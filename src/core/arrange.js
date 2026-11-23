@@ -11,7 +11,8 @@ export const FREQ = Array.from({ length: 96 }, (_, n) => Math.min(0xFFFF, Math.r
 const clampNote = (n) => { n = Math.round(n); while (n > 92) n -= 12; while (n < 0) n += 12; return n; };
 
 export function convertSong(mod, replay, analysis, opts = {}) {
-  const o = Object.assign({ seed: 1, creativity: 0, assignments: {}, fitEnvelope: true, useFilter: true, lang: 'de', title: mod.title }, opts);
+  const o = Object.assign({ seed: 1, creativity: 0, assignments: {}, fitEnvelope: true, useFilter: true, lang: 'de', title: mod.title, sids: 1 }, opts);
+  const NV = o.sids === 2 ? 6 : 3;
   const R = rng(o.seed * 104729 + 7);
   const rows = replay.rows, N = rows.length;
   // ------------------------------------------------------------ samples
@@ -145,6 +146,7 @@ export function convertSong(mod, replay, analysis, opts = {}) {
   let prevVoiceOf = [0, 1, 2, 2]; // channel -> voice
   const perms = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]];
   for (const seg of segs) {
+    if (NV === 6) { plans.push({ voices: [[0], [1], [2], [3], [], []], dropped: [], cost: 0 }); continue; }
     const act = [0, 1, 2, 3].map(c => activity(c, seg));
     const live = [0, 1, 2, 3].filter(c => act[c] > 0);
     const options = [];
@@ -177,7 +179,7 @@ export function convertSong(mod, replay, analysis, opts = {}) {
     plans.push(best);
   }
   // ------------------------------------------------------------ instruments & tables
-  const song = new GTSong();
+  const song = new GTSong(NV);
   song.name = (o.title || 'mod2sid').slice(0, 32);
   song.author = (o.author || 'converted with mod2sid').slice(0, 32);
   song.copyright = (o.copyright || (new Date().getFullYear() + ' IT-Dummkopfen mod2sid')).slice(0, 32);
@@ -186,28 +188,29 @@ export function convertSong(mod, replay, analysis, opts = {}) {
   const minT = Math.min(...rows.map(r => Math.max(2, Math.round(fprOf(r)))));
   const GATE = minT <= 2 ? 1 : 2;
   // filter voice: voice with most filter-instrument rows
-  const filterUse = [0, 0, 0];
+  const filterUse = new Array(NV).fill(0);
   if (o.useFilter) plans.forEach((p, k) => p.voices.forEach((grp, v) => grp.forEach(c => {
     for (let i = segs[k].start; i < segs[k].end; i++) { const e = trigAt[c].get(i); if (e && S[e.smp].preset.filter) filterUse[v] += e.w; }
   })));
-  const filterVoice = filterUse.some(x => x > 0) ? filterUse.indexOf(Math.max(...filterUse)) : -1;
+  const fu3 = filterUse.slice(0, 3);
+  const filterVoice = fu3.some(x => x > 0) ? fu3.indexOf(Math.max(...fu3)) : -1;
   const insOf = {}; const waveOf = {};
   const mainWave = (steps) => { const s = steps.find(x => typeof x[0] === 'number' && x[0] >= 0x10); return s ? s[0] : 0x41; };
   const wavesFor = (s) => s.chord ? [...s.chord.iv.map(iv => [mainWave(s.preset.wave), iv]), ['J', 0]] : s.preset.wave;
-  const instrFor = (smpIdx, voice) => {
+  const instrFor = (smpIdx, voice, plain = false) => {
     const s = S[smpIdx];
     const useF = s.preset.filter && voice === filterVoice;
-    const key = smpIdx + (useF ? 'f' : '');
+    const key = smpIdx + (useF ? 'f' : '') + (plain && s.chord ? 'p' : '');
     if (insOf[key]) return insOf[key];
     const pr = s.preset;
-    const steps = wavesFor(s);
+    const steps = (plain && s.chord) ? pr.wave : wavesFor(s);
     const wv = song.addWave(steps);
-    waveOf[smpIdx] = steps;
+    if (!(plain && s.chord)) waveOf[smpIdx] = steps;
     const pu = song.addPulse(pr.pulse);
     const fi = useF ? song.addFilter(pr.filter, 1 << filterVoice) : 0;
     let vp = 0, vd = 0;
     if (pr.vib) { vp = song.addSpeed(pr.vib[0], pr.vib[1]); vd = pr.vib[2] || 1; }
-    const nm = (s.chord ? presetName(pr, o.lang).slice(0, 10) + ' ' + s.chord.type : presetName(pr, o.lang)).slice(0, 16);
+    const nm = (s.chord && !plain ? presetName(pr, o.lang).slice(0, 10) + ' ' + s.chord.type : presetName(pr, o.lang)).slice(0, 16);
     const id = song.addInstrument({ ad: s.env.ad, sr: s.env.sr, wv, pu, fi, vp, vd, gt: GATE, fw: pr.fw, name: nm });
     insOf[key] = id;
     return id;
@@ -230,13 +233,34 @@ export function convertSong(mod, replay, analysis, opts = {}) {
   const plainTable = (melIdx) => song.addWave([[mainWave(waveOf[melIdx] || wavesFor(S[melIdx])), 0], ['S']]);
   // ------------------------------------------------------------ voice rows
   // cell: {n: gt note byte or null, i: instr, cmds: [{p, c, d}]}
-  const V = [0, 1, 2].map(() => Array.from({ length: N }, () => ({ n: null, i: 0, cmds: [] })));
-  const vstate = [0, 1, 2].map(() => ({ owner: null, arp: false, fxArp: null, susS: 0, keyed: false }));
+  const V = Array.from({ length: NV }, () => Array.from({ length: N }, () => ({ n: null, i: 0, cmds: [] })));
+  const vstate = Array.from({ length: NV }, () => ({ owner: null, arp: false, fxArp: null, susS: 0, keyed: false }));
+  // 2SID: spare voices 4+5 for real chords and split-off drums
+  const spareBusy = NV === 6 ? [new Uint8Array(N + 1), new Uint8Array(N + 1)] : [];
+  const spareFree = (k, a, b) => { for (let i = a; i < Math.min(b, N); i++) if (spareBusy[k][i]) return false; return true; };
+  const spareNote = (i, ev, note, plain, end) => {
+    for (let k = 0; k < spareBusy.length; k++) {
+      if (!spareFree(k, i, end)) continue;
+      for (let j = i; j < Math.min(end, N); j++) spareBusy[k][j] = 1;
+      const v = 4 + k, c = V[v][i];
+      c.n = 0x60 + clampNote(note); c.i = instrFor(ev.smp, v, plain);
+      if (end < N && S[ev.smp].sustained && V[v][end].n === null) V[v][end].n = KEYOFF;
+      return true;
+    }
+    return false;
+  };
   const pushCmd = (v, i, p, c, d) => { if ((c === 8 || c === 1 || c === 2 || c === 3 || c === 4 || c === 0x0E) && !d) return; V[v][i].cmds.push({ p, c, d }); };
   const curFreq = (ev) => FREQ[ev.note];
   const emitNote = (v, i, ev, voice) => {
     const cell = V[v][i];
     cell.n = 0x60 + ev.note; cell.i = instrFor(ev.smp, voice);
+    const sc = S[ev.smp];
+    if (NV === 6 && sc.chord && v < 4) {
+      // play the chord with real voices where possible, arpeggio only as fallback
+      const ivs = sc.chord.iv.slice(1, 3);
+      const free = [0, 1].filter(k => spareFree(k, i, ev.end)).length;
+      if (free >= ivs.length) { ivs.forEach(iv => spareNote(i, ev, ev.note + iv, true, ev.end)); cell.i = instrFor(ev.smp, voice, true); }
+    }
     const st = vstate[v]; st.owner = ev; st.arp = false; st.fxArp = null; st.keyed = false;
     const s = S[ev.smp];
     st.susS = s.env.sr >> 4;
@@ -302,6 +326,8 @@ export function convertSong(mod, replay, analysis, opts = {}) {
       for (let i = seg.start; i < seg.end; i++) {
         if (b === undefined) {
           const ea = trigAt[a].get(i);
+          if (ea && NV === 6 && ea.drum && st.owner && !st.keyed && !st.owner.drum && st.owner.sus && st.owner.end > i + 1 &&
+              spareNote(i, ea, ea.note, false, Math.min(ea.end, i + 4))) { effects(v, i, a); continue; }
           if (ea) emitNote(v, i, ea, v);
           effects(v, i, a);
           continue;
@@ -356,7 +382,7 @@ export function convertSong(mod, replay, analysis, opts = {}) {
     lastT = key;
     // place on a voice with a free slot, else override lowest priority
     let placed = false;
-    for (const v of [0, 1, 2]) if (!V[v][i].cmds.length) { pushCmd(v, i, 20, cmd[0], cmd[1]); placed = true; break; }
+    for (let v = 0; v < NV; v++) if (!V[v][i].cmds.length) { pushCmd(v, i, 20, cmd[0], cmd[1]); placed = true; break; }
     if (!placed) { const v = 2; V[v][i].cmds.push({ p: 20, c: cmd[0], d: cmd[1] }); }
   }
   const initTempo = Math.max(2, Math.round(fprOf(rows[0])));
@@ -368,7 +394,7 @@ export function convertSong(mod, replay, analysis, opts = {}) {
   };
   let k = 1;
   const build = (k) => {
-    song.patterns = []; song.patKey = new Map(); song.orders = [[], [], []];
+    song.patterns = []; song.patKey = new Map(); song.orders = Array.from({ length: NV }, () => []);
     const chunks = [];
     for (let s = 0; s < segs.length;) {
       let e = s, len = 0;
@@ -376,7 +402,7 @@ export function convertSong(mod, replay, analysis, opts = {}) {
       chunks.push({ start: segs[s].start, end: segs[e - 1].end, first: s });
       s = e;
     }
-    for (const ch of chunks) for (let v = 0; v < 3; v++) {
+    for (const ch of chunks) for (let v = 0; v < NV; v++) {
       const prow = [];
       for (let i = ch.start; i < ch.end; i++) prow.push(resolve(V[v][i]));
       song.orders[v].push(song.addPattern(prow));
@@ -390,7 +416,7 @@ export function convertSong(mod, replay, analysis, opts = {}) {
   if (truncated) {
     // keep as many chunks as fit
     while (song.patterns.length > MAX_PATTERNS || song.orders[0].length > 254) {
-      for (let v = 0; v < 3; v++) song.orders[v].pop();
+      for (let v = 0; v < NV; v++) song.orders[v].pop();
       const used = new Set(song.orders.flat());
       if (used.size <= MAX_PATTERNS && song.orders[0].length <= 254) {
         const remap = new Map(); const pats = [];
@@ -401,9 +427,12 @@ export function convertSong(mod, replay, analysis, opts = {}) {
       }
     }
   }
-  const segInfo = segs.map((s, k) => ({ start: s.start, end: s.end, pos: rows[s.start].pos, pat: rows[s.start].pat, voices: plans[k].voices, dropped: plans[k].dropped, cost: plans[k].cost }));
+  const segInfo = segs.map((s, k) => {
+    const spare = [4, 5].filter(v => v < NV).map(v => { let n = 0; for (let i = s.start; i < s.end; i++) if (V[v][i].n !== null && V[v][i].n < 0xBD) n++; return n; });
+    return { start: s.start, end: s.end, pos: rows[s.start].pos, pat: rows[s.start].pat, voices: plans[k].voices, dropped: plans[k].dropped, cost: plans[k].cost, spare };
+  });
   return {
-    song, initTempo, gate: GATE, filterVoice, segments: segInfo, loopSeg, truncated, overflow: song.overflow,
+    song, voices: NV, initTempo, gate: GATE, filterVoice, segments: segInfo, loopSeg, truncated, overflow: song.overflow,
     rowsTotal: N, seconds: rowSec.reduce((a, b) => a + b, 0),
     instrumentMap: Object.fromEntries(Object.entries(insOf)),
   };

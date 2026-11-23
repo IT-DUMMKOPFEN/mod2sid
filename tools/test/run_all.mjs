@@ -12,7 +12,7 @@ for (const f of fs.readdirSync(dir).filter(f => /\.mod$/i.test(f))) {
   try {
     const ctx = loadMod(fs.readFileSync(dir + '/' + f));
     const an = analyze(ctx, { seed: 1 });
-    const res = convert(ctx, an, { seed: 1, title: ctx.mod.title });
+    const res = convert(ctx, an, { seed: 1, title: ctx.mod.title, sids: +(process.env.SIDS || 1) });
     const t1 = Date.now();
     const pl = new SIDPlayer(44100); pl.load(res.sid);
     const secs = Math.min(30, res.seconds);

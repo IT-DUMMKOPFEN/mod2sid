@@ -166,16 +166,25 @@ export function parsePSID(bytes) {
   let data = b.subarray(dataOff);
   if (load === 0) { load = data[0] | (data[1] << 8); data = data.subarray(2); }
   const s = (o) => { let r = ''; for (let i = 0; i < 32 && b[o + i]; i++) r += String.fromCharCode(b[o + i]); return r; };
-  return { load, init, play, songs, start, data, name: s(0x16), author: s(0x36), released: s(0x56) };
+  const version = w(4);
+  let sid2 = 0;
+  if (version >= 3 && b[0x7A] >= 0x42 && b[0x7A] <= 0xFE) sid2 = 0xD000 | (b[0x7A] << 4);
+  return { load, init, play, songs, start, data, sid2, name: s(0x16), author: s(0x36), released: s(0x56) };
 }
 
 export class SIDPlayer {
   constructor(sampleRate = 44100, model = '6581') {
     this.sid = new SID(sampleRate, model);
+    this.sid2 = new SID(sampleRate, model);
+    this.sid2Base = 0;
     this.sampleRate = sampleRate;
+    this.buf2 = new Float32Array(4096);
     this.spf = sampleRate / 50.1245;
     this.mem = new Uint8Array(65536);
-    this.cpu = new CPU6502(this.mem, (r, v) => this.sid.write(r, v));
+    this.cpu = new CPU6502(this.mem, (a, v) => {
+      if (this.sid2Base && a >= this.sid2Base && a < this.sid2Base + 0x20) this.sid2.write(a - this.sid2Base, v);
+      else if (a < 0xD420 || !this.sid2Base) this.sid.write(a & 0x1F, v);
+    });
     this.frame = 0; this.acc = 0; this.tune = null;
   }
   load(psidBytes, song = 0) {
@@ -184,23 +193,32 @@ export class SIDPlayer {
     this.restart();
   }
   restart() {
-    const t = this.tune; this.mem.fill(0); this.sid.reset();
+    const t = this.tune; this.mem.fill(0); this.sid.reset(); this.sid2.reset(); this.sid2Base = t.sid2 || 0;
     this.mem.set(t.data, t.load);
     this.cpu.call(t.init, this.song);
     this.frame = 0; this.acc = 0;
   }
   seek(frame) {
     this.restart();
-    for (let i = 0; i < frame; i++) { this.cpu.call(this.tune.play); this.sid.v.forEach(v => v.clockEnv(19656)); }
+    for (let i = 0; i < frame; i++) { this.cpu.call(this.tune.play); this.sid.v.forEach(v => v.clockEnv(19656)); this.sid2.v.forEach(v => v.clockEnv(19656)); }
     this.frame = frame;
   }
+  setMute(m) { this.sid.mute = m.slice(0, 3); this.sid2.mute = (m.length > 3 ? m.slice(3, 6) : [false, false, false]); }
+  setModel(m) { this.sid.setModel(m); this.sid2.setModel(m); }
+  get voices() { return this.sid2Base ? 6 : 3; }
   // fill out (Float32Array) with mono samples
   generate(out) {
     let i = 0;
     while (i < out.length) {
       if (this.acc <= 0) { this.cpu.call(this.tune.play); this.frame++; this.acc += this.spf; }
       const n = Math.min(out.length - i, Math.ceil(this.acc));
-      this.sid.render(out, i, n); i += n; this.acc -= n;
+      this.sid.render(out, i, n);
+      if (this.sid2Base) {
+        if (this.buf2.length < n) this.buf2 = new Float32Array(n);
+        this.sid2.render(this.buf2, 0, n);
+        for (let k = 0; k < n; k++) out[i + k] = (out[i + k] + this.buf2[k]) * 0.75;
+      }
+      i += n; this.acc -= n;
     }
   }
 }

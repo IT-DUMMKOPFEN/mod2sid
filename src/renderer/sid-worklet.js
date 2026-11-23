@@ -15,7 +15,7 @@ class SidProcessor extends AudioWorkletProcessor {
           this.model = m.model || this.model;
           this.pl = new SIDPlayer(sampleRate, this.model);
           this.pl.load(m.psid);
-          this.pl.sid.mute = m.mute || this.mute;
+          this.pl.setMute(m.mute || this.mute);
           if (m.frame) this.pl.seek(m.frame);
           this.playing = !!m.autoplay; this.stopAt = m.stopAfter ? Math.round(m.stopAfter * 50) + (m.frame || 0) : 0;
           this.port.postMessage({ type: 'loaded', id: m.id });
@@ -24,8 +24,8 @@ class SidProcessor extends AudioWorkletProcessor {
         case 'pause': this.playing = false; break;
         case 'stop': this.playing = false; if (this.pl) this.pl.restart(); this.port.postMessage({ type: 'pos', frame: 0 }); break;
         case 'seek': if (this.pl) { this.pl.seek(m.frame); this.port.postMessage({ type: 'pos', frame: this.pl.frame }); } break;
-        case 'mute': this.mute = m.mute; if (this.pl) this.pl.sid.mute = m.mute; break;
-        case 'model': this.model = m.model; if (this.pl) this.pl.sid.setModel(m.model); break;
+        case 'mute': this.mute = m.mute; if (this.pl) this.pl.setMute(m.mute); break;
+        case 'model': this.model = m.model; if (this.pl) this.pl.setModel(m.model); break;
       }
     } catch (err) { this.port.postMessage({ type: 'error', message: String(err && err.message || err) }); }
   }

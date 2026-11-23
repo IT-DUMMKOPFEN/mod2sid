@@ -1,3 +1,9 @@
+## mod2sid 1.1
+
+**DE:** Neu: Option 1 oder 2 SIDs (6 Stimmen, echte Akkorde, PSID v3 + GoatTracker-Stereo-SNG), 164 SID-Instrumente (+78), KI neu trainiert mit 35 MODs (73 % Klasse / 86 % Familie).
+
+**EN:** New: 1 or 2 SIDs (6 voices, real chords, PSID v3 + GoatTracker Stereo SNG), 164 SID instruments (+78), AI retrained on 35 MODs (73 % class / 86 % family).
+
 ## mod2sid – Release
 
 **DE:** Amiga-MOD → C64-SID + GoatTracker-SNG für macOS (Apple Silicon).

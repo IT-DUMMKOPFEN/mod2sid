@@ -1,13 +1,13 @@
 :root {
   --bg: #12102a; --bg2: #1b1838; --card: #221e45; --card2: #2b2657; --line: #3a3470;
   --text: #ecebff; --muted: #a29fd0; --accent: #ff9a3c; --accent2: #6ee4ff; --primary: #7b6cff; --warn: #ffcf5c;
-  --c0: #ff9a3c; --c1: #6ee4ff; --c2: #b78cff; --c3: #7fe08a;
+  --c0: #ff9a3c; --c1: #6ee4ff; --c2: #b78cff; --c3: #7fe08a; --c4: #ff6f9f; --c5: #f5e06b;
   --radius: 12px; --shadow: 0 6px 24px rgba(0,0,0,.35);
 }
 html.light, body.light {
   --bg: #f1f0fb; --bg2: #e6e4f7; --card: #ffffff; --card2: #f3f1ff; --line: #d5d1f0;
   --text: #1d1a3a; --muted: #6a6694; --shadow: 0 4px 16px rgba(40,30,120,.12);
-  --c0: #e07a12; --c1: #0aa5c9; --c2: #7a4cdc; --c3: #2a9d3a;
+  --c0: #e07a12; --c1: #0aa5c9; --c2: #7a4cdc; --c3: #2a9d3a; --c4: #d6336c; --c5: #b59a00;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }

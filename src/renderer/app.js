@@ -19,7 +19,7 @@ const S = {
   theme: LS.get('theme', 'dark'),
   ctx: null, analysis: null, result: null, file: null, seed: 1, variant: 1,
   assign: {}, manual: new Set(),
-  mode: 'sid', playing: false, frame: 0, mute: [false, false, false], solo: -1,
+  mode: 'sid', playing: false, frame: 0, mute: [false, false, false, false, false, false], solo: -1,
   audio: null, node: null, gain: null, modBuf: null, modSrc: null, modStart: 0, modOffset: 0,
   loaded: 'none', rowStart: [], savedDir: LS.get('savedDir', ''),
 };
@@ -57,7 +57,8 @@ async function ensureAudio() {
   };
 }
 function sidMsg(m) { if (S.node) S.node.port.postMessage(m); }
-function muteMask() { return [0, 1, 2].map(v => S.solo >= 0 ? v !== S.solo : S.mute[v]); }
+const nVoices = () => (S.result ? S.result.voices : (+$('#optSids').value === 2 ? 6 : 3));
+function muteMask() { return Array.from({ length: 6 }, (_, v) => S.solo >= 0 ? v !== S.solo : S.mute[v]); }
 async function loadSongIntoPlayer(autoplay, frame = 0) {
   await ensureAudio();
   sidMsg({ type: 'load', psid: S.result.sid, model: $('#optModel').value, mute: muteMask(), autoplay, frame });
@@ -189,12 +190,12 @@ function runConvert(keepPos = false) {
   for (const a of S.analysis.samples) if (a.used) assignments[a.index] = S.assign[a.index] || a.presetId;
   S.result = convert(S.ctx, S.analysis, {
     seed: S.seed, creativity: S.variant > 1 ? +$('#optCreativity').value / 100 : 0, assignments, lang: S.lang,
-    fitEnvelope: $('#optFitEnv').checked, useFilter: $('#optFilter').checked, model: $('#optModel').value,
+    fitEnvelope: $('#optFitEnv').checked, useFilter: $('#optFilter').checked, model: $('#optModel').value, sids: +$('#optSids').value,
     title: S.ctx.mod.title || (S.file && S.file.name.replace(/\.mod$/i, '')),
   });
   // row start times for the arrangement view
   let acc = 0; S.rowStart = S.ctx.replay.rows.map(r => { const s = acc; acc += r.ticks.length * 2.5 / r.bpm; return s; });
-  renderArrangement(); renderStats();
+  renderArrangement(); renderStats(); renderVoiceBtns();
   if (S.loaded === 'song' || keepPos) loadSongIntoPlayer(S.playing && S.mode === 'sid', keepPos ? S.frame : 0);
   else S.loaded = 'none';
   updatePos(); setStatus(t('ready'));
@@ -253,7 +254,7 @@ function renderKiInfo() {
 function renderStats() {
   if (!S.result) return;
   const r = S.result;
-  $('#outStats').textContent = t('stats', { patterns: r.song.patterns.length, instr: r.song.instr.length, size: r.sidInfo.size, end: r.sidInfo.end.toString(16).toUpperCase() });
+  $('#outStats').textContent = t('stats', { sids: r.voices > 3 ? '2 SIDs ($D400+$D420)' : '1 SID', patterns: r.song.patterns.length, instr: r.song.instr.length, size: r.sidInfo.size, end: r.sidInfo.end.toString(16).toUpperCase() });
   const w = [];
   if (r.truncated) w.push(t('trunc'));
   if (r.overflow) w.push(t('ovf'));
@@ -261,9 +262,10 @@ function renderStats() {
 }
 function renderVoiceBtns() {
   const box = $('#voiceBtns'); box.innerHTML = '';
-  for (let v = 0; v < 3; v++) {
+  const nv = nVoices();
+  for (let v = 0; v < nv; v++) {
     const b = document.createElement('button'); b.className = 'vbtn';
-    b.innerHTML = `<i style="background:var(--c${v})"></i>${t('voice')} ${v + 1}`;
+    b.innerHTML = `<i style="background:var(--c${v})"></i>${nv > 3 ? (v < 3 ? 'A' : 'B') + ((v % 3) + 1) : t('voice') + ' ' + (v + 1)}`;
     b.title = `${t('mute')} (Klick) · ${t('solo')} (Doppelklick / double click)`;
     if (S.solo >= 0 ? S.solo !== v : S.mute[v]) b.classList.add('off');
     if (S.solo === v) b.classList.add('solo');
@@ -313,11 +315,13 @@ function renderArrangement() {
   const px = 3;
   const chCol = (c) => `var(--c${c})`;
   let h = '';
-  for (let v = 0; v < 3; v++) {
-    h += `<div class="arrRow"><div class="arrLabel"><i style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--c${v});margin-right:6px"></i>SID ${v + 1}</div>`;
+  const nv = S.result.voices || 3;
+  for (let v = 0; v < nv; v++) {
+    const lab = nv > 3 ? `SID${v < 3 ? 1 : 2}·${(v % 3) + 1}` : `SID ${v + 1}`;
+    h += `<div class="arrRow"><div class="arrLabel"><i style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--c${v});margin-right:6px"></i>${lab}</div>`;
     segs.forEach((s, k) => {
       const grp = s.voices[v]; const w = Math.max(6, (s.end - s.start) * px);
-      const inner = grp.length ? grp.map(c => `<div style="background:${chCol(c)}">K${c + 1}</div>`).join('') : '<div class="empty"></div>';
+      const inner = grp.length ? grp.map(c => `<div style="background:${chCol(c)}">K${c + 1}</div>`).join('') : (v >= 4 && s.spare && s.spare[v - 4] ? `<div style="background:var(--c${v})">${S.lang === 'de' ? 'Akkord/Drum' : 'chord/drum'}</div>` : '<div class="empty"></div>');
       h += `<div class="arrSeg" data-k="${k}" style="width:${w}px" title="Pos ${s.pos} · Pattern ${s.pat} · ${grp.map(c => 'K' + (c + 1)).join('+') || '-'}${grp.length > 1 ? ' (' + t('merged') + ')' : ''}">${inner}</div>`;
     });
     h += '</div>';
@@ -327,6 +331,7 @@ function renderArrangement() {
   h += '</div>';
   h += `<div class="legend">${[0, 1, 2, 3].map(c => `<span><i style="background:var(--c${c})"></i>${S.lang === 'de' ? 'Kanal' : 'Channel'} ${c + 1} (K${c + 1})</span>`).join('')}</div>`;
   box.innerHTML = h;
+  const head = box.parentElement.querySelector('h3'); if (head) head.textContent = t('arrangement').replace('3', String(nv));
   box.querySelectorAll('.arrSeg').forEach(el => { el.onclick = () => { const s = segs[+el.dataset.k]; seekTo(S.rowStart[s.start] || 0); }; });
 }
 let lastSeg = -1;
@@ -379,7 +384,8 @@ async function init() {
   if (saved.filter !== undefined) $('#optFilter').checked = saved.filter;
   applyLang();
   if (api.appInfo) api.appInfo().then(i => { $('#ver').textContent = 'v' + i.version; });
-  const saveOpts = () => LS.set('opts', { model: $('#optModel').value, creativity: +$('#optCreativity').value, fitEnv: $('#optFitEnv').checked, filter: $('#optFilter').checked });
+  if (saved.sids) $('#optSids').value = saved.sids;
+  const saveOpts = () => LS.set('opts', { sids: +$('#optSids').value, model: $('#optModel').value, creativity: +$('#optCreativity').value, fitEnv: $('#optFitEnv').checked, filter: $('#optFilter').checked });
   $('#btnOpen').onclick = async () => { const f = await api.openMod(); if (f) openFile(f); };
   $('#btnReconvert').onclick = reconvert;
   $('#btnSave').onclick = save;
@@ -397,6 +403,7 @@ async function init() {
   $('#seek').onchange = () => { S.seeking = false; seekTo(+$('#seek').value / 1000 * songSeconds()); };
   $('#optModel').onchange = () => { saveOpts(); sidMsg({ type: 'model', model: $('#optModel').value }); if (S.ctx) runConvert(true); };
   $('#optCreativity').onchange = saveOpts;
+  $('#optSids').onchange = () => { saveOpts(); S.solo = -1; if (S.ctx) runConvert(true); else renderVoiceBtns(); };
   $('#optFitEnv').onchange = () => { saveOpts(); if (S.ctx) runConvert(true); };
   $('#optFilter').onchange = () => { saveOpts(); if (S.ctx) runConvert(true); };
   document.querySelectorAll('.tab').forEach(b => { b.onclick = () => {

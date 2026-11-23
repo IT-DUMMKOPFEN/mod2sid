@@ -2,7 +2,9 @@
 import fs from 'fs';
 import { parseMod, replayMod } from '../../src/core/mod.js';
 import { analyzeSample, sampleUsage, CLASSES } from '../../src/core/features.js';
-const [synthBase, modDir, out] = process.argv.slice(2);
+const [synthBase, modDirArg, out] = process.argv.slice(2);
+const modDirs = modDirArg.split(',');
+const findMod = (f) => modDirs.map(d => d + '/' + f).find(p => fs.existsSync(p));
 const idx = JSON.parse(fs.readFileSync(synthBase + '.json'));
 const bin = fs.readFileSync(synthBase + '.bin');
 const rows = [];
@@ -13,9 +15,13 @@ for (const m of idx) {
   const a = analyzeSample(s, u);
   rows.push({ y: CLASSES.indexOf(m.cls), x: a.features, src: 'synth' });
 }
-const labels = JSON.parse(fs.readFileSync(new URL('./labels.json', import.meta.url)));
+const labels = {};
+for (const lf of ['./labels.json', './labels_auto.json']) {
+  try { Object.assign(labels, JSON.parse(fs.readFileSync(new URL(lf, import.meta.url)))); } catch { /* optional */ }
+}
 for (const [file, lab] of Object.entries(labels)) {
-  const mod = parseMod(fs.readFileSync(modDir + '/' + file));
+  const mp = findMod(file); if (!mp) { console.warn('missing', file); continue; }
+  const mod = parseMod(fs.readFileSync(mp));
   const u = sampleUsage(replayMod(mod));
   for (const [k, cls] of Object.entries(lab)) {
     const s = mod.samples[+k - 1]; if (!u[+k]) continue;

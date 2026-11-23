@@ -11,11 +11,12 @@ export const T = {
     colNr: '#', colName: 'Sample', colKi: 'KI-Erkennung', colInstr: 'SID-Instrument', colOrig: 'Original', colSid: 'SID', colHits: 'Noten',
     manual: 'manuell', learned: 'gelernt', converting: 'Konvertiere …', analysing: 'Analysiere Samples …', ready: 'Fertig',
     saved: 'Gespeichert', savedTo: 'Gespeichert:', reveal: 'Im Finder zeigen', errLoad: 'Fehler beim Laden', notLoaded: 'Noch kein MOD geladen',
-    stats: (r) => `${r.patterns} Patterns · ${r.instr} Instrumente · SID ${r.size} Bytes ($1000–$${r.end})`,
+    stats: (r) => `${r.sids} · ${r.patterns} Patterns · ${r.instr} Instrumente · SID ${r.size} Bytes ($1000–$${r.end})`,
     variant: (n) => `Variante ${n}`, speechMuted: 'Sprache wird nicht umgewandelt', merged: 'kombiniert', theme: 'Hell/Dunkel', lang: 'Sprache',
     tabArr: 'Stimmen', tabLib: 'Instrumenten-Bibliothek', libHint: 'Klicke auf ▶ um ein Instrument anzuhören.',
     trunc: 'Achtung: Der Song war für das GoatTracker-Format zu lang und wurde gekürzt.', ovf: 'Hinweis: Tabellen fast voll – einige Effekte wurden vereinfacht.',
     close: 'Schließen',
+    sidChips: 'SID-Chips', sidHint: '2 SIDs = 6 Stimmen: kein Zusammenlegen nötig, Akkorde als echte Akkorde. Braucht 2 SIDs (VICE: zweiter SID auf $D420).',
   },
   en: {
     open: 'Open MOD', reconvert: 'Convert again', save: 'Save SID + SNG', help: 'Help', info: 'About',
@@ -28,11 +29,12 @@ export const T = {
     colNr: '#', colName: 'Sample', colKi: 'AI detection', colInstr: 'SID instrument', colOrig: 'Original', colSid: 'SID', colHits: 'Notes',
     manual: 'manual', learned: 'learned', converting: 'Converting …', analysing: 'Analysing samples …', ready: 'Ready',
     saved: 'Saved', savedTo: 'Saved:', reveal: 'Show in Finder', errLoad: 'Error while loading', notLoaded: 'No MOD loaded yet',
-    stats: (r) => `${r.patterns} patterns · ${r.instr} instruments · SID ${r.size} bytes ($1000–$${r.end})`,
+    stats: (r) => `${r.sids} · ${r.patterns} patterns · ${r.instr} instruments · SID ${r.size} bytes ($1000–$${r.end})`,
     variant: (n) => `Variant ${n}`, speechMuted: 'Speech is not converted', merged: 'combined', theme: 'Light/Dark', lang: 'Language',
     tabArr: 'Voices', tabLib: 'Instrument library', libHint: 'Click ▶ to listen to an instrument.',
     trunc: 'Note: the song was too long for the GoatTracker format and has been shortened.', ovf: 'Note: tables nearly full – some effects were simplified.',
     close: 'Close',
+    sidChips: 'SID chips', sidHint: '2 SIDs = 6 voices: no merging needed, chords as real chords. Needs 2 SIDs (VICE: second SID at $D420).',
   },
 };
 
@@ -55,6 +57,7 @@ export const HELP = {
 <li><b>Vorhören:</b> Mit ▶ hörst du die SID-Version (eingebauter SID-Emulator, 6581 oder 8580). Umschalten auf „Original-MOD“ zum Vergleich. Einzelne SID-Stimmen kannst du stumm oder solo schalten.</li>
 <li><b>Instrumente tauschen:</b> In der Instrumentenliste das Instrument wählen – die Musik wird sofort neu berechnet. mod2sid merkt sich deine Wahl und schlägt sie bei ähnlichen Samples künftig selbst vor.</li>
 <li><b>Neu konvertieren</b> erzeugt eine andere Variante (andere Instrumentwahl und Stimmenverteilung). Der Regler „Kreativität“ bestimmt, wie stark sie sich unterscheidet. Manuell gewählte Instrumente bleiben erhalten.</li>
+<li><b>1 oder 2 SIDs:</b> Mit 2 SIDs (6 Stimmen) bekommt jeder MOD-Kanal eine eigene Stimme. Die zwei freien Stimmen spielen Akkord-Samples als echte Akkorde und übernehmen Drum-Schläge, damit Bass oder Melodie weiterklingen. Die SID nutzt dann das PSID-v3-Format mit zweitem SID auf $D420 (VICE, SIDPlay), die SNG ist für GoatTracker Stereo.</li>
 <li><b>Speichern</b> legt eine <b>.sid</b> (abspielbar in VICE, SIDPlay, auf dem C64) und eine <b>.sng</b> (GoatTracker 2 zum Weiterbearbeiten) mit gleichem Namen ab.</li>
 </ol>
 <h3>Gut zu wissen</h3>
@@ -72,6 +75,7 @@ export const HELP = {
 <li><b>Preview:</b> press ▶ to hear the SID version (built-in SID emulator, 6581 or 8580). Switch to “Original MOD” to compare. Single SID voices can be muted or soloed.</li>
 <li><b>Swap instruments:</b> pick another instrument in the list – the music is re-calculated instantly. mod2sid remembers your choice and suggests it for similar samples in the future.</li>
 <li><b>Convert again</b> creates a different variant (other instruments and voice allocation). The “creativity” slider controls how different it is. Instruments you picked manually are kept.</li>
+<li><b>1 or 2 SIDs:</b> with 2 SIDs (6 voices) every MOD channel gets its own voice. The two spare voices play chord samples as real chords and take drum hits so bass or melody keeps ringing. The SID then uses PSID v3 with the second SID at $D420 (VICE, SIDPlay), the SNG is for GoatTracker Stereo.</li>
 <li><b>Save</b> writes a <b>.sid</b> (plays in VICE, SIDPlay, on a real C64) and a <b>.sng</b> (GoatTracker 2, for further editing) with the same name.</li>
 </ol>
 <h3>Good to know</h3>

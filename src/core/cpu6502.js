@@ -18,7 +18,7 @@ export class CPU6502 {
     this.m = mem; this.onWrite = onWrite || null;
     this.a = 0; this.x = 0; this.y = 0; this.sp = 0xFF; this.c = 0; this.z = 0; this.n = 0; this.v = 0; this.d = 0; this.i = 1; this.pc = 0;
   }
-  wr(a, v) { a &= 0xFFFF; v &= 0xFF; this.m[a] = v; if (this.onWrite && a >= 0xD400 && a <= 0xD7FF) this.onWrite(a & 0x1F, v); }
+  wr(a, v) { a &= 0xFFFF; v &= 0xFF; this.m[a] = v; if (this.onWrite && a >= 0xD400 && a <= 0xD7FF) this.onWrite(a, v); }
   push(v) { this.m[0x100 + this.sp] = v & 0xFF; this.sp = (this.sp - 1) & 0xFF; }
   pop() { this.sp = (this.sp + 1) & 0xFF; return this.m[0x100 + this.sp]; }
   nz(v) { v &= 0xFF; this.z = v === 0 ? 1 : 0; this.n = v >> 7; return v; }

@@ -1,5 +1,6 @@
 // mod2sid – SID instrument library (GoatTracker-2 instruments)
 // (c) IT-DUMMKOPFEN, GPL-3.0
+import { EXTRA_PRESETS, EXTRA_CATEGORIES, CLASS_PRESETS_EXT } from './library_extra.js';
 //
 // wave:   [left, right] steps. right: number = relative halftones, {a:n} = absolute note, 'k' = keep pitch
 //         ['J', i] = jump to step i (0-based), ['S'] = stop
@@ -13,14 +14,14 @@ const still = (w) => [PW(w), ['S']];
 const A = (n) => ({ a: n });
 const p = (o) => Object.assign({ gate: 2, fw: 0x09, pulse: null, filter: null, vib: null, drum: false, prefix: 0 }, o);
 
-export const CATEGORIES = [
+const BASE_CATEGORIES = [
   ['bass', 'Bass', 'Bass'], ['lead', 'Lead', 'Lead'], ['strings', 'Streicher', 'Strings'], ['brass', 'Blech', 'Brass'],
   ['wood', 'Holz', 'Woodwinds'], ['guitar', 'Gitarre', 'Guitar'], ['keys', 'Tasten', 'Keys'], ['bell', 'Glocken', 'Bells & Mallets'],
   ['pad', 'Flächen', 'Pads'], ['choir', 'Chor', 'Choir'], ['synth', 'Synth', 'Synth'], ['drums', 'Schlagzeug', 'Drums'],
   ['fx', 'Effekte', 'FX'], ['mute', 'Stumm', 'Muted'],
 ];
 
-export const PRESETS = [
+const BASE_PRESETS = [
   // ------------------------------------------------------------------ BASS
   p({ id: 'bass_pulse', cat: 'bass', de: 'Pulse-Bass', en: 'Pulse bass', ad: 0x09, sr: 0x6A, wave: [[0x41, 0], ['S']], pulse: sweep(0x400, 0x20, 0x20), desc: { bright: .5, slow: 0, sus: .5 } }),
   p({ id: 'bass_saw', cat: 'bass', de: 'Saw-Bass', en: 'Saw bass', ad: 0x09, sr: 0x5A, wave: [[0x21, 0], ['S']], desc: { bright: .8, slow: 0, sus: .4 } }),
@@ -123,10 +124,12 @@ export const PRESETS = [
   p({ id: 'mute', cat: 'mute', de: 'Stumm (nicht übernehmen)', en: 'Muted (skip)', ad: 0, sr: 0, wave: [['S']], desc: { bright: 0, slow: 0, sus: 0 } }),
 ];
 
+export const CATEGORIES = [...BASE_CATEGORIES.slice(0, -2), ...EXTRA_CATEGORIES, ...BASE_CATEGORIES.slice(-2)];
+export const PRESETS = [...BASE_PRESETS.filter(x => x.id !== 'mute'), ...EXTRA_PRESETS, ...BASE_PRESETS.filter(x => x.id === 'mute')];
 export const PRESET_BY_ID = Object.fromEntries(PRESETS.map(x => [x.id, x]));
 
 // which presets fit which detected class (first = default)
-export const CLASS_PRESETS = {
+const BASE_CLASS_PRESETS = {
   kick: ['kick', 'kick_hard', 'kick808'], snare: ['snare', 'snare_fat', 'snare_tight', 'clap'],
   hihat: ['hihat', 'hihat_open', 'shaker'], cymbal: ['cymbal', 'ride', 'fx_crash'], tom: ['tom', 'tom_syn'],
   perc: ['clap', 'rim', 'perc_blip', 'cowbell', 'shaker'],
@@ -144,5 +147,7 @@ export const CLASS_PRESETS = {
   fx: ['fx_wind', 'fx_crash', 'fx_noise', 'fx_up', 'fx_down', 'fx_laser', 'fx_boom'],
   speech: ['mute', 'fx_noise', 'choir'],
 };
+
+export const CLASS_PRESETS = { ...BASE_CLASS_PRESETS, ...CLASS_PRESETS_EXT };
 
 export function presetName(pr, lang) { return lang === 'en' ? pr.en : pr.de; }

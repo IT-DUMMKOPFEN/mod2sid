@@ -1,7 +1,7 @@
 // mod2sid – builds a PSID file (own GoatTracker-compatible player + song data)
 // (c) IT-DUMMKOPFEN, GPL-3.0
 import { assemble } from './asm6502.js';
-import { PLAYER_ASM } from './player.js';
+import { playerAsm } from './player.js';
 import { REST, KEYOFF, KEYON } from './gtsong.js';
 import { FREQ } from './arrange.js';
 
@@ -31,6 +31,8 @@ export function compilePattern(rows) {
 }
 
 export function buildSID(song, { initTempo = 6, gate = 2, load = 0x1000, model = '6581', name, author, released } = {}) {
+  const nv = song.orders.length;
+  const PLAYER_ASM = playerAsm(nv);
   const tab1 = (arr, f) => [0, ...arr.map(f)];
   const data = {};
   const ins = song.instr;
@@ -55,7 +57,7 @@ export function buildSID(song, { initTempo = 6, gate = 2, load = 0x1000, model =
   const put = (n, arr) => { sym[n] = base + bytes.length; bytes.push(...arr.map(v => v & 0xFF)); };
   for (const [n, arr] of Object.entries(data)) put(n, arr);
   const olAddr = [];
-  for (let v = 0; v < 3; v++) { olAddr.push(base + bytes.length); bytes.push(...song.orders[v], 0xFF, song.restart); }
+  for (let v = 0; v < nv; v++) { olAddr.push(base + bytes.length); bytes.push(...song.orders[v], 0xFF, song.restart); }
   put('ORDLO', olAddr.map(a => a & 0xFF)); put('ORDHI', olAddr.map(a => a >> 8));
   const pats = song.patterns.map(compilePattern);
   const pl = base + bytes.length; bytes.push(...new Array(pats.length * 2).fill(0));
@@ -69,10 +71,12 @@ export function buildSID(song, { initTempo = 6, gate = 2, load = 0x1000, model =
   // PSID v2 header
   const h = new Uint8Array(0x7C);
   const w16 = (o, v) => { h[o] = (v >> 8) & 255; h[o + 1] = v & 255; };
-  h.set([0x50, 0x53, 0x49, 0x44]); w16(4, 2); w16(6, 0x7C); w16(8, 0); w16(10, load); w16(12, load + 3); w16(14, 1); w16(16, 1);
+  h.set([0x50, 0x53, 0x49, 0x44]); w16(4, nv > 3 ? 3 : 2); w16(6, 0x7C); w16(8, 0); w16(10, load); w16(12, load + 3); w16(14, 1); w16(16, 1);
   const str = (o, s) => { const t = String(s || ''); for (let i = 0; i < Math.min(31, t.length); i++) { const c = t.charCodeAt(i); h[o + i] = c < 256 ? c : 63; } };
   str(0x16, name || song.name); str(0x36, author || song.author); str(0x56, released || song.copyright);
-  w16(0x76, (model === '8580' ? 0x20 : 0x10) | 0x04);
+  const m = model === '8580' ? 2 : 1;
+  w16(0x76, (m << 4) | 0x04 | (nv > 3 ? (m << 6) : 0));
+  if (nv > 3) h[0x7A] = 0x42; // second SID at $D420
   const psid = new Uint8Array(0x7C + 2 + binary.length);
   psid.set(h, 0); psid[0x7C] = load & 255; psid[0x7D] = load >> 8; psid.set(binary, 0x7E);
   return { psid, size: binary.length, codeLen, end: load + binary.length - 1, symbols: fin.syms };

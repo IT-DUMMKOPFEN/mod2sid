@@ -4,13 +4,14 @@ export const REST = 0xBD, KEYOFF = 0xBE, KEYON = 0xBF, ENDPATT = 0xFF;
 export const MAX_PATTERNS = 208, MAX_INSTR = 63, MAX_TABLE = 255;
 
 export class GTSong {
-  constructor() {
+  constructor(nch = 3) {
+    this.nch = nch;
     this.name = ''; this.author = ''; this.copyright = '';
     this.instr = [];               // {ad,sr,wv,pu,fi,vp,vd,gt,fw,name}
     this.wt = []; this.pt = []; this.ft = []; this.st = [];   // [l,r] entries
     this.cache = new Map();
     this.patterns = []; this.patKey = new Map();
-    this.orders = [[], [], []]; this.restart = 0;
+    this.orders = Array.from({ length: nch }, () => []); this.restart = 0;
     this.overflow = false;
   }
   // ---- tables. steps use 0-based jump targets; returns 1-based start position
@@ -86,7 +87,7 @@ export class GTSong {
     out.push(0x47, 0x54, 0x53, 0x35);
     str(this.name, 32); str(this.author, 32); str(this.copyright, 32);
     out.push(1);
-    for (let v = 0; v < 3; v++) {
+    for (let v = 0; v < this.orders.length; v++) {
       const ol = this.orders[v];
       out.push(ol.length + 1, ...ol, 0xFF, this.restart);
     }
@@ -109,13 +110,13 @@ export class GTSong {
 }
 
 // read back a GTS5 file (used for self-checks)
-export function parseSNG(b) {
+export function parseSNG(b, nch = 3) {
   let p = 0; const rd = () => b[p++];
   const id = String.fromCharCode(b[0], b[1], b[2], b[3]); p = 4;
   if (id !== 'GTS5') throw new Error('not GTS5');
   p += 96;
   const subs = rd(); const orders = [];
-  for (let s = 0; s < subs; s++) for (let c = 0; c < 3; c++) { const n = rd() + 1; orders.push(Array.from(b.slice(p, p + n))); p += n; }
+  for (let s = 0; s < subs; s++) for (let c = 0; c < nch; c++) { const n = rd() + 1; orders.push(Array.from(b.slice(p, p + n))); p += n; }
   const ni = rd(); p += ni * 25;
   const tabs = [];
   for (let t = 0; t < 4; t++) { const n = rd(); tabs.push(n); p += 2 * n; }

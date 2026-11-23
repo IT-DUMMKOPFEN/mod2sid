@@ -13,8 +13,9 @@ App für **macOS (Apple Silicon)**, Oberfläche Deutsch/Englisch. *Done by IT-DU
 
 - **4-Kanal-MODs einlesen**: ProTracker, NoiseTracker, StarTrekker (M.K., M!K!, FLT4, 4CHN …) und alte 15-Sample-SoundTracker-MODs. Alle ProTracker-Effekte werden tickgenau nachgespielt (Arpeggio, Portamento, Tone-Portamento, Vibrato, Lautstärke, Pattern-Break/-Jump, Loops, Delay …).
 - **KI-Erkennung der Samples**: Ein trainierter Klassifizierer (Extra-Trees-Ensemble) erkennt 19 Klassen: Bassdrum, Snare, HiHat, Becken, Tom, Perkussion, Bass, Lead, Fläche, Streicher, Blech, Holzbläser, Gitarre, Tasten, Glocke, Chor, Akkord, Effekt und **Sprache** (Sprache wird nicht umgewandelt). Grundlage sind 31 Klang- und Nutzungsmerkmale: Spektrum, Hüllkurve, Tonhöhe (YIN), Akkord-Chroma und wie das Sample im Song gespielt wird.
-- **Instrumente nachbauen**: Bibliothek mit über 80 SID-Instrumenten (Bass, Lead, Streicher, Blech, Holz, Gitarre, Tasten, Glocken, Flächen, Chor, Synth, Drums, Effekte). Die Hüllkurve (ADSR) wird an das Original-Sample angepasst, Akkord-Samples werden zu Arpeggios.
-- **4 Stimmen auf 3 SID-Stimmen**: Der Arranger bewertet für jedes Pattern alle Möglichkeiten und nutzt C64-Tricks:
+- **Instrumente nachbauen**: Bibliothek mit 164 SID-Instrumenten in 16 Kategorien (Bass, Lead, Streicher, Blech, Holz, Gitarre, Tasten, Glocken, Flächen, Chor, Synth, Welt/Ethno, Chiptune, Drums, Effekte). Die Hüllkurve (ADSR) wird an das Original-Sample angepasst, Akkord-Samples werden zu Arpeggios.
+- **1 oder 2 SIDs**: Mit 2 SIDs (6 Stimmen, PSID v3, zweiter SID auf $D420) bekommt jeder Kanal eine eigene Stimme. Die beiden freien Stimmen spielen Akkord-Samples als echte Akkorde und übernehmen Drum-Schläge, damit Bass oder Melodie weiterklingen. Die SNG ist dann für **GoatTracker Stereo**.
+- **4 Stimmen auf 3 SID-Stimmen** (1-SID-Modus): Der Arranger bewertet für jedes Pattern alle Möglichkeiten und nutzt C64-Tricks:
   - Drum-Anschlag + Bass/Melodie auf einer Stimme (Rausch-Transient vorne, dann die Note)
   - Drum-Transient über einen gehaltenen Ton, ohne ihn neu anzuschlagen
   - zwei Melodiestimmen als Arpeggio
@@ -51,11 +52,12 @@ Die Werkzeuge liegen in `tools/train/`:
 2. `extract.mjs` berechnet die Merkmale mit **demselben Code wie die App** (`src/core/features.js`) – für die synthetischen Samples und für die von Hand beschrifteten echten Samples aus `labels.json`.
 3. `train.py` trainiert das Extra-Trees-Modell, prüft es per *Leave-one-MOD-out* (das geprüfte MOD ist nie im Training) und exportiert `src/core/model.json`.
 
-Stand v1.0: 5 700 synthetische + 105 echte Samples aus 15 Test-MODs. Treffer bei völlig unbekannten MODs: **64 % exakte Klasse, 81 % richtige Familie** (Drum / Bass / Melodie / Akkord / FX / Sprache). Was die KI falsch einordnet, korrigierst du per Instrumententausch – und die App merkt es sich.
+Stand v1.1: 5 700 synthetische + 184 echte Samples aus 35 Test-MODs (davon 79 regelbasiert und streng beschriftet, `autolabel.mjs`). Treffer bei völlig unbekannten MODs: **73 % exakte Klasse, 86 % richtige Familie** (Drum / Bass / Melodie / Akkord / FX / Sprache). Was die KI falsch einordnet, korrigierst du per Instrumententausch – und die App merkt es sich.
 
 ```bash
 python3 tools/train/synth_dataset.py /tmp/synth 300
-node tools/train/extract.mjs /tmp/synth <mod-ordner> /tmp/features.json
+node tools/train/autolabel.mjs <neue-mods> tools/train/labels_auto.json
+node tools/train/extract.mjs /tmp/synth <mod-ordner1>,<mod-ordner2> /tmp/features.json
 python3 tools/train/train.py /tmp/features.json src/core/model.json
 ```
 
@@ -87,7 +89,8 @@ GPL-3.0 – siehe [LICENSE](LICENSE). Das SNG-Format stammt von GoatTracker 2 (L
 **mod2sid** converts 4-channel Amiga MODs into **C64 SID music (PSID)** and **GoatTracker 2 songs (.sng)**. It is an Electron app for **macOS on Apple Silicon** with a German/English interface.
 
 - An **AI classifier** (extra-trees, trained on synthetic and hand-labelled real Amiga samples) recognises 19 instrument classes, including speech. Speech is not converted.
-- **Instrument library** with 80+ SID instruments. Envelopes are fitted to the original samples, and chord samples become arpeggios.
+- **1 or 2 SIDs**: with 2 SIDs (6 voices, PSID v3, second SID at $D420) every channel gets its own voice and chords become real chords; the SNG is for GoatTracker Stereo.
+- **Instrument library** with 164 SID instruments. Envelopes are fitted to the original samples, and chord samples become arpeggios.
 - An **arranger for 4 → 3 voices** uses classic C64 tricks: combined bass and drum notes, drum transients overlaid on held notes, arpeggio merging and gap filling.
 - **Preview** with a built-in 6502 + SID emulator (6581/8580), A/B comparison with the original MOD, mute/solo for each voice.
 - **Swap instruments** to re-convert instantly; the app learns your choices. **Convert again** produces a different variant.

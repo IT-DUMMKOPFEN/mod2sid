@@ -1,7 +1,7 @@
 // mod2sid – 6502 playroutine with GoatTracker-2 compatible semantics
 // (c) IT-DUMMKOPFEN, GPL-3.0
 // Data symbols are supplied by sidbuild.js. GATE is the gate/hard-restart timer.
-export const PLAYER_ASM = String.raw`
+const PLAYER_SRC = String.raw`
 ZP = $FB
 ZP2 = $FD
         jmp init
@@ -22,7 +22,7 @@ clvar:  sta VARS-1,x
         sta tempo
         lda #$0F
         sta mvol
-        ldx #2
+        ldx #NVM1
 ivoice: lda #$FE
         sta gmask,x
         lda #1
@@ -40,7 +40,7 @@ ivoice: lda #$FE
 ; ---------------------------------------------------------------- play
 play:   lda tick
         bne pl_nt0
-        ldx #2
+        ldx #NVM1
 pl_ap:  jsr applyrow
         dex
         bpl pl_ap
@@ -49,11 +49,11 @@ pl_nt0: lda tempo
         sbc #GATE
         cmp tick
         bne pl_nof
-        ldx #2
+        ldx #NVM1
 pl_fr:  jsr fetchrow
         dex
         bpl pl_fr
-pl_nof: ldx #2
+pl_nof: ldx #NVM1
 pl_vx:  jsr voicefx
         dex
         bpl pl_vx
@@ -639,9 +639,10 @@ ff_out: lda #0
         lda ftype
         ora mvol
         sta $D418
+SID2OUT
         rts
 
-SIDOFF: .byte 0,7,14
+SIDOFF: .byte SIDOFFS
 ; ---------------------------------------------------------------- variables
 VARS:
 tick:    .byte 0
@@ -661,37 +662,46 @@ fspd:    .byte 0
 fcut:    .byte 0
 fctrl:   .byte 0
 ftype:   .byte 0
-ordpos:  .byte 0,0,0
-plo:     .byte 0,0,0
-phi:     .byte 0,0,0
-skip:    .byte 0,0,0
-pnote:   .byte 0,0,0
-pinst:   .byte 0,0,0
-pctl:    .byte 0,0,0
-pcmd:    .byte 0,0,0
-pdata:   .byte 0,0,0
-instr:   .byte 0,0,0
-notenum: .byte 0,0,0
-ninit:   .byte 0,0,0
-fxcmd:   .byte 0,0,0
-fxdata:  .byte 0,0,0
-vibtime: .byte 0,0,0
-vibdel:  .byte 0,0,0
-wavepos: .byte 0,0,0
-wavedel: .byte 0,0,0
-pulsepos: .byte 0,0,0
-pulsetm: .byte 0,0,0
-pspd:    .byte 0,0,0
-wave:    .byte 0,0,0
-gmask:   .byte 0,0,0
-vad:     .byte 0,0,0
-vsr:     .byte 0,0,0
-pwlo:    .byte 0,0,0
-pwhi:    .byte 0,0,0
-flo:     .byte 0,0,0
-fhi:     .byte 0,0,0
-tflo:    .byte 0,0,0
-tfhi:    .byte 0,0,0
+ordpos:  .byte VBYTES
+plo:     .byte VBYTES
+phi:     .byte VBYTES
+skip:    .byte VBYTES
+pnote:   .byte VBYTES
+pinst:   .byte VBYTES
+pctl:    .byte VBYTES
+pcmd:    .byte VBYTES
+pdata:   .byte VBYTES
+instr:   .byte VBYTES
+notenum: .byte VBYTES
+ninit:   .byte VBYTES
+fxcmd:   .byte VBYTES
+fxdata:  .byte VBYTES
+vibtime: .byte VBYTES
+vibdel:  .byte VBYTES
+wavepos: .byte VBYTES
+wavedel: .byte VBYTES
+pulsepos: .byte VBYTES
+pulsetm: .byte VBYTES
+pspd:    .byte VBYTES
+wave:    .byte VBYTES
+gmask:   .byte VBYTES
+vad:     .byte VBYTES
+vsr:     .byte VBYTES
+pwlo:    .byte VBYTES
+pwhi:    .byte VBYTES
+flo:     .byte VBYTES
+fhi:     .byte VBYTES
+tflo:    .byte VBYTES
+tfhi:    .byte VBYTES
 VARSEND:
 VARSIZE = VARSEND - VARS
 `;
+
+// nv = 3 (one SID) or 6 (two SIDs, second at $D420)
+export function playerAsm(nv = 3) {
+  const zeros = new Array(nv).fill(0).join(',');
+  const offs = [0, 7, 14, 32, 39, 46].slice(0, nv).join(',');
+  const sid2 = nv > 3 ? '        lda #0\n        sta $D437\n        lda mvol\n        sta $D438' : '';
+  return PLAYER_SRC.replace(/VBYTES/g, zeros).replace('SIDOFFS', offs).replace('SID2OUT', sid2).replace(/NVM1/g, String(nv - 1));
+}
+export const PLAYER_ASM = playerAsm(3);

@@ -1,0 +1,113 @@
+{
+ "Mod.Antipasti_40.Mod": {
+  "4": "snare",
+  "5": "bass",
+  "7": "lead",
+  "9": "lead",
+  "15": "lead",
+  "16": "lead",
+  "17": "lead",
+  "18": "lead",
+  "19": "lead",
+  "20": "lead",
+  "21": "lead",
+  "22": "lead"
+ },
+ "Mod.Aspect_Crack_02.Mod": {
+  "1": "bass",
+  "2": "lead",
+  "4": "lead",
+  "5": "snare",
+  "6": "kick",
+  "7": "hihat"
+ },
+ "Mod.Bth_Cracktro_01.Mod": {
+  "15": "bass",
+  "16": "kick",
+  "18": "hihat",
+  "19": "snare"
+ },
+ "Mod.Bth_Cracktro_02.Mod": {
+  "18": "hihat"
+ },
+ "Mod.Crack.Mod": {
+  "1": "kick",
+  "3": "snare"
+ },
+ "Mod.Crack_Tune_01.Mod": {
+  "1": "hihat",
+  "2": "kick",
+  "3": "snare",
+  "6": "bass"
+ },
+ "Mod.Crystal_Crack_03.Mod": {
+  "1": "lead",
+  "2": "snare",
+  "3": "kick",
+  "9": "bass",
+  "13": "bass",
+  "15": "lead"
+ },
+ "Mod.Decade_Crack_02.Mod": {
+  "1": "hihat",
+  "4": "snare",
+  "5": "bass",
+  "7": "lead"
+ },
+ "Mod.Delight_Crack_05.Mod": {
+  "2": "bass",
+  "4": "snare",
+  "5": "kick",
+  "7": "snare",
+  "8": "bass",
+  "9": "bass",
+  "10": "bass",
+  "11": "bass"
+ },
+ "Mod.Delirium_Crack_01.Mod": {
+  "8": "snare",
+  "13": "snare",
+  "15": "snare"
+ },
+ "Mod.Fairlight_Crack_05.Mod": {
+  "5": "lead",
+  "6": "bass",
+  "8": "hihat",
+  "9": "snare"
+ },
+ "Mod.Skidrow_Crack10.Mod": {
+  "1": "bass",
+  "3": "bass",
+  "4": "bass",
+  "6": "lead",
+  "9": "hihat",
+  "12": "snare"
+ },
+ "Mod.Spirit_Crackintro_01.Mod": {
+  "2": "bass",
+  "5": "kick",
+  "7": "snare"
+ },
+ "Mod.Trsi_Crack_08.Mod": {
+  "2": "kick",
+  "3": "kick",
+  "4": "hihat",
+  "8": "kick"
+ },
+ "Mod.Trsi_Crack_10.Mod": {
+  "1": "bass",
+  "3": "bass",
+  "5": "bass",
+  "6": "bass",
+  "7": "bass",
+  "8": "lead",
+  "11": "snare",
+  "12": "kick"
+ },
+ "mod.crack_the_eggshell.Mod": {
+  "3": "snare",
+  "4": "kick",
+  "5": "hihat",
+  "6": "hihat"
+ }
+}

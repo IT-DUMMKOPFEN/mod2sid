@@ -25,6 +25,6 @@ export function convert(ctx, analysis, opts = {}) {
     name: opts.title || ctx.mod.title || 'mod2sid', author: opts.author || res.song.author, released: opts.released || `${year} mod2sid`,
   });
   const sng = res.song.toSNG();
-  parseSNG(sng); // self-check, throws on a malformed file
+  parseSNG(sng, res.voices); // self-check, throws on a malformed file
   return { ...res, sid: sid.psid, sidInfo: { size: sid.size, end: sid.end }, sng };
 }
