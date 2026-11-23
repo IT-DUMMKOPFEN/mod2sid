@@ -1,0 +1,137 @@
+{
+ "den-boom.mod": {
+  "1": "bass",
+  "2": "bass",
+  "3": "chord",
+  "4": "chord",
+  "5": "chord",
+  "6": "chord",
+  "7": "chord",
+  "8": "chord",
+  "9": "fx",
+  "10": "chord",
+  "12": "kick",
+  "13": "snare",
+  "14": "hihat",
+  "15": "cymbal",
+  "16": "tom",
+  "17": "bass",
+  "18": "bass",
+  "19": "bass",
+  "20": "bass",
+  "22": "chord",
+  "24": "chord",
+  "25": "chord",
+  "28": "chord",
+  "29": "wood"
+ },
+ "moongazr.mod": {
+  "1": "bass",
+  "2": "keys",
+  "4": "chord",
+  "5": "chord",
+  "6": "snare",
+  "7": "kick",
+  "8": "hihat",
+  "9": "hihat",
+  "10": "wood",
+  "11": "chord",
+  "12": "brass",
+  "13": "tom",
+  "14": "chord",
+  "15": "wood",
+  "16": "strings",
+  "17": "perc"
+ },
+ "sterne.mod": {
+  "1": "bass",
+  "2": "kick",
+  "3": "chord",
+  "4": "chord",
+  "5": "chord",
+  "6": "hihat",
+  "7": "lead",
+  "8": "snare",
+  "9": "fx",
+  "10": "fx",
+  "11": "kick",
+  "12": "hihat",
+  "13": "perc"
+ },
+ "death-zone.mod": {
+  "4": "keys"
+ },
+ "flight_of_the_heart.mod": {
+  "13": "keys"
+ },
+ "tekkno-mod.mod": {
+  "1": "bass",
+  "2": "kick",
+  "3": "hihat",
+  "4": "chord",
+  "7": "pad",
+  "8": "pad",
+  "13": "kick"
+ },
+ "aquarius-slx.mod": {
+  "1": "kick",
+  "2": "kick",
+  "4": "bass",
+  "5": "pad"
+ },
+ "funny-beat-slx.mod": {
+  "4": "kick",
+  "5": "hihat",
+  "11": "bass",
+  "12": "pad",
+  "2": "pad"
+ },
+ "total-recall-slx.mod": {
+  "1": "bass",
+  "2": "bass",
+  "3": "bass",
+  "4": "bass",
+  "12": "hihat",
+  "13": "kick",
+  "14": "hihat",
+  "15": "hihat",
+  "5": "pad",
+  "17": "bass"
+ },
+ "terminator2-theme.mod": {
+  "2": "strings",
+  "7": "pad",
+  "9": "strings"
+ },
+ "immortal.mod": {
+  "16": "bass",
+  "4": "lead"
+ },
+ "interference.mod": {
+  "4": "kick",
+  "5": "hihat",
+  "8": "bass",
+  "9": "bass",
+  "20": "lead",
+  "21": "lead",
+  "22": "lead",
+  "23": "lead",
+  "3": "lead"
+ },
+ "skelma.mod": {
+  "19": "cymbal"
+ },
+ "excellate.mod": {
+  "20": "hihat",
+  "10": "cymbal"
+ },
+ "GSLINGER.MOD": {
+  "18": "guitar",
+  "19": "guitar",
+  "20": "guitar",
+  "12": "bass",
+  "16": "hihat",
+  "17": "snare",
+  "14": "kick"
+ }
+}

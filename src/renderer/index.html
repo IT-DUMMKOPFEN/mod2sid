@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' app:; script-src 'self' app:; style-src 'self' app: 'unsafe-inline'; img-src 'self' app: data:; media-src 'self' app: blob:; worker-src 'self' app: blob:">
+<title>mod2sid</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><img src="icon.png" alt=""><div><b>mod2sid</b><small id="ver"></small></div></div>
+  <div class="actions">
+    <button id="btnOpen" class="btn primary" data-t="open"></button>
+    <button id="btnReconvert" class="btn" data-t="reconvert" disabled></button>
+    <button id="btnSave" class="btn accent" data-t="save" disabled></button>
+  </div>
+  <div class="actions right">
+    <span id="status" class="status"></span>
+    <button id="btnLang" class="btn ghost" title="Sprache / Language">EN</button>
+    <button id="btnTheme" class="btn ghost" data-tt="theme">◐</button>
+    <button id="btnHelp" class="btn ghost" data-t="help"></button>
+    <button id="btnInfo" class="btn ghost" data-t="info"></button>
+  </div>
+</header>
+
+<main id="main">
+  <aside class="side">
+    <section class="card" id="songCard">
+      <h3 data-t="song"></h3>
+      <div id="songInfo" class="kv muted" data-t="notLoaded"></div>
+    </section>
+    <section class="card">
+      <h3 data-t="options"></h3>
+      <label class="row"><span data-t="model"></span>
+        <select id="optModel"><option value="6581">MOS 6581</option><option value="8580">MOS 8580</option></select></label>
+      <label class="row col"><span data-t="creativity"></span>
+        <input id="optCreativity" type="range" min="0" max="100" value="60"></label>
+      <label class="check"><input id="optFitEnv" type="checkbox" checked> <span data-t="fitEnv"></span></label>
+      <label class="check"><input id="optFilter" type="checkbox" checked> <span data-t="useFilter"></span></label>
+    </section>
+    <section class="card">
+      <h3 data-t="kiInfo"></h3>
+      <div id="kiInfo" class="kv small"></div>
+    </section>
+    <section class="card">
+      <div id="outStats" class="small muted"></div>
+      <div id="warnings" class="small warn"></div>
+    </section>
+  </aside>
+
+  <section class="content">
+    <div class="card player">
+      <div class="transport">
+        <button id="btnPlay" class="round" disabled>▶</button>
+        <button id="btnStop" class="round small" disabled>■</button>
+        <div class="srcSwitch">
+          <button id="srcSid" class="seg active" data-t="srcSid"></button>
+          <button id="srcMod" class="seg" data-t="srcMod"></button>
+        </div>
+        <div class="time"><span id="tNow">0:00</span> / <span id="tLen">0:00</span></div>
+        <div class="voices" id="voiceBtns"></div>
+      </div>
+      <input id="seek" type="range" min="0" max="1000" value="0" disabled>
+      <canvas id="scope" height="90"></canvas>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="arr" data-t="tabArr"></button>
+      <button class="tab" data-tab="lib" data-t="tabLib"></button>
+    </div>
+    <div class="card tabpane" id="pane-arr">
+      <h3 data-t="arrangement"></h3>
+      <div id="arrView" class="arr"></div>
+    </div>
+    <div class="card tabpane hidden" id="pane-lib">
+      <p class="small muted" data-t="libHint"></p>
+      <div id="libView" class="lib"></div>
+    </div>
+
+    <div class="card">
+      <h3 data-t="instruments"></h3>
+      <table class="smp">
+        <thead><tr><th data-t="colNr"></th><th data-t="colName"></th><th data-t="colKi"></th><th data-t="colInstr"></th><th data-t="colOrig"></th><th data-t="colSid"></th><th data-t="colHits"></th></tr></thead>
+        <tbody id="smpBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <div id="drop" class="drop">
+    <div><div class="dropIcon">⇩</div><h2 data-t="dropTitle"></h2><p data-t="dropSub"></p></div>
+  </div>
+</main>
+
+<div id="modal" class="modal hidden"><div class="modalBox"><button id="modalClose" class="btn ghost close">✕</button><div id="modalBody"></div></div></div>
+<script type="module" src="app.js"></script>
+</body>
+</html>

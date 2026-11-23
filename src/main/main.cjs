@@ -1,0 +1,69 @@
+// mod2sid – Electron main process
+// (c) IT-DUMMKOPFEN, GPL-3.0
+const { app, BrowserWindow, ipcMain, dialog, protocol, net, shell, Menu } = require('electron');
+const path = require('path');
+const fs = require('fs');
+const { pathToFileURL } = require('url');
+
+const ROOT = path.join(__dirname, '..');
+protocol.registerSchemesAsPrivileged([
+  { scheme: 'app', privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true, stream: true } },
+]);
+
+let win = null;
+function createWindow() {
+  win = new BrowserWindow({
+    width: 1440, height: 920, minWidth: 1100, minHeight: 720,
+    title: 'mod2sid', backgroundColor: '#14102a',
+    titleBarStyle: 'hiddenInset',
+    webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true },
+  });
+  win.loadURL('app://local/renderer/index.html');
+  win.webContents.setWindowOpenHandler(({ url }) => { shell.openExternal(url); return { action: 'deny' }; });
+}
+
+app.whenReady().then(() => {
+  protocol.handle('app', (req) => {
+    const u = new URL(req.url);
+    const p = path.normalize(path.join(ROOT, decodeURIComponent(u.pathname)));
+    if (!p.startsWith(ROOT)) return new Response('forbidden', { status: 403 });
+    return net.fetch(pathToFileURL(p).toString());
+  });
+  const isMac = process.platform === 'darwin';
+  Menu.setApplicationMenu(Menu.buildFromTemplate([
+    ...(isMac ? [{ role: 'appMenu' }] : []),
+    { label: 'Datei / File', submenu: [
+      { label: 'MOD öffnen / Open MOD…', accelerator: 'CmdOrCtrl+O', click: () => win && win.webContents.send('menu', 'open') },
+      { label: 'SID + SNG speichern / Save…', accelerator: 'CmdOrCtrl+S', click: () => win && win.webContents.send('menu', 'save') },
+      { type: 'separator' }, isMac ? { role: 'close' } : { role: 'quit' }] },
+    { role: 'editMenu' }, { role: 'viewMenu' }, { role: 'windowMenu' },
+  ]));
+  createWindow();
+  app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
+});
+app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
+
+ipcMain.handle('open-mod', async () => {
+  const r = await dialog.showOpenDialog(win, { properties: ['openFile'], filters: [{ name: 'Amiga MOD', extensions: ['mod', 'MOD', 'nst', 'stk'] }, { name: '*', extensions: ['*'] }] });
+  if (r.canceled || !r.filePaths.length) return null;
+  const p = r.filePaths[0];
+  return { name: path.basename(p), path: p, data: fs.readFileSync(p) };
+});
+ipcMain.handle('read-file', async (_e, p) => {
+  if (typeof p !== 'string') return null;
+  return { name: path.basename(p), path: p, data: fs.readFileSync(p) };
+});
+ipcMain.handle('save-output', async (_e, { baseName, sid, sng, defaultDir }) => {
+  const r = await dialog.showSaveDialog(win, {
+    defaultPath: path.join(defaultDir || app.getPath('documents'), (baseName || 'tune') + '.sid'),
+    filters: [{ name: 'SID + SNG', extensions: ['sid'] }],
+  });
+  if (r.canceled || !r.filePath) return null;
+  const base = r.filePath.replace(/\.(sid|sng)$/i, '');
+  fs.writeFileSync(base + '.sid', Buffer.from(sid));
+  fs.writeFileSync(base + '.sng', Buffer.from(sng));
+  return { sid: base + '.sid', sng: base + '.sng' };
+});
+ipcMain.handle('reveal', async (_e, p) => { if (typeof p === 'string') shell.showItemInFolder(p); });
+ipcMain.handle('open-url', async (_e, u) => { if (/^https:\/\//.test(u)) shell.openExternal(u); });
+ipcMain.handle('app-info', async () => ({ version: app.getVersion(), electron: process.versions.electron, platform: process.platform, arch: process.arch }));
