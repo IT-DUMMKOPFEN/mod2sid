@@ -30,23 +30,20 @@ jobs:
       - name: Build app bundles (Apple Silicon + Intel)
         env: { CSC_IDENTITY_AUTO_DISCOVERY: 'false' }
         run: npx electron-builder --mac --arm64 --x64 --publish never
-      - name: Ad-hoc sign, DMG + ZIP per architecture
+      - name: Ad-hoc sign, DMG per architecture (LZMA)
         run: |
           VER=$(node -p "require('./package.json').version")
           for pair in "mac-arm64:arm64" "mac:x64"; do
             DIR="${pair%%:*}"; ARCH="${pair##*:}"; APP="dist/$DIR/mod2sid.app"
             codesign --force --deep --sign - "$APP"
             rm -rf dmgroot && mkdir dmgroot && cp -R "$APP" dmgroot/ && ln -s /Applications dmgroot/Applications
-            hdiutil create -volname "mod2sid $VER" -srcfolder dmgroot -ov -format UDZO -imagekey zlib-level=9 "dist/mod2sid-$VER-mac-$ARCH.dmg"
-            ditto -c -k --keepParent "$APP" "dist/mod2sid-$VER-mac-$ARCH.zip"
+            hdiutil create -volname "mod2sid $VER" -srcfolder dmgroot -ov -format ULMO "dist/mod2sid-$VER-mac-$ARCH.dmg"
           done
           ls -la dist
       - uses: actions/upload-artifact@v4
         with:
           name: mod2sid-macos
-          path: |
-            dist/*.dmg
-            dist/*.zip
+          path: dist/*.dmg
 
   windows:
     needs: test

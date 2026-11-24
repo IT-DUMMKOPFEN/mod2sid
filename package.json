@@ -63,9 +63,7 @@
     "asar": true,
     "fileAssociations": [
       {
-        "ext": [
-          "mod"
-        ],
+        "ext": "mod",
         "name": "Amiga MOD",
         "role": "Viewer"
       }
