@@ -1,3 +1,9 @@
+## mod2sid 2.1.1
+
+**DE:** Fehler im SID-Player behoben: Das Vibrato wurde in jeder Zeile neu gestartet, deshalb liefen gehaltene Noten langsam nach oben weg. Das passierte auch mit ausgeschalteten Slides. Jetzt schwingt das Vibrato sauber um den Ton. Mit „Slides: Aus“ und „Vibrato: Aus“ gibt es keinerlei Tonhöhenbewegung mehr, auch kein Instrument-Vibrato aus der Bibliothek. Vorher wanderten in den Testsongs 22 % der gehaltenen Noten mehr als einen halben Halbton, jetzt sind es 1,4 % mit den Standard-Einstellungen und 0 % mit beiden Optionen auf „Aus“.
+
+**EN:** Fixed a bug in the SID player: vibrato restarted on every row, so held notes slowly drifted upwards, even with slides switched off. Vibrato now swings evenly around the note. With “slides: off” and “vibrato: off” there is no pitch movement at all, not even the instrument vibrato from the library. In the test songs, 22 % of held notes drifted by more than half a semitone before; now it is 1.4 % with the default settings and 0 % with both options off.
+
 ## mod2sid 2.1
 
 **DE:**

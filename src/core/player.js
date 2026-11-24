@@ -212,11 +212,13 @@ ap_kon: lda #$FF
 ap_cmd: lda pcmd,x
         cmp #5
         bcs ap_one
+        cmp fxcmd,x
+        beq ap_same
         sta fxcmd,x
-        lda pdata,x
-        sta fxdata,x
         lda #0
         sta vibtime,x
+ap_same: lda pdata,x
+        sta fxdata,x
         rts
 ap_one: ldy pdata,x
         cmp #5

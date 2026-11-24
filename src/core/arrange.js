@@ -308,7 +308,7 @@ export function convertSong(mod, replay, analysis, opts = {}) {
     const pu = song.addPulse(pr.pulse);
     const fi = useF ? song.addFilter(pr.filter, 1 << filterVoice) : 0;
     let vp = 0, vd = 0;
-    if (pr.vib) { vp = song.addSpeed(pr.vib[0], pr.vib[1]); vd = pr.vib[2] || 1; }
+    if (pr.vib && o.vibrato !== 'off') { vp = song.addSpeed(pr.vib[0], o.vibrato === 'soft' ? Math.max(1, pr.vib[1] >> 1) : pr.vib[1]); vd = pr.vib[2] || 1; }
     const nm = (s.chord && !plain ? presetName(pr, o.lang).slice(0, 10) + ' ' + s.chord.type : presetName(pr, o.lang)).slice(0, 16);
     const id = song.addInstrument({ ad: s.env.ad, sr: s.env.sr, wv, pu, fi, vp, vd, gt: GATE, fw: pr.fw, name: nm });
     insOf[key] = id;
