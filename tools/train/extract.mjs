@@ -2,13 +2,14 @@
 import fs from 'fs';
 import { parseMod, replayMod } from '../../src/core/mod.js';
 import { analyzeSample, sampleUsage, CLASSES } from '../../src/core/features.js';
-const [synthBase, modDirArg, out] = process.argv.slice(2);
+const [synthBase, modDirArg, out, shardArg = '0/1'] = process.argv.slice(2);
+const [shard, of] = shardArg.split('/').map(Number);
 const modDirs = modDirArg.split(',');
 const findMod = (f) => modDirs.map(d => d + '/' + f).find(p => fs.existsSync(p));
 const idx = JSON.parse(fs.readFileSync(synthBase + '.json'));
 const bin = fs.readFileSync(synthBase + '.bin');
 const rows = [];
-for (const m of idx) {
+for (const m of (shard === 0 ? idx : [])) {
   const data = new Int8Array(bin.buffer, bin.byteOffset + m.offset, m.length);
   const s = { data, length: m.length, loopStart: m.loopStart, loopLength: m.loopLength, looped: m.loopLength > 2, volume: 64 };
   const u = { medianPeriod: m.period, distinct: m.usage.distinct, range: m.usage.range, medianDur: m.usage.dur, density: m.usage.density, hits: 10, beatFrac: m.usage.beat };
@@ -19,7 +20,7 @@ const labels = {};
 for (const lf of ['./labels.json', './labels_auto.json']) {
   try { Object.assign(labels, JSON.parse(fs.readFileSync(new URL(lf, import.meta.url)))); } catch { /* optional */ }
 }
-for (const [file, lab] of Object.entries(labels)) {
+for (const [file, lab] of Object.entries(labels).filter((_, i) => i % of === shard)) {
   const mp = findMod(file); if (!mp) { console.warn('missing', file); continue; }
   const mod = parseMod(fs.readFileSync(mp));
   const u = sampleUsage(replayMod(mod));

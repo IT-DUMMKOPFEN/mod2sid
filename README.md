@@ -66,9 +66,9 @@ Die Werkzeuge liegen in `tools/train/`:
 3. `extract_wav.mjs` liest eine Sample-Bibliothek (WAV). Beschriftet wird nach dem Dateinamen (`wavlabel.mjs`), aber nur, wenn der Klang dazu passt. Die meisten Amiga-WAVs tragen einen falschen 44,1-kHz-Header; sie werden mit typischen MOD-Abspielraten (8–17 kHz) als 8-Bit-Samples ausgewertet.
 4. `train.py` trainiert das Extra-Trees-Modell, prüft es per *Leave-one-MOD-out* (das geprüfte MOD ist nie im Training) und exportiert `src/core/model.json`.
 
-Stand v1.3: 6 000 synthetische Samples, 5 304 Samples aus der WAV-Bibliothek (10 651 Dateien, davon 5 721 eindeutig benannt, 417 wegen unpassendem Klang verworfen) und 1 958 echte Samples aus 492 MODs. Die meisten MOD-Samples sind per `autolabel.mjs` beschriftet: über Namen wie „st-01:bass“, aber nur, wenn Klang und Spielweise dazu passen, plus eindeutige Klangregeln. Ergebnisse:
-- MODs, die nie im Training waren: **80 % exakte Klasse, 88 % richtige Familie** (Drum / Bass / Melodie / Akkord / FX / Stimme / Beat), gemessen mit 10-fach gruppierter Kreuzvalidierung.
-- Zurückgehaltene WAV-Samples: **73 % Klasse / 92 % Familie**. Ohne das WAV-Training waren es nur 46 % / 74 %.
+Stand v1.3.1: 6 000 synthetische Samples, 5 304 Samples aus der WAV-Bibliothek (10 651 Dateien, davon 5 721 eindeutig benannt, 417 wegen unpassendem Klang verworfen) und 10 896 echte Samples aus 2 782 MODs (über 3 300 MOD-Dateien, Duplikate entfernt). Die meisten MOD-Samples sind per `autolabel.mjs` beschriftet: über Namen wie „st-01:bass“, aber nur, wenn Klang und Spielweise dazu passen, plus eindeutige Klangregeln. Hinweise auf Stimme oder Beat zählen nur bei kurzen, label-artigen Namen, nicht bei Grußtexten. Ergebnisse:
+- MODs, die nie im Training waren: **83 % exakte Klasse, 91 % richtige Familie** (Drum / Bass / Melodie / Akkord / FX / Stimme / Beat), gemessen mit 10-fach gruppierter Kreuzvalidierung.
+- Zurückgehaltene WAV-Samples: **69 % Klasse / 90 % Familie**.
 
 Was die KI falsch einordnet, korrigierst du per Instrumententausch, und die App merkt es sich.
 
@@ -77,7 +77,7 @@ python3 tools/train/synth_dataset.py /tmp/synth 300
 node tools/train/autolabel.mjs <neue-mods> tools/train/labels_auto.json
 node tools/train/extract.mjs /tmp/synth <mod-ordner1>,<mod-ordner2> /tmp/features.json
 node tools/train/extract_wav.mjs <wav-ordner> /tmp/wav.json
-AUG=80 python3 tools/train/train.py /tmp/features.json src/core/model.json /tmp/wav.json
+AUG=20 python3 tools/train/train.py /tmp/features.json src/core/model.json /tmp/wav.json
 ```
 
 ## Technik
@@ -108,7 +108,7 @@ GPL-3.0 – siehe [LICENSE](LICENSE). Das SNG-Format stammt von GoatTracker 2 (L
 
 **mod2sid** converts 4-channel Amiga MODs into **C64 SID music (PSID)** and **GoatTracker 2 songs (.sng)**. It is an Electron app for **macOS (Apple Silicon + Intel), Windows and Linux (AppImage/deb)** with a German/English interface.
 
-- An **AI classifier** (extra-trees, trained on synthetic and hand-labelled real Amiga samples) recognises 20 instrument classes, including drum loops and voices. It was trained on synthetic samples, a library of more than 5 000 Amiga WAV samples and about 2 000 labelled samples from 492 MODs. On MODs it never saw it gets 80 % of classes and 88 % of families right.
+- An **AI classifier** (extra-trees, trained on synthetic and hand-labelled real Amiga samples) recognises 20 instrument classes, including drum loops and voices. It was trained on synthetic samples, a library of more than 5 000 Amiga WAV samples and about 11 000 labelled samples from 2 782 MODs. On MODs it never saw it gets 83 % of classes and 91 % of families right.
 - **Drum loops** are split into single hits. Similar hits are clustered and share one SID drum, so kick, snare and hi-hat in a loop become different instruments.
 - **Voices** follow their pitch contour, measured every 20 ms: a “yeah” that starts low and slides up does the same on the SID.
 - **Long strings/pads** keep their swell and ring for the full sample length.

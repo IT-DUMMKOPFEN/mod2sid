@@ -17,7 +17,7 @@ function treePredict(nodes, x, acc) {
 
 const NAME_HINTS = [
   [/drum[ ._-]?(beat|loop)|\bbeat\b|beat[ ._-]?\d|\bloop\b|break[ ._-]?beat|\bbreak\d*\b|groove|\bamen\b|drumloop|\bdrums\b/i, 'beat'],
-  [/speak|speech|\bvoice|vocal|\bvox\b|yeah|\bhey\b|\bsay\b|scream|laugh|shout|\btalk|\bsing(?!le)|come[ ._-]?on|get[ ._-]?up/i, 'speech'],
+  [/speak(?!er)|speech|\bvoice|vocal|\bvox\b|yeah|\bhey\b|\bsay\b|scream|laugh|shout|\btalk|\bsing(?!le)|come[ ._-]?on|get[ ._-]?up/i, 'speech'],
   [/\b(bd|kick|bassdrum|bass[ ._-]?drum|bdrum|kik)\b|bassdr/i, 'kick'],
   [/\b(sn|sd|snare|snr|snar)\b|snare/i, 'snare'],
   [/\b(hh|hihat|hi[ ._-]?hat|chh|ohh|hat|cl\.?hat|op\.?hat)\b|hihat|hi-hat/i, 'hihat'],
@@ -38,9 +38,18 @@ const NAME_HINTS = [
   [/\b(fx|sfx|zoom|sweep|laser|noise|wind|boom|explo)\b/i, 'fx'],
 ];
 
+// sample names double as greeting texts ("shouts go out to…", "vocals by…"):
+// speech and beat hints only count for short, label-like names
+const proseLike = (name) => {
+  const n = name.replace(/^\s*st-?\d+[:.\s]/i, '').trim();
+  return n.split(/[\s.,!]+/).filter(Boolean).length > 3 || /\b(by|from|taken|to|the|and|for|of|with|my|all|here|we|you)\b/i.test(n);
+};
 export function nameHint(name) {
   if (!name) return null;
-  for (const [re, c] of NAME_HINTS) if (re.test(name)) return c;
+  for (const [re, c] of NAME_HINTS) if (re.test(name)) {
+    if ((c === 'speech' || c === 'beat') && proseLike(name)) continue;
+    return c;
+  }
   return null;
 }
 

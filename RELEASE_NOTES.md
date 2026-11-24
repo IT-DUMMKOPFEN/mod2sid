@@ -1,3 +1,9 @@
+## mod2sid 1.3.1
+
+**DE:** KI weiter trainiert mit über 3 000 zusätzlichen MODs: jetzt 10 896 echte Samples aus 2 782 MODs. Bei unbekannten MODs sind 83 % der Klassen und 91 % der Familien richtig (v1.3: 80 % / 88 %). Grußtexte in Sample-Namen („shouts go out to…“) werden nicht mehr als Stimme oder Beat gewertet.
+
+**EN:** AI trained further with more than 3,000 additional MODs: now 10,896 real samples from 2,782 MODs. On unseen MODs it gets 83 % of classes and 91 % of families right (v1.3: 80 % / 88 %). Greeting texts in sample names (“shouts go out to…”) no longer count as voice or beat hints.
+
 ## mod2sid 1.3
 
 **DE:** KI neu trainiert mit der Amiga-Sample-Bibliothek (5 304 WAV-Samples) und 492 MODs: 80 % Klasse / 88 % Familie bei unbekannten MODs. Neu: Drum-Loops werden in Einzelschläge zerlegt, gleich klingende Schläge teilen sich ein SID-Instrument. Stimmen werden mit ihrem Tonhöhenverlauf nachgebaut statt stummgeschaltet. Lange Streicher und Flächen halten so lange wie das Original. Neue Instrumente „Beat zerlegen (KI)“ und „Stimme mit Tonverlauf (KI)“.

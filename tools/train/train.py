@@ -22,7 +22,7 @@ wav = np.array([s.startswith('wav:') for s in src]); syn = (src == 'synth') | wa
 rng = np.random.default_rng(0)
 import os
 AUG = int(os.environ.get("AUG", 200))
-NTREES, DEPTH, LEAF = 60, 15, 3
+NTREES, DEPTH, LEAF = int(os.environ.get("NTREES", 60)), int(os.environ.get("DEPTH", 15)), int(os.environ.get("LEAF", 3))
 
 def make(): return ExtraTreesClassifier(NTREES, max_depth=DEPTH, min_samples_leaf=LEAF, random_state=0, n_jobs=-1)
 def trainset(mask):
