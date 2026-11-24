@@ -1,3 +1,9 @@
+## mod2sid 1.2
+
+**DE:** Neu: Versionen für macOS Apple Silicon + Intel, Windows (Installer + Portable) und Linux (AppImage + deb); kleinere Pakete (nur DE/EN-Sprachdateien, maximale Kompression); KI mit 203 MODs neu trainiert (79 % Klasse / 89 % Familie); MOD-Dateien per Doppelklick öffnen.
+
+**EN:** New: builds for macOS Apple Silicon + Intel, Windows (installer + portable) and Linux (AppImage + deb); smaller packages; AI retrained on 203 MODs (79 % class / 89 % family); open MOD files by double click.
+
 ## mod2sid 1.1
 
 **DE:** Neu: Option 1 oder 2 SIDs (6 Stimmen, echte Akkorde, PSID v3 + GoatTracker-Stereo-SNG), 164 SID-Instrumente (+78), KI neu trainiert mit 35 MODs (73 % Klasse / 86 % Familie).

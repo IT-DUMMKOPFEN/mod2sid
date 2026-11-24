@@ -3,7 +3,7 @@
 # mod2sid
 
 **Amiga-MOD → C64-SID + GoatTracker-SNG** – mit KI-Sample-Erkennung, Instrumenten-Bibliothek, Vorhören und Instrumententausch.
-App für **macOS (Apple Silicon)**, Oberfläche Deutsch/Englisch. *Done by IT-DUMMKOPFEN.*
+App für **macOS (Apple Silicon + Intel), Windows und Linux (AppImage/deb)**, Oberfläche Deutsch/Englisch. *Done by IT-DUMMKOPFEN.*
 
 [English below](#english)
 
@@ -25,24 +25,34 @@ App für **macOS (Apple Silicon)**, Oberfläche Deutsch/Englisch. *Done by IT-DU
 - **Neu konvertieren**: Jedes Mal entsteht eine andere Variante (Instrumentwahl und Stimmenverteilung); der Kreativitätsregler steuert, wie stark sie sich unterscheidet.
 - **Speichern**: `.sid` (PSID v2, eigener GoatTracker-kompatibler Player ab $1000; läuft in VICE, SIDPlay und auf echten C64) **und** `.sng` (GoatTracker 2, GTS5) zum Weiterbearbeiten.
 
-## Installation (macOS, Apple Silicon)
+## Installation
 
-1. Unter [Releases](https://github.com/IT-DUMMKOPFEN/mod2sid/releases) bzw. in den [Actions-Artefakten](https://github.com/IT-DUMMKOPFEN/mod2sid/actions) die `mod2sid-…-arm64.dmg` laden.
-2. DMG öffnen und `mod2sid` in **Programme** ziehen.
-3. Die App ist nicht von Apple notarisiert: Beim ersten Start **Rechtsklick → Öffnen**. Meldet macOS „beschädigt“, hilft im Terminal:
-   `xattr -cr /Applications/mod2sid.app`
+Downloads unter [Releases](https://github.com/IT-DUMMKOPFEN/mod2sid/releases) bzw. in den [Actions-Artefakten](https://github.com/IT-DUMMKOPFEN/mod2sid/actions):
+
+| System | Datei |
+|---|---|
+| macOS Apple Silicon | `mod2sid-…-mac-arm64.dmg` |
+| macOS Intel | `mod2sid-…-mac-x64.dmg` |
+| Windows 10/11 | `mod2sid-…-win-x64-setup.exe` (Installer) oder `…-portable.exe` |
+| Linux | `mod2sid-…-linux-x86_64.AppImage` (ausführbar machen: `chmod +x`) oder `…-linux-amd64.deb` |
+
+Die Programme sind nicht signiert:
+- **macOS:** beim ersten Start Rechtsklick → Öffnen, oder `xattr -cr /Applications/mod2sid.app`
+- **Windows:** bei der SmartScreen-Warnung „Weitere Informationen“ → „Trotzdem ausführen“
 
 ## Selbst bauen
 
 ```bash
 npm install
 npm start              # App starten
-npm run dist           # DMG + ZIP für Apple Silicon (auf einem Mac)
+npm run dist:mac       # macOS arm64 + x64 (auf einem Mac)
+npm run dist:win       # Windows Installer + Portable
+npm run dist:linux     # AppImage + deb
 node tools/test/selftest.mjs            # Kern-Selbsttest
 node tools/test/run_all.mjs <ordner>    # alle MODs eines Ordners testen
 ```
 
-GitHub Actions (`.github/workflows/build-mac.yml`) baut bei jedem Push auf `main` eine DMG; ein Tag `v*` erstellt ein Release.
+GitHub Actions (`.github/workflows/build.yml`) baut bei jedem Push auf `main` für macOS (arm64 + x64), Windows und Linux; ein Tag `v*` erstellt ein Release mit allen Dateien.
 
 ## KI-Training
 
@@ -52,7 +62,7 @@ Die Werkzeuge liegen in `tools/train/`:
 2. `extract.mjs` berechnet die Merkmale mit **demselben Code wie die App** (`src/core/features.js`) – für die synthetischen Samples und für die von Hand beschrifteten echten Samples aus `labels.json`.
 3. `train.py` trainiert das Extra-Trees-Modell, prüft es per *Leave-one-MOD-out* (das geprüfte MOD ist nie im Training) und exportiert `src/core/model.json`.
 
-Stand v1.1: 5 700 synthetische + 184 echte Samples aus 35 Test-MODs (davon 79 regelbasiert und streng beschriftet, `autolabel.mjs`). Treffer bei völlig unbekannten MODs: **73 % exakte Klasse, 86 % richtige Familie** (Drum / Bass / Melodie / Akkord / FX / Sprache). Was die KI falsch einordnet, korrigierst du per Instrumententausch – und die App merkt es sich.
+Stand v1.2: 5 700 synthetische + 880 echte Samples aus 203 MODs (die meisten per `autolabel.mjs` aus Sample-Namen wie „st-01:bass“ und eindeutigen Klangregeln beschriftet, Namen nur, wenn Klang und Spielweise dazu passen). Treffer bei MODs, die nie im Training waren: **79 % exakte Klasse, 89 % richtige Familie** (Drum / Bass / Melodie / Akkord / FX / Sprache). Was die KI falsch einordnet, korrigierst du per Instrumententausch – und die App merkt es sich.
 
 ```bash
 python3 tools/train/synth_dataset.py /tmp/synth 300
@@ -86,7 +96,7 @@ GPL-3.0 – siehe [LICENSE](LICENSE). Das SNG-Format stammt von GoatTracker 2 (L
 
 ## English
 
-**mod2sid** converts 4-channel Amiga MODs into **C64 SID music (PSID)** and **GoatTracker 2 songs (.sng)**. It is an Electron app for **macOS on Apple Silicon** with a German/English interface.
+**mod2sid** converts 4-channel Amiga MODs into **C64 SID music (PSID)** and **GoatTracker 2 songs (.sng)**. It is an Electron app for **macOS (Apple Silicon + Intel), Windows and Linux (AppImage/deb)** with a German/English interface.
 
 - An **AI classifier** (extra-trees, trained on synthetic and hand-labelled real Amiga samples) recognises 19 instrument classes, including speech. Speech is not converted.
 - **1 or 2 SIDs**: with 2 SIDs (6 voices, PSID v3, second SID at $D420) every channel gets its own voice and chords become real chords; the SNG is for GoatTracker Stereo.

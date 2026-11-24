@@ -30,13 +30,17 @@ def trainset(mask):
 
 h = fh = n = 0
 conf = {}
-for m in sorted(set(mods[real])):
-    te = real & (mods == m)
-    clf = make().fit(*trainset(real & (mods != m)))
+umods = sorted(set(mods[real])); rng2 = np.random.default_rng(3); rng2.shuffle(umods)
+folds = [set(umods[i::10]) for i in range(10)] if len(umods) > 20 else [{m} for m in umods]
+for fold in folds:
+    inf = np.array([m in fold for m in mods])
+    te = real & inf
+    if not te.any(): continue
+    clf = make().fit(*trainset(real & ~inf))
     p = clf.predict(X[te])
     h += (p == y[te]).sum(); fh += sum(fam(a) == fam(b) for a, b in zip(p, y[te])); n += te.sum()
     for a, b in zip(p, y[te]): conf[(CLASSES[b], CLASSES[a])] = conf.get((CLASSES[b], CLASSES[a]), 0) + 1
-print(f'leave-one-MOD-out on {n} real samples: class accuracy {h/n:.2f}, family accuracy {fh/n:.2f}')
+print(f'grouped CV (test MODs never in training) on {n} real samples from {len(umods)} MODs: class accuracy {h/n:.2f}, family accuracy {fh/n:.2f}')
 print('most common confusions:', sorted(((v, k) for k, v in conf.items() if k[0] != k[1]), reverse=True)[:8])
 
 clf = make().fit(*trainset(real))

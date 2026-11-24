@@ -31,7 +31,7 @@ const NAME_HINTS = [
   [/guit|gtr|gitar|dist\.?gt|banjo|sitar|harp\b/i, 'guitar'],
   [/piano|pian|organ|orgel|rhodes|harpsi|clav|cembal|keys|synpia|e\.?p\b/i, 'keys'],
   [/bell|glock|vibra|marimb|xylo|celest|chime/i, 'bell'],
-  [/choir|chor|voice|vox|aah|ooh/i, 'choir'],
+  [/choir|chor(?!d)|voice|vox|aah|ooh/i, 'choir'],
   [/chord|maj7|min7|major|minor|\bmaj\b|\bmin\b|dim7|aug|sus4/i, 'chord'],
   [/\b(fx|sfx|zoom|sweep|laser|noise|wind|boom|explo)\b/i, 'fx'],
 ];

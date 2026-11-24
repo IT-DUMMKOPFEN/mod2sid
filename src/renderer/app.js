@@ -383,7 +383,8 @@ async function init() {
   if (saved.fitEnv !== undefined) $('#optFitEnv').checked = saved.fitEnv;
   if (saved.filter !== undefined) $('#optFilter').checked = saved.filter;
   applyLang();
-  if (api.appInfo) api.appInfo().then(i => { $('#ver').textContent = 'v' + i.version; });
+  if (api.appInfo) api.appInfo().then(i => { $('#ver').textContent = 'v' + i.version; document.body.classList.add('os-' + i.platform); });
+  if (api.onOpenPath) api.onOpenPath(async (p) => { const r = await api.readFile(p); if (r) openFile(r); });
   if (saved.sids) $('#optSids').value = saved.sids;
   const saveOpts = () => LS.set('opts', { sids: +$('#optSids').value, model: $('#optModel').value, creativity: +$('#optCreativity').value, fitEnv: $('#optFitEnv').checked, filter: $('#optFilter').checked });
   $('#btnOpen').onclick = async () => { const f = await api.openMod(); if (f) openFile(f); };

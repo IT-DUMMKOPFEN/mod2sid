@@ -11,14 +11,25 @@ protocol.registerSchemesAsPrivileged([
 ]);
 
 let win = null;
+let pendingPath = process.argv.slice(1).find(a => /\.(mod|nst|stk)$/i.test(a)) || null;
+const isMac = process.platform === 'darwin';
+if (!app.requestSingleInstanceLock()) app.quit();
+app.on('second-instance', (_e, argv) => {
+  const p = argv.slice(1).find(a => /\.(mod|nst|stk)$/i.test(a));
+  if (win) { if (win.isMinimized()) win.restore(); win.focus(); if (p) win.webContents.send('open-path', p); }
+});
+app.on('open-file', (e, p) => { e.preventDefault(); if (win) win.webContents.send('open-path', p); else pendingPath = p; });
 function createWindow() {
   win = new BrowserWindow({
     width: 1440, height: 920, minWidth: 1100, minHeight: 720,
     title: 'mod2sid', backgroundColor: '#14102a',
-    titleBarStyle: 'hiddenInset',
+    icon: path.join(ROOT, 'renderer', 'icon.png'),
+    autoHideMenuBar: !isMac,
+    ...(isMac ? { titleBarStyle: 'hiddenInset' } : {}),
     webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true },
   });
   win.loadURL('app://local/renderer/index.html');
+  win.webContents.on('did-finish-load', () => { if (pendingPath) { win.webContents.send('open-path', pendingPath); pendingPath = null; } });
   win.webContents.setWindowOpenHandler(({ url }) => { shell.openExternal(url); return { action: 'deny' }; });
 }
 
@@ -29,7 +40,6 @@ app.whenReady().then(() => {
     if (!p.startsWith(ROOT)) return new Response('forbidden', { status: 403 });
     return net.fetch(pathToFileURL(p).toString());
   });
-  const isMac = process.platform === 'darwin';
   Menu.setApplicationMenu(Menu.buildFromTemplate([
     ...(isMac ? [{ role: 'appMenu' }] : []),
     { label: 'Datei / File', submenu: [

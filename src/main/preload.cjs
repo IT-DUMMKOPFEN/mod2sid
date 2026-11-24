@@ -9,4 +9,5 @@ contextBridge.exposeInMainWorld('m2s', {
   openUrl: (u) => ipcRenderer.invoke('open-url', u),
   appInfo: () => ipcRenderer.invoke('app-info'),
   onMenu: (cb) => ipcRenderer.on('menu', (_e, a) => cb(a)),
+  onOpenPath: (cb) => ipcRenderer.on('open-path', (_e, p) => cb(p)),
 });

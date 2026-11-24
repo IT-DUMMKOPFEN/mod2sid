@@ -1,19 +1,26 @@
 {
   "name": "mod2sid",
   "productName": "mod2sid",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Amiga MOD → C64 SID + GoatTracker SNG converter with AI sample recognition",
-  "author": "IT-DUMMKOPFEN",
+  "author": {
+    "name": "IT-DUMMKOPFEN",
+    "email": "it-dummkopfen@users.noreply.github.com"
+  },
   "license": "GPL-3.0-only",
   "type": "module",
   "main": "src/main/main.cjs",
   "homepage": "https://github.com/IT-DUMMKOPFEN/mod2sid",
-  "repository": { "type": "git", "url": "https://github.com/IT-DUMMKOPFEN/mod2sid.git" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/IT-DUMMKOPFEN/mod2sid.git"
+  },
   "scripts": {
     "start": "electron .",
     "test": "node tools/test/run_all.mjs test-mods",
-    "pack": "electron-builder --mac dir --arm64 --publish never",
-    "dist": "electron-builder --mac dmg zip --arm64 --publish never"
+    "dist:mac": "electron-builder --mac --arm64 --x64 --publish never",
+    "dist:win": "electron-builder --win --x64 --publish never",
+    "dist:linux": "electron-builder --linux --x64 --publish never"
   },
   "devDependencies": {
     "electron": "^35.7.5",
@@ -23,16 +30,98 @@
     "appId": "de.it-dummkopfen.mod2sid",
     "productName": "mod2sid",
     "copyright": "© IT-DUMMKOPFEN – GPL-3.0",
-    "directories": { "output": "dist", "buildResources": "build" },
-    "files": ["src/**/*", "package.json", "LICENSE"],
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "package.json",
+      "LICENSE"
+    ],
     "mac": {
-      "target": [{ "target": "dmg", "arch": ["arm64"] }, { "target": "zip", "arch": ["arm64"] }],
+      "target": [
+        {
+          "target": "dir",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
+      ],
       "category": "public.app-category.music",
       "icon": "build/icon.png",
       "identity": null,
-      "hardenedRuntime": false,
-      "fileAssociations": [{ "ext": ["mod"], "name": "Amiga MOD", "role": "Viewer" }]
+      "hardenedRuntime": false
     },
-    "dmg": { "title": "mod2sid ${version}" }
+    "compression": "maximum",
+    "electronLanguages": [
+      "de",
+      "en",
+      "en-US"
+    ],
+    "asar": true,
+    "fileAssociations": [
+      {
+        "ext": [
+          "mod"
+        ],
+        "name": "Amiga MOD",
+        "role": "Viewer"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png",
+      "artifactName": "mod2sid-${version}-win-${arch}-${target}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "artifactName": "mod2sid-${version}-win-x64-setup.${ext}"
+    },
+    "portable": {
+      "artifactName": "mod2sid-${version}-win-x64-portable.${ext}"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png",
+      "category": "Audio",
+      "synopsis": "Amiga MOD to C64 SID converter",
+      "artifactName": "mod2sid-${version}-linux-${arch}.${ext}"
+    },
+    "deb": {
+      "depends": [
+        "libnss3",
+        "libgtk-3-0",
+        "libasound2"
+      ]
+    }
   }
 }
