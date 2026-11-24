@@ -12,8 +12,11 @@ App für **macOS (Apple Silicon + Intel), Windows und Linux (AppImage/deb)**, Ob
 ## Funktionen
 
 - **4-Kanal-MODs einlesen**: ProTracker, NoiseTracker, StarTrekker (M.K., M!K!, FLT4, 4CHN …) und alte 15-Sample-SoundTracker-MODs. Alle ProTracker-Effekte werden tickgenau nachgespielt (Arpeggio, Portamento, Tone-Portamento, Vibrato, Lautstärke, Pattern-Break/-Jump, Loops, Delay …).
-- **KI-Erkennung der Samples**: Ein trainierter Klassifizierer (Extra-Trees-Ensemble) erkennt 19 Klassen: Bassdrum, Snare, HiHat, Becken, Tom, Perkussion, Bass, Lead, Fläche, Streicher, Blech, Holzbläser, Gitarre, Tasten, Glocke, Chor, Akkord, Effekt und **Sprache** (Sprache wird nicht umgewandelt). Grundlage sind 31 Klang- und Nutzungsmerkmale: Spektrum, Hüllkurve, Tonhöhe (YIN), Akkord-Chroma und wie das Sample im Song gespielt wird.
-- **Instrumente nachbauen**: Bibliothek mit 164 SID-Instrumenten in 16 Kategorien (Bass, Lead, Streicher, Blech, Holz, Gitarre, Tasten, Glocken, Flächen, Chor, Synth, Welt/Ethno, Chiptune, Drums, Effekte). Die Hüllkurve (ADSR) wird an das Original-Sample angepasst, Akkord-Samples werden zu Arpeggios.
+- **KI-Erkennung der Samples**: Ein trainierter Klassifizierer (Extra-Trees-Ensemble) erkennt 20 Klassen: Bassdrum, Snare, HiHat, Becken, Tom, Perkussion, **Drum-Loop**, Bass, Lead, Fläche, Streicher, Blech, Holzbläser, Gitarre, Tasten, Glocke, Chor, Akkord, Effekt und **Stimme**. Grundlage sind 34 Klang- und Nutzungsmerkmale: Spektrum, Hüllkurve, Tonhöhe (YIN), Akkord-Chroma, Anschläge (Onsets) und wie das Sample im Song gespielt wird.
+- **Drum-Loops zerlegen**: Ein Sample mit einem ganzen Beat wird in einzelne Schläge zerlegt. Jeder Schlag wird als Bassdrum, Snare, HiHat, Becken, Tom oder Perkussion eingeordnet; gleich klingende Schläge werden zusammengefasst und teilen sich ein SID-Instrument. Der Beat läuft dann zeilengenau mit verschiedenen SID-Drums.
+- **Stimmen mit Tonhöhenverlauf**: Bei Stimmen-Samples misst die KI die Tonhöhe alle 20 ms und baut daraus eine Wavetable – ein „Yeah“, das tief beginnt und nach oben gleitet, klingt auch im SID so. Stimmlose Laute werden zu Rauschen, Pausen zu Gate-aus.
+- **Lange Streicher und Flächen** behalten ihr langsames Anschwellen und klingen so lange wie das Original-Sample, mit einem Release wie der Ausklang des Samples.
+- **Instrumente nachbauen**: Bibliothek mit 166 SID-Instrumenten in 17 Kategorien (Bass, Lead, Streicher, Blech, Holz, Gitarre, Tasten, Glocken, Flächen, Chor, Synth, Drums, KI-Automatik, Welt/Ethno, Chiptune, Effekte). Die Hüllkurve (ADSR) wird an das Original-Sample angepasst, Akkord-Samples werden zu Arpeggios.
 - **1 oder 2 SIDs**: Mit 2 SIDs (6 Stimmen, PSID v3, zweiter SID auf $D420) bekommt jeder Kanal eine eigene Stimme. Die beiden freien Stimmen spielen Akkord-Samples als echte Akkorde und übernehmen Drum-Schläge, damit Bass oder Melodie weiterklingen. Die SNG ist dann für **GoatTracker Stereo**.
 - **4 Stimmen auf 3 SID-Stimmen** (1-SID-Modus): Der Arranger bewertet für jedes Pattern alle Möglichkeiten und nutzt C64-Tricks:
   - Drum-Anschlag + Bass/Melodie auf einer Stimme (Rausch-Transient vorne, dann die Note)
@@ -58,17 +61,23 @@ GitHub Actions (`.github/workflows/build.yml`) baut bei jedem Push auf `main` f�
 
 Die Werkzeuge liegen in `tools/train/`:
 
-1. `synth_dataset.py` erzeugt einen synthetischen Datensatz typischer Amiga-Samples (19 Klassen, mit Varianten von Klangfarbe, Hüllkurve, Samplerate und Spielweise).
+1. `synth_dataset.py` erzeugt einen synthetischen Datensatz typischer Amiga-Samples (20 Klassen inkl. Drum-Loops, mit Varianten von Klangfarbe, Hüllkurve, Samplerate und Spielweise).
 2. `extract.mjs` berechnet die Merkmale mit **demselben Code wie die App** (`src/core/features.js`) – für die synthetischen Samples und für die von Hand beschrifteten echten Samples aus `labels.json`.
-3. `train.py` trainiert das Extra-Trees-Modell, prüft es per *Leave-one-MOD-out* (das geprüfte MOD ist nie im Training) und exportiert `src/core/model.json`.
+3. `extract_wav.mjs` liest eine Sample-Bibliothek (WAV). Beschriftet wird nach dem Dateinamen (`wavlabel.mjs`), aber nur, wenn der Klang dazu passt. Die meisten Amiga-WAVs tragen einen falschen 44,1-kHz-Header; sie werden mit typischen MOD-Abspielraten (8–17 kHz) als 8-Bit-Samples ausgewertet.
+4. `train.py` trainiert das Extra-Trees-Modell, prüft es per *Leave-one-MOD-out* (das geprüfte MOD ist nie im Training) und exportiert `src/core/model.json`.
 
-Stand v1.2: 5 700 synthetische + 880 echte Samples aus 203 MODs (die meisten per `autolabel.mjs` aus Sample-Namen wie „st-01:bass“ und eindeutigen Klangregeln beschriftet, Namen nur, wenn Klang und Spielweise dazu passen). Treffer bei MODs, die nie im Training waren: **79 % exakte Klasse, 89 % richtige Familie** (Drum / Bass / Melodie / Akkord / FX / Sprache). Was die KI falsch einordnet, korrigierst du per Instrumententausch – und die App merkt es sich.
+Stand v1.3: 6 000 synthetische Samples, 5 304 Samples aus der WAV-Bibliothek (10 651 Dateien, davon 5 721 eindeutig benannt, 417 wegen unpassendem Klang verworfen) und 1 958 echte Samples aus 492 MODs. Die meisten MOD-Samples sind per `autolabel.mjs` beschriftet: über Namen wie „st-01:bass“, aber nur, wenn Klang und Spielweise dazu passen, plus eindeutige Klangregeln. Ergebnisse:
+- MODs, die nie im Training waren: **80 % exakte Klasse, 88 % richtige Familie** (Drum / Bass / Melodie / Akkord / FX / Stimme / Beat), gemessen mit 10-fach gruppierter Kreuzvalidierung.
+- Zurückgehaltene WAV-Samples: **73 % Klasse / 92 % Familie**. Ohne das WAV-Training waren es nur 46 % / 74 %.
+
+Was die KI falsch einordnet, korrigierst du per Instrumententausch, und die App merkt es sich.
 
 ```bash
 python3 tools/train/synth_dataset.py /tmp/synth 300
 node tools/train/autolabel.mjs <neue-mods> tools/train/labels_auto.json
 node tools/train/extract.mjs /tmp/synth <mod-ordner1>,<mod-ordner2> /tmp/features.json
-python3 tools/train/train.py /tmp/features.json src/core/model.json
+node tools/train/extract_wav.mjs <wav-ordner> /tmp/wav.json
+AUG=80 python3 tools/train/train.py /tmp/features.json src/core/model.json /tmp/wav.json
 ```
 
 ## Technik
@@ -76,7 +85,8 @@ python3 tools/train/train.py /tmp/features.json src/core/model.json
 | Teil | Datei |
 |---|---|
 | MOD-Parser + ProTracker-Replay | `src/core/mod.js` |
-| Merkmale, Tonhöhe, Akkorde | `src/core/features.js` |
+| Merkmale, Tonhöhe, Akkorde, Onsets | `src/core/features.js` |
+| Drum-Loop-Zerlegung, Stimmen-Tonverlauf | `src/core/beat.js` |
 | KI-Klassifizierer (Inferenz) | `src/core/classifier.js`, `model.json` |
 | Instrumenten-Bibliothek | `src/core/library.js` |
 | Arranger 4→3 Stimmen, Effekte | `src/core/arrange.js` |
@@ -98,9 +108,12 @@ GPL-3.0 – siehe [LICENSE](LICENSE). Das SNG-Format stammt von GoatTracker 2 (L
 
 **mod2sid** converts 4-channel Amiga MODs into **C64 SID music (PSID)** and **GoatTracker 2 songs (.sng)**. It is an Electron app for **macOS (Apple Silicon + Intel), Windows and Linux (AppImage/deb)** with a German/English interface.
 
-- An **AI classifier** (extra-trees, trained on synthetic and hand-labelled real Amiga samples) recognises 19 instrument classes, including speech. Speech is not converted.
+- An **AI classifier** (extra-trees, trained on synthetic and hand-labelled real Amiga samples) recognises 20 instrument classes, including drum loops and voices. It was trained on synthetic samples, a library of more than 5 000 Amiga WAV samples and about 2 000 labelled samples from 492 MODs. On MODs it never saw it gets 80 % of classes and 88 % of families right.
+- **Drum loops** are split into single hits. Similar hits are clustered and share one SID drum, so kick, snare and hi-hat in a loop become different instruments.
+- **Voices** follow their pitch contour, measured every 20 ms: a “yeah” that starts low and slides up does the same on the SID.
+- **Long strings/pads** keep their swell and ring for the full sample length.
 - **1 or 2 SIDs**: with 2 SIDs (6 voices, PSID v3, second SID at $D420) every channel gets its own voice and chords become real chords; the SNG is for GoatTracker Stereo.
-- **Instrument library** with 164 SID instruments. Envelopes are fitted to the original samples, and chord samples become arpeggios.
+- **Instrument library** with 166 SID instruments. Envelopes are fitted to the original samples, and chord samples become arpeggios.
 - An **arranger for 4 → 3 voices** uses classic C64 tricks: combined bass and drum notes, drum transients overlaid on held notes, arpeggio merging and gap filling.
 - **Preview** with a built-in 6502 + SID emulator (6581/8580), A/B comparison with the original MOD, mute/solo for each voice.
 - **Swap instruments** to re-convert instantly; the app learns your choices. **Convert again** produces a different variant.

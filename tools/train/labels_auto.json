@@ -1,4 +1,122 @@
 {
+ "aquarius-slx.mod": {
+  "1": "kick",
+  "2": "kick"
+ },
+ "cndmcrrp.mod": {
+  "14": "snare"
+ },
+ "ddream0.mod": {
+  "5": "kick"
+ },
+ "death-zone.mod": {
+  "4": "keys"
+ },
+ "den-boom.mod": {
+  "1": "bass",
+  "2": "bass",
+  "4": "chord",
+  "5": "chord",
+  "6": "chord",
+  "8": "chord",
+  "10": "chord",
+  "12": "kick",
+  "13": "snare",
+  "14": "hihat",
+  "16": "tom",
+  "17": "bass",
+  "18": "bass",
+  "19": "bass",
+  "20": "bass",
+  "22": "bass",
+  "24": "chord",
+  "25": "chord",
+  "28": "chord",
+  "29": "wood"
+ },
+ "excellate.mod": {
+  "11": "snare",
+  "20": "snare"
+ },
+ "flight_of_the_heart.mod": {
+  "7": "speech"
+ },
+ "funny-beat-slx.mod": {
+  "4": "kick",
+  "5": "hihat"
+ },
+ "h0ffman_-_drop_the_panic.mod": {
+  "1": "kick",
+  "2": "hihat",
+  "3": "snare"
+ },
+ "h0ffman_-_everyway.mod": {
+  "1": "kick",
+  "2": "snare",
+  "4": "snare",
+  "5": "snare",
+  "6": "snare"
+ },
+ "immortal.mod": {
+  "18": "hihat",
+  "19": "hihat",
+  "22": "kick",
+  "23": "snare",
+  "24": "kick",
+  "25": "kick"
+ },
+ "interference.mod": {
+  "4": "kick",
+  "20": "bass",
+  "21": "bass",
+  "22": "bass",
+  "23": "bass"
+ },
+ "moongazr.mod": {
+  "1": "bass",
+  "2": "keys",
+  "4": "chord",
+  "5": "chord",
+  "6": "snare",
+  "7": "kick",
+  "8": "hihat",
+  "9": "hihat",
+  "10": "wood",
+  "11": "chord",
+  "12": "lead",
+  "14": "chord",
+  "15": "wood",
+  "16": "strings",
+  "17": "perc"
+ },
+ "skelma.mod": {
+  "12": "kick"
+ },
+ "sterne.mod": {
+  "1": "kick",
+  "2": "kick",
+  "8": "snare",
+  "11": "kick"
+ },
+ "tamas_kingdom.mod": {
+  "9": "snare",
+  "10": "snare",
+  "15": "kick",
+  "22": "kick",
+  "24": "kick"
+ },
+ "tekkno-mod.mod": {
+  "2": "kick",
+  "6": "snare",
+  "13": "kick"
+ },
+ "thuglive.mod": {
+  "5": "kick",
+  "6": "kick"
+ },
+ "total-recall-slx.mod": {
+  "13": "kick"
+ },
  "Mod.Antipasti_40.Mod": {
   "4": "snare",
   "5": "bass",
@@ -32,7 +150,6 @@
   "18": "hihat"
  },
  "Mod.Crack.Mod": {
-  "1": "kick",
   "3": "snare"
  },
  "Mod.Crack_Tune_01.Mod": {
@@ -111,466 +228,262 @@
   "5": "hihat",
   "6": "hihat"
  },
- "100_ELYSIUM.MOD": {
+ "Lotus1-1.mod": {
+  "11": "kick"
+ },
+ "Lotus1-2.mod": {
+  "11": "kick"
+ },
+ "Lotus1-3.mod": {
+  "11": "kick"
+ },
+ "Lotus1-4.mod": {
+  "11": "kick"
+ },
+ "Lotus2.mod": {
   "1": "kick",
-  "22": "snare"
+  "2": "hihat",
+  "3": "hihat",
+  "5": "bass",
+  "9": "speech",
+  "10": "speech",
+  "11": "brass"
  },
- "101_anette-3.mod": {
-  "1": "chord",
-  "2": "chord",
-  "4": "bell",
-  "13": "hihat",
-  "14": "snare",
-  "15": "snare",
-  "20": "bass"
- },
- "102_MOD.KILLING_Flute_(Arabian_Nights_Tribute).mod": {
-  "7": "kick"
- },
- "103_acid_jazz_part2.mod": {
-  "1": "kick",
-  "2": "kick",
-  "5": "hihat",
-  "6": "kick",
-  "7": "snare",
-  "8": "snare",
-  "17": "snare",
-  "26": "snare"
- },
- "105_kaupunki(dizzy).mod": {
-  "4": "hihat",
+ "Lotus3-1.mod": {
+  "1": "bass",
   "5": "kick",
-  "7": "snare",
-  "8": "snare",
-  "13": "kick",
-  "16": "hihat",
-  "19": "hihat"
+  "6": "snare"
  },
- "107_clown.mod": {
-  "2": "kick",
-  "3": "chord",
+ "Lotus3-2.mod": {
+  "3": "bass",
+  "6": "kick",
+  "7": "guitar",
+  "10": "snare"
+ },
+ "Lotus3-3.mod": {
+  "4": "bass",
+  "5": "kick",
+  "6": "snare",
+  "7": "bass",
+  "8": "chord"
+ },
+ "Lotus3-4.mod": {
+  "1": "kick",
+  "2": "snare",
   "4": "hihat",
-  "9": "hihat"
+  "5": "bass",
+  "10": "choir"
  },
- "108_-_ACES_HIGH.MOD": {
-  "14": "kick",
+ "Lotus3-Title.mod": {
+  "2": "snare",
+  "3": "hihat",
+  "4": "strings",
+  "6": "keys"
+ },
+ "LotusTitle.mod": {
+  "11": "kick"
+ },
+ "LotusTurboChallenge2End.mod": {
+  "1": "hihat",
+  "2": "hihat",
+  "4": "kick",
+  "5": "kick",
+  "7": "keys",
+  "8": "hihat",
+  "13": "bass",
+  "15": "snare"
+ },
+ "MagicPockets-DointheDo.mod": {
+  "17": "hihat"
+ },
+ "ManUnited.MOD": {
+  "3": "kick",
+  "4": "snare",
+  "5": "bass",
+  "6": "hihat",
+  "7": "brass",
+  "8": "tom"
+ },
+ "machine-main1.mod": {
+  "1": "kick",
+  "2": "snare",
+  "3": "hihat",
+  "4": "kick",
+  "9": "snare",
+  "12": "bass",
+  "13": "strings",
+  "22": "guitar",
+  "23": "guitar"
+ },
+ "machine-main2.mod": {
+  "1": "kick",
+  "2": "snare",
+  "8": "lead",
+  "10": "snare",
+  "15": "bass"
+ },
+ "Bomberman - by eike Steffen.mod": {
+  "9": "snare"
+ },
+ "MOD.discomix.mod": {
+  "1": "bass",
+  "4": "fx",
+  "10": "kick",
+  "11": "snare",
+  "12": "hihat",
+  "23": "tom"
+ },
+ "MOD.summertime.mod": {
+  "4": "snare",
+  "5": "bass",
+  "6": "hihat",
+  "7": "keys",
+  "8": "bass"
+ },
+ "Smooth chillin'. feat Beastie.mod": {
+  "8": "fx"
+ },
+ "Tori Amos - cornflake-girl.mod": {
+  "25": "keys"
+ },
+ "anarchy.mod": {
+  "6": "kick"
+ },
+ "body funk.mod": {
+  "9": "kick",
+  "11": "kick",
+  "12": "kick",
+  "15": "snare",
+  "20": "snare",
+  "21": "snare",
+  "25": "kick",
+  "26": "snare",
+  "27": "snare",
+  "28": "kick",
   "29": "snare"
  },
- "109_-KLISJE.MOD": {
-  "1": "keys",
-  "2": "keys",
-  "3": "keys",
-  "4": "keys",
-  "5": "bass",
-  "6": "snare",
-  "8": "kick",
-  "9": "hihat",
-  "10": "keys",
-  "12": "guitar",
-  "13": "guitar",
-  "14": "guitar",
-  "15": "guitar"
+ "enjoyone.mod": {
+  "9": "kick",
+  "10": "kick",
+  "12": "kick",
+  "14": "beat",
+  "15": "snare",
+  "16": "snare"
  },
- "10_-_BOOM.MOD": {
+ "foreverchange.mod": {
+  "1": "hihat",
+  "4": "kick",
+  "5": "wood",
+  "6": "wood",
+  "10": "keys",
+  "11": "keys",
+  "18": "keys",
+  "19": "keys",
+  "20": "keys",
+  "21": "keys",
+  "23": "keys"
+ },
+ "golden.mod": {
+  "6": "kick"
+ },
+ "happy fellows jamm.mod": {
+  "5": "guitar",
+  "15": "brass",
+  "21": "kick"
+ },
+ "joy.mod": {
+  "6": "kick",
+  "7": "hihat",
+  "15": "kick",
+  "16": "snare"
+ },
+ "just like that.mod": {
+  "7": "cymbal"
+ },
+ "megamix vol.1.mod": {
+  "1": "snare",
+  "2": "snare",
+  "6": "hihat",
+  "7": "hihat",
+  "26": "keys"
+ },
+ "paradise(1).mod": {
+  "1": "beat",
+  "2": "kick",
+  "7": "speech",
+  "8": "cymbal",
+  "10": "bass",
+  "23": "cymbal",
+  "28": "keys",
+  "30": "bass"
+ },
+ "substance introcut.mod": {
+  "8": "kick"
+ },
+ "summertime(1).mod": {
+  "7": "kick",
+  "11": "hihat",
+  "20": "snare"
+ },
+ "supermarket music.mod": {
+  "17": "kick",
+  "18": "hihat"
+ },
+ "Back to the future (Original).mod": {
+  "2": "snare",
+  "3": "snare",
+  "5": "hihat",
+  "6": "hihat",
+  "7": "hihat"
+ },
+ "CAPTAIN - Space Debris.mod": {
   "1": "bass",
-  "2": "bass",
   "4": "chord",
   "5": "chord",
   "6": "chord",
-  "8": "chord",
+  "9": "choir",
   "10": "chord",
-  "12": "kick",
-  "13": "snare",
-  "14": "hihat",
-  "16": "tom",
-  "17": "bass",
-  "18": "bass",
-  "19": "bass",
-  "20": "bass",
-  "22": "bass",
-  "24": "chord",
-  "25": "chord",
-  "28": "chord",
-  "29": "wood"
+  "13": "chord",
+  "14": "chord",
+  "18": "brass"
  },
- "110_the_last_flight.mod": {
-  "2": "kick",
-  "5": "snare",
-  "7": "hihat",
-  "12": "bass",
-  "13": "bass",
-  "21": "bass",
-  "22": "bass"
+ "CODEX - Memory Dust.mod": {
+  "3": "snare"
  },
- "111_run_away.mod": {
-  "2": "bass",
-  "3": "snare",
-  "5": "kick",
-  "6": "brass",
-  "7": "strings",
-  "9": "hihat",
-  "13": "perc",
-  "14": "cymbal",
-  "15": "cymbal"
- },
- "113_Alienway.mod": {
-  "5": "kick",
-  "6": "hihat",
-  "8": "kick",
-  "10": "kick",
-  "13": "hihat",
-  "18": "kick",
-  "20": "snare",
-  "21": "snare",
-  "22": "hihat",
-  "24": "choir"
- },
- "114_phantasmagoria.mod": {
-  "7": "hihat"
- },
- "116_MOD.digital_expression": {
-  "8": "bass",
-  "9": "bass",
-  "16": "fx",
-  "17": "snare",
-  "18": "bass",
-  "19": "snare",
-  "20": "snare",
-  "21": "strings",
-  "22": "strings",
-  "23": "tom",
-  "24": "kick"
- },
- "117_beat_it!.mod": {
-  "3": "hihat",
-  "4": "hihat"
- },
- "118_brainless_2.chip_tune.mod": {
-  "5": "bass"
- },
- "119_MOD.connected.mod": {
-  "10": "kick",
-  "11": "snare"
- },
- "11_MOD.free_from_guitar": {
-  "4": "keys",
-  "5": "bass",
-  "6": "snare",
-  "8": "kick",
-  "9": "perc",
-  "13": "keys",
-  "19": "guitar",
-  "20": "brass",
-  "21": "brass"
- },
- "120_Armalytelvl4.mod": {
-  "2": "snare",
-  "3": "hihat",
-  "4": "bass",
-  "5": "bass",
-  "6": "bass"
- },
- "121_ASSASIN.MOD": {
-  "3": "strings",
-  "5": "snare",
-  "7": "bass",
-  "8": "bass",
-  "12": "strings",
-  "14": "choir",
-  "15": "choir"
- },
- "122_Armalyteend.mod": {
-  "3": "wood"
- },
- "123_Armalytelvl2.mod": {
-  "2": "snare",
-  "3": "hihat",
-  "5": "bass",
-  "7": "strings"
- },
- "124_Armalytealt.mod": {
-  "2": "snare",
-  "3": "hihat",
-  "4": "strings",
-  "5": "bass",
-  "8": "strings"
- },
- "127_AlienBreed_-_tower_assault.mod": {
-  "6": "snare"
- },
- "128_ARABIAN-4.MOD": {
-  "1": "brass",
-  "2": "bass",
-  "3": "snare",
-  "4": "bell"
- },
- "129_ARABIAN-8.MOD": {
-  "1": "brass",
-  "2": "bass",
-  "3": "snare",
-  "4": "strings"
- },
- "12_laughing_stacks.chip.mod": {
-  "9": "kick",
-  "14": "guitar",
-  "17": "bass",
-  "18": "bass",
-  "19": "bass",
-  "20": "bass",
-  "21": "bass",
-  "22": "bass",
-  "23": "bass",
-  "24": "bass"
- },
- "130_Background_noises.mod": {
-  "5": "kick",
-  "6": "snare"
- },
- "133_ARABIAN-9.MOD": {
-  "1": "chord",
-  "3": "snare",
-  "4": "strings",
-  "5": "snare"
- },
- "134_alfred-Ingame1.mod": {
-  "9": "kick",
-  "13": "hihat"
- },
- "137_Armalytelvl3.mod": {
-  "2": "snare",
-  "5": "bass",
-  "10": "strings"
- },
- "138_ARABIAN-TITLE.MOD": {
-  "2": "snare",
-  "7": "kick",
-  "8": "snare",
-  "10": "choir"
- },
- "139_alfred-Title1.mod": {
-  "9": "kick",
-  "12": "hihat",
-  "13": "hihat",
-  "15": "hihat"
- },
- "140_alfred-Ingame2.mod": {
-  "9": "kick",
-  "13": "hihat"
- },
- "143_ARABIAN-INTROSEQ.MOD": {
-  "8": "snare",
-  "10": "choir",
-  "13": "choir"
- },
- "144_Banshee_-_calm_bottom4.mod": {
-  "12": "kick",
-  "16": "snare"
- },
- "145_ARABIAN-2.MOD": {
-  "1": "kick",
-  "2": "bass",
-  "3": "snare",
-  "4": "strings"
- },
- "146_ARABIAN-6.MOD": {
-  "4": "choir",
-  "5": "bass"
- },
- "147_alfred-Radio1.mod": {
-  "3": "choir",
-  "6": "choir",
-  "9": "kick",
-  "13": "hihat"
- },
- "148_ARABIAN-1.MOD": {
-  "1": "brass",
-  "3": "snare",
-  "4": "strings"
- },
- "149_Aquaventura_Attract.mod": {
-  "2": "lead",
-  "3": "chord",
-  "4": "chord",
-  "5": "chord",
-  "6": "bass"
- },
- "14_megamix(final).mod": {
-  "2": "hihat",
-  "3": "kick"
- },
- "150_Awesome.MOD": {
-  "2": "keys",
-  "5": "chord"
- },
- "151_Anarchy.MOD": {
-  "5": "kick"
- },
- "154_BARRY_LEITCH_-_Hero_Quest_Ingame.mod": {
-  "1": "bell",
-  "2": "kick",
-  "3": "lead",
-  "7": "snare",
-  "10": "bass",
-  "11": "keys",
-  "12": "bass"
- },
- "156_ARABIAN-5.MOD": {
-  "1": "bass",
-  "3": "snare",
-  "4": "strings"
- },
- "157_alfred-Bonus2.mod": {
-  "7": "kick",
-  "8": "hihat"
- },
- "158_ARABIAN-7.MOD": {
-  "1": "brass",
-  "2": "bass",
-  "3": "snare",
-  "4": "strings"
- },
- "159_ALIEN_BREED_3D-GAMEOVER.MOD": {
-  "3": "chord"
- },
- "160_AlienBreed2.MOD": {
-  "13": "snare"
- },
- "161_alfred-Meka1.mod": {
-  "10": "hihat",
-  "11": "hihat"
- },
- "162_Armalytevl1.mod": {
-  "2": "snare",
-  "3": "hihat",
-  "10": "strings"
- },
- "163_Awesome5.mod": {
-  "1": "bass",
-  "3": "kick",
-  "4": "snare",
-  "5": "snare"
- },
- "165_Badlands.MOD": {
-  "2": "bass",
-  "3": "chord",
-  "4": "kick",
-  "5": "bass",
-  "7": "perc",
-  "8": "bass"
- },
- "166_alfred-Endgame1.mod": {
-  "9": "bass",
-  "10": "bass"
- },
- "167_ALIEN_BREED_3D-INGAME.MOD": {
-  "1": "choir",
-  "4": "snare",
-  "5": "kick"
- },
- "168_alfred-Credit2.mod": {
-  "6": "hihat",
-  "7": "kick"
- },
- "16_Mod.AcidJazz": {
-  "1": "snare",
-  "2": "snare",
-  "3": "hihat",
-  "4": "hihat",
-  "5": "hihat",
-  "6": "hihat",
-  "7": "snare",
-  "8": "hihat"
- },
- "170_Awesome4.mod": {
-  "3": "bass"
- },
- "171_Armalytebss.mod": {
-  "2": "brass",
-  "3": "brass",
-  "4": "kick",
-  "5": "snare",
-  "6": "hihat"
- },
- "173_JESTER_-_Wizardry.mod": {
-  "6": "kick",
-  "11": "hihat"
- },
- "174_ecstacy.long_-_dr_awesome.mod": {
-  "5": "snare"
- },
- "175_JESTER_-_Elysium.mod": {
-  "1": "kick",
-  "22": "snare"
- },
- "176_Chinese_dreams.mod": {
-  "1": "kick",
-  "2": "hihat"
- },
- "178_Checknob.mod": {
+ "Checknob.mod": {
   "17": "kick",
   "26": "bass"
  },
- "179_crusade.mod": {
-  "1": "strings",
-  "2": "strings",
-  "4": "bass",
-  "7": "bell",
-  "8": "bass",
-  "10": "brass",
-  "11": "kick",
-  "12": "snare",
-  "13": "perc",
-  "14": "tom"
- },
- "17_1234_rock.mod": {
-  "2": "kick",
-  "4": "snare",
-  "5": "hihat",
-  "6": "snare",
-  "9": "snare"
- },
- "180_heavy_house.mod": {
+ "Chinese_dreams.mod": {
   "1": "kick",
+  "2": "hihat"
+ },
+ "Echoing (classic).Mod": {
   "2": "snare",
-  "4": "perc",
-  "6": "bass",
-  "7": "bell",
-  "8": "brass",
-  "9": "perc"
+  "6": "guitar"
  },
- "181_imperium.mod": {
-  "1": "kick",
-  "2": "hihat",
-  "4": "hihat",
-  "19": "bass"
+ "HEATBEAT - Sainahi Circles (Original).mod": {
+  "12": "kick"
  },
- "182_JESTER_-_Stardust_Memories.mod": {
-  "3": "kick",
-  "4": "hihat",
-  "12": "hihat"
- },
- "183_HEATBEAT_-_Street_Jungle.mod": {
+ "HEATBEAT - Street Jungle.mod": {
   "10": "kick",
   "13": "kick",
   "15": "kick",
   "22": "hihat"
  },
- "184_HEATBEAT_-_Sainahi_Circles_(Original).mod": {
-  "12": "kick"
+ "HMC - Dream Off (mco).mod": {
+  "1": "bass",
+  "2": "hihat",
+  "6": "lead",
+  "8": "kick",
+  "19": "snare",
+  "21": "lead"
  },
- "185_ecstacy.mod": {
-  "5": "snare"
+ "JESTER - Elysium.mod": {
+  "1": "kick",
+  "22": "snare"
  },
- "186_hard-rockin_-_the_judge.mod": {
-  "5": "kick",
-  "6": "snare",
-  "15": "bass"
- },
- "187_Echoing_(classic).Mod": {
-  "2": "snare",
-  "6": "guitar"
- },
- "188_JESTER_-_Molecules_Revenge.mod": {
+ "JESTER - Molecules Revenge.mod": {
   "2": "hihat",
   "3": "hihat",
   "4": "kick",
@@ -579,65 +492,31 @@
   "12": "lead",
   "24": "kick"
  },
- "189_elkon-song.mod": {
-  "3": "perc",
-  "4": "bass",
-  "6": "hihat",
-  "9": "perc"
+ "JESTER - Stardust Memories.mod": {
+  "3": "kick",
+  "4": "hihat",
+  "12": "hihat"
  },
- "190_CODEX_-_Memory_Dust.mod": {
-  "3": "snare"
+ "JESTER - Wizardry.mod": {
+  "6": "kick",
+  "11": "hihat"
  },
- "191_JOGEIR_LILJEDAHL_-_Physical_Presence.mod": {
+ "JOGEIR LILJEDAHL - Physical Presence.mod": {
   "1": "hihat",
   "14": "kick"
  },
- "192_HMC_-_Dream_Off_(mco).mod": {
-  "1": "bass",
-  "2": "hihat",
-  "6": "lead",
-  "8": "kick",
-  "19": "snare",
-  "21": "lead"
- },
- "193_Back_to_the_future_(Original).mod": {
-  "2": "snare",
-  "3": "snare",
-  "5": "hihat",
-  "6": "hihat",
-  "7": "hihat"
- },
- "194_BARRY_LEITCH_-_Lotus_2_(Title).mod": {
-  "1": "kick",
-  "2": "hihat",
-  "3": "hihat",
-  "5": "bass",
-  "11": "brass"
- },
- "195_JOGEIR_LILJEDAHL_-_Signia.mod": {
+ "JOGEIR LILJEDAHL - Signia.mod": {
   "14": "kick",
   "18": "kick",
   "19": "snare",
   "20": "hihat",
   "21": "hihat"
  },
- "196_basehead.mod": {
+ "basehead.mod": {
   "4": "bass",
   "10": "bass"
  },
- "19_WHERENOW.MOD": {
-  "1": "kick",
-  "3": "chord"
- },
- "1_MOD.listen": {
-  "1": "snare",
-  "2": "snare",
-  "4": "kick",
-  "5": "bass",
-  "6": "bass",
-  "8": "kick"
- },
- "200_bass_madness_-_the_judge.mod": {
+ "bass madness - the judge.mod": {
   "1": "bass",
   "2": "bass",
   "3": "bass",
@@ -655,108 +534,317 @@
   "15": "kick",
   "16": "snare"
  },
- "201_CAPTAIN_-_Space_Debris.mod": {
-  "1": "bass",
-  "4": "chord",
-  "5": "chord",
-  "6": "chord",
-  "9": "choir",
-  "10": "chord",
-  "13": "chord",
-  "14": "chord",
-  "18": "brass"
+ "crusade.mod": {
+  "1": "strings",
+  "2": "strings",
+  "4": "bass",
+  "7": "bell",
+  "8": "bass",
+  "10": "brass",
+  "11": "kick",
+  "12": "snare",
+  "13": "perc",
+  "14": "tom"
  },
- "202_erotica.mod": {
+ "ecstacy.long - dr awesome.mod": {
+  "5": "snare"
+ },
+ "ecstacy.mod": {
+  "5": "snare"
+ },
+ "elkon-song.mod": {
+  "3": "perc",
+  "4": "bass",
+  "6": "hihat",
+  "9": "perc"
+ },
+ "erotica.mod": {
   "4": "kick",
   "5": "hihat",
   "11": "hihat"
  },
- "203_Lotus3-3.mod": {
-  "4": "bass",
+ "hard-rockin - the judge.mod": {
   "5": "kick",
   "6": "snare",
-  "7": "bass",
-  "8": "chord"
+  "15": "bass"
  },
- "204_Lotus3-1.mod": {
-  "1": "bass",
-  "5": "kick",
-  "6": "snare"
- },
- "205_machine-main1.mod": {
+ "heavy house.mod": {
   "1": "kick",
   "2": "snare",
-  "3": "hihat",
-  "4": "kick",
-  "9": "snare",
-  "12": "bass",
-  "13": "strings",
-  "22": "guitar",
-  "23": "guitar"
+  "4": "perc",
+  "6": "bass",
+  "7": "bell",
+  "8": "brass",
+  "9": "perc"
  },
- "206_MagicPockets-DointheDo.mod": {
-  "17": "hihat"
+ "imperium.mod": {
+  "1": "kick",
+  "2": "hihat",
+  "4": "hihat",
+  "19": "bass"
  },
- "208_Lotus3-Title.mod": {
+ "ALIEN_BREED_3D-GAMEOVER.MOD": {
+  "3": "chord"
+ },
+ "ALIEN_BREED_3D-INGAME.MOD": {
+  "1": "choir",
+  "4": "snare",
+  "5": "kick"
+ },
+ "ARABIAN-1.MOD": {
+  "1": "brass",
+  "3": "snare",
+  "4": "strings"
+ },
+ "ARABIAN-2.MOD": {
+  "1": "kick",
+  "2": "bass",
+  "3": "snare",
+  "4": "strings"
+ },
+ "ARABIAN-4.MOD": {
+  "1": "brass",
+  "2": "bass",
+  "3": "snare",
+  "4": "bell"
+ },
+ "ARABIAN-5.MOD": {
+  "1": "bass",
+  "3": "snare",
+  "4": "strings"
+ },
+ "ARABIAN-6.MOD": {
+  "4": "choir",
+  "5": "bass"
+ },
+ "ARABIAN-7.MOD": {
+  "1": "brass",
+  "2": "bass",
+  "3": "snare",
+  "4": "strings"
+ },
+ "ARABIAN-8.MOD": {
+  "1": "brass",
+  "2": "bass",
+  "3": "snare",
+  "4": "strings"
+ },
+ "ARABIAN-9.MOD": {
+  "1": "chord",
+  "3": "snare",
+  "4": "strings",
+  "5": "snare"
+ },
+ "ARABIAN-INTROSEQ.MOD": {
+  "8": "snare",
+  "10": "choir",
+  "13": "choir"
+ },
+ "ARABIAN-TITLE.MOD": {
+  "2": "snare",
+  "7": "kick",
+  "8": "snare",
+  "10": "choir"
+ },
+ "ASSASIN.MOD": {
+  "3": "strings",
+  "5": "snare",
+  "7": "bass",
+  "8": "bass",
+  "12": "strings",
+  "14": "choir",
+  "15": "choir"
+ },
+ "AlienBreed - tower assault.mod": {
+  "6": "snare"
+ },
+ "AlienBreed2.MOD": {
+  "13": "snare"
+ },
+ "Anarchy.MOD": {
+  "5": "kick"
+ },
+ "Aquaventura_Attract.mod": {
+  "2": "lead",
+  "3": "chord",
+  "4": "chord",
+  "5": "chord",
+  "6": "bass"
+ },
+ "Armalytealt.mod": {
   "2": "snare",
   "3": "hihat",
   "4": "strings",
-  "6": "keys"
+  "5": "bass",
+  "8": "strings"
  },
- "209_Lotus1-4.mod": {
-  "11": "kick"
+ "Armalytebss.mod": {
+  "2": "brass",
+  "3": "brass",
+  "4": "kick",
+  "5": "snare",
+  "6": "hihat"
  },
- "210_Lotus3-2.mod": {
-  "3": "bass",
-  "6": "kick",
-  "7": "guitar",
-  "10": "snare"
+ "Armalyteend.mod": {
+  "3": "wood"
  },
- "211_machine-main2.mod": {
-  "1": "kick",
+ "Armalytelvl2.mod": {
   "2": "snare",
-  "8": "lead",
-  "10": "snare",
-  "15": "bass"
+  "3": "hihat",
+  "5": "bass",
+  "7": "strings"
  },
- "212_Lotus1-1.mod": {
-  "11": "kick"
+ "Armalytelvl3.mod": {
+  "2": "snare",
+  "5": "bass",
+  "10": "strings"
  },
- "213_LotusTitle.mod": {
-  "11": "kick"
+ "Armalytelvl4.mod": {
+  "2": "snare",
+  "3": "hihat",
+  "4": "bass",
+  "5": "bass",
+  "6": "bass"
  },
- "214_Lotus1-2.mod": {
-  "11": "kick"
+ "Armalytevl1.mod": {
+  "2": "snare",
+  "3": "hihat",
+  "10": "strings"
  },
- "215_ManUnited.MOD": {
+ "Awesome.MOD": {
+  "2": "keys",
+  "5": "chord"
+ },
+ "Awesome4.mod": {
+  "3": "bass"
+ },
+ "Awesome5.mod": {
+  "1": "bass",
   "3": "kick",
   "4": "snare",
-  "5": "bass",
-  "6": "hihat",
-  "7": "brass",
-  "8": "tom"
+  "5": "snare"
  },
- "216_Lotus3-4.mod": {
-  "1": "kick",
-  "2": "snare",
-  "4": "hihat",
-  "5": "bass",
-  "10": "choir"
+ "BARRY LEITCH - Hero Quest Ingame.mod": {
+  "1": "bell",
+  "2": "kick",
+  "3": "lead",
+  "7": "snare",
+  "10": "bass",
+  "11": "keys",
+  "12": "bass"
  },
- "217_LotusTurboChallenge2End.mod": {
-  "1": "hihat",
-  "2": "hihat",
-  "4": "kick",
+ "Background noises.mod": {
   "5": "kick",
-  "7": "keys",
+  "6": "snare"
+ },
+ "Badlands.MOD": {
+  "2": "bass",
+  "3": "chord",
+  "4": "kick",
+  "5": "bass",
+  "7": "perc",
+  "8": "bass"
+ },
+ "Banshee - calm bottom4.mod": {
+  "12": "kick",
+  "16": "snare"
+ },
+ "alfred-Bonus2.mod": {
+  "7": "kick",
+  "8": "hihat"
+ },
+ "alfred-Credit2.mod": {
+  "6": "hihat",
+  "7": "kick"
+ },
+ "alfred-Endgame1.mod": {
+  "9": "bass",
+  "10": "bass"
+ },
+ "alfred-Ingame1.mod": {
+  "9": "kick",
+  "13": "hihat"
+ },
+ "alfred-Ingame2.mod": {
+  "9": "kick",
+  "13": "hihat"
+ },
+ "alfred-Meka1.mod": {
+  "10": "hihat",
+  "11": "hihat"
+ },
+ "alfred-Radio1.mod": {
+  "9": "kick",
+  "13": "hihat"
+ },
+ "alfred-Title1.mod": {
+  "9": "kick",
+  "12": "hihat",
+  "13": "hihat",
+  "15": "hihat"
+ },
+ "- ACES HIGH.MOD": {
+  "14": "speech",
+  "29": "snare"
+ },
+ "-KLISJE.MOD": {
+  "1": "keys",
+  "2": "keys",
+  "3": "keys",
+  "4": "keys",
+  "5": "bass",
+  "6": "snare",
+  "8": "kick",
+  "9": "hihat",
+  "10": "keys",
+  "12": "guitar",
+  "13": "guitar",
+  "14": "guitar",
+  "15": "guitar"
+ },
+ "1234_rock.mod": {
+  "2": "kick",
+  "4": "snare",
+  "5": "hihat",
+  "6": "snare",
+  "9": "snare"
+ },
+ "2good2be.mod": {
+  "5": "hihat",
+  "6": "kick"
+ },
+ "3HardToBeSoft.mod": {
+  "9": "snare"
+ },
+ "Alienway.mod": {
+  "5": "kick",
+  "6": "hihat",
+  "8": "kick",
+  "10": "kick",
+  "13": "hihat",
+  "18": "kick",
+  "20": "snare",
+  "21": "snare",
+  "22": "hihat",
+  "24": "choir"
+ },
+ "Another Day.mod": {
+  "6": "kick",
+  "7": "snare",
   "8": "hihat",
+  "11": "hihat"
+ },
+ "BOPFLOP.MOD": {
+  "9": "bell"
+ },
+ "Crazytrain.mod": {
+  "1": "kick",
+  "11": "guitar",
   "13": "bass",
-  "15": "snare"
+  "14": "cymbal",
+  "16": "guitar"
  },
- "218_Lotus1-3.mod": {
-  "11": "kick"
- },
- "21_DIGTHIS.MOD": {
+ "DIGTHIS.MOD": {
   "1": "kick",
   "2": "perc",
   "3": "bass",
@@ -766,293 +854,35 @@
   "7": "strings",
   "8": "bass"
  },
- "220_MOD.summertime.mod": {
-  "4": "snare",
-  "5": "bass",
-  "6": "hihat",
-  "7": "keys",
-  "8": "bass"
- },
- "222_Bomberman_-_by_eike_Steffen.mod": {
-  "9": "snare"
- },
- "223_MOD.discomix.mod": {
-  "1": "bass",
-  "4": "fx",
-  "10": "kick",
-  "11": "snare",
-  "12": "hihat",
-  "23": "tom"
- },
- "224_joy.mod": {
-  "6": "kick",
-  "7": "hihat",
-  "15": "kick",
-  "16": "snare"
- },
- "225_summertime(1).mod": {
-  "7": "kick",
-  "11": "hihat",
-  "20": "snare"
- },
- "226_Smooth_chillin'._feat_Beastie.mod": {
-  "8": "fx"
- },
- "228_megamix_vol.1.mod": {
-  "1": "snare",
-  "2": "snare",
-  "6": "hihat",
-  "7": "hihat",
-  "26": "keys"
- },
- "229_golden.mod": {
-  "6": "kick"
- },
- "22_MOD.boppy-joff": {
-  "7": "bass",
-  "9": "choir",
-  "10": "kick",
-  "11": "snare",
-  "12": "hihat"
- },
- "230_just_like_that.mod": {
-  "7": "cymbal"
- },
- "232_anarchy.mod": {
-  "6": "kick"
- },
- "233_body_funk.mod": {
-  "9": "kick",
-  "11": "kick",
-  "12": "kick",
-  "15": "snare",
-  "20": "snare",
-  "21": "snare",
-  "25": "kick",
-  "26": "snare",
-  "27": "snare",
-  "28": "kick",
-  "29": "snare"
- },
- "234_foreverchange.mod": {
-  "1": "hihat",
-  "4": "kick",
-  "5": "wood",
-  "6": "wood",
-  "10": "keys",
-  "11": "keys",
-  "18": "keys",
-  "19": "keys",
-  "20": "keys",
-  "21": "keys",
-  "23": "keys"
- },
- "235_happy_fellows_jamm.mod": {
-  "5": "guitar",
-  "15": "brass",
-  "21": "kick"
- },
- "236_substance_introcut.mod": {
-  "8": "kick"
- },
- "237_enjoyone.mod": {
-  "9": "kick",
-  "10": "kick",
-  "12": "kick",
-  "14": "kick",
-  "15": "snare",
-  "16": "snare"
- },
- "239_paradise(1).mod": {
-  "2": "kick",
-  "8": "cymbal",
-  "10": "bass",
-  "23": "cymbal",
-  "28": "keys",
-  "30": "bass"
- },
- "23_acidjaz2.mod": {
+ "ELYSIUM.MOD": {
   "1": "kick",
-  "2": "kick",
-  "5": "hihat",
-  "6": "kick",
-  "7": "snare",
-  "8": "snare",
-  "17": "snare",
-  "26": "snare"
+  "22": "snare"
  },
- "240_Tori_Amos_-_cornflake-girl.mod": {
-  "25": "keys"
- },
- "241_supermarket_music.mod": {
-  "17": "kick",
-  "18": "hihat"
- },
- "27_WINNING.MOD": {
+ "EMOTHERO.MOD": {
+  "1": "kick",
   "2": "snare",
-  "3": "hihat",
-  "4": "kick",
-  "5": "bass"
+  "6": "snare",
+  "7": "hihat"
  },
- "29_2good2be.mod": {
-  "5": "hihat",
-  "6": "kick"
- },
- "2_MOD.rage_tune.mod": {
-  "3": "kick",
+ "Lost.mod": {
   "4": "snare",
-  "10": "snare"
+  "8": "hihat",
+  "9": "hihat",
+  "10": "guitar",
+  "13": "guitar",
+  "14": "guitar",
+  "23": "keys",
+  "25": "bass"
  },
- "30_3HardToBeSoft.mod": {
-  "9": "snare"
- },
- "34_MOD.moments.mod": {
-  "23": "hihat",
-  "29": "kick"
- },
- "36_pleasure.mod": {
-  "10": "kick",
-  "13": "snare"
- },
- "38_dirt.mod": {
-  "1": "hihat",
-  "3": "hihat",
-  "5": "snare",
-  "15": "bass"
- },
- "39_acid_jazz_part1.mod": {
-  "1": "snare",
-  "2": "snare",
-  "3": "hihat",
-  "4": "hihat",
-  "5": "hihat",
-  "6": "hihat",
-  "7": "snare",
-  "8": "hihat"
- },
- "3_spring_breeze.mod": {
-  "4": "kick"
- },
- "41_fby_thriller.mod": {
-  "6": "keys"
- },
- "42_jamaica_vibes-or.mod": {
-  "2": "kick",
-  "14": "snare"
- },
- "43_MOD.love_song": {
-  "2": "snare",
-  "5": "hihat",
-  "8": "bass",
-  "20": "perc",
-  "28": "snare"
- },
- "44_pacific.mod": {
-  "5": "kick",
-  "10": "hihat",
-  "12": "snare"
- },
- "45_magic_tubes.mod": {
-  "15": "hihat"
- },
- "47_MOD.humanoid_dance": {
-  "1": "kick"
- },
- "4_a-rooty-tooty.mod": {
-  "2": "kick",
-  "3": "snare",
-  "4": "kick"
- },
- "50_butterfl.mod": {
-  "5": "bass",
-  "7": "lead"
- },
- "51_megamix-90ii.mod": {
-  "6": "strings",
-  "7": "guitar",
-  "15": "bass",
-  "18": "snare",
-  "19": "tom",
-  "20": "bass",
-  "21": "strings",
-  "22": "guitar",
-  "31": "strings"
- },
- "52_MOD.CALIBRA_PT": {
+ "MOD.CALIBRA PT": {
   "5": "snare"
  },
- "54_MOD.tiny_tunes": {
-  "10": "kick",
-  "11": "snare",
-  "15": "hihat",
-  "17": "hihat"
- },
- "55_aquarius.mod": {
-  "5": "kick",
-  "6": "snare"
- },
- "57_resonance2.mod": {
-  "3": "strings",
-  "4": "strings",
-  "6": "bass",
-  "8": "kick",
-  "9": "snare",
-  "10": "hihat",
-  "12": "keys",
-  "13": "bass"
- },
- "58_MOD.ig-metall.metal": {
-  "2": "snare",
-  "6": "bell",
-  "7": "cymbal"
- },
- "59_MOD.rythm-of-life": {
-  "5": "bass",
-  "8": "kick",
-  "9": "chord",
-  "10": "chord",
-  "11": "snare",
-  "12": "snare",
-  "13": "keys",
-  "15": "keys"
- },
- "60_fields(1).mod": {
-  "5": "kick",
-  "6": "snare",
-  "8": "snare",
-  "9": "snare"
- },
- "62_MOD.Highland_Traveller.mod": {
+ "MOD.Highland Traveller.mod": {
   "8": "guitar",
-  "13": "hihat",
+  "9": "beat",
   "24": "kick"
  },
- "63_groovy_girl.mod": {
-  "14": "kick",
-  "16": "kick",
-  "20": "snare",
-  "22": "hihat"
- },
- "67_anette1.mod": {
-  "1": "chord",
-  "2": "chord",
-  "4": "bell",
-  "13": "hihat",
-  "14": "snare",
-  "15": "snare",
-  "20": "bass"
- },
- "6_mod.blow_your_speakers!": {
-  "11": "bass"
- },
- "71_around_you.disco.mod": {
-  "2": "snare",
-  "3": "snare",
-  "4": "hihat",
-  "6": "bass",
-  "12": "cymbal"
- },
- "73_MOD.Hold_On_I'm_Coming.mod": {
+ "MOD.Hold On I'm Coming.mod": {
   "2": "chord",
   "3": "chord",
   "4": "chord",
@@ -1063,32 +893,184 @@
   "11": "kick",
   "12": "snare"
  },
- "76_aspirine.mod": {
+ "MOD.KILLING Flute (Arabian Nights Tribute).mod": {
+  "7": "kick"
+ },
+ "MOD.boppy-joff": {
+  "7": "bass",
+  "10": "kick",
+  "11": "snare",
+  "12": "hihat"
+ },
+ "MOD.connected.mod": {
+  "10": "kick",
+  "11": "snare"
+ },
+ "MOD.darkside o.the moon.mod": {
+  "6": "snare",
+  "12": "snare",
+  "14": "kick",
+  "25": "speech"
+ },
+ "MOD.digital expression": {
+  "8": "bass",
+  "9": "bass",
+  "16": "fx",
+  "17": "snare",
+  "18": "bass",
+  "19": "snare",
+  "20": "snare",
+  "21": "strings",
+  "22": "strings",
+  "23": "tom",
+  "24": "kick"
+ },
+ "MOD.free from guitar": {
+  "4": "keys",
+  "5": "bass",
+  "6": "snare",
+  "8": "kick",
+  "9": "perc",
+  "13": "keys",
+  "19": "guitar",
+  "20": "brass",
+  "21": "brass"
+ },
+ "MOD.humanoid dance": {
+  "1": "kick"
+ },
+ "MOD.ig-metall.metal": {
+  "2": "snare",
+  "6": "bell",
+  "7": "cymbal"
+ },
+ "MOD.listen": {
+  "1": "snare",
+  "2": "snare",
+  "4": "kick",
+  "5": "bass",
+  "6": "bass",
+  "8": "kick"
+ },
+ "MOD.love song": {
+  "5": "hihat",
+  "8": "bass",
+  "20": "perc",
+  "28": "snare"
+ },
+ "MOD.moments.mod": {
+  "23": "hihat",
+  "29": "kick"
+ },
+ "MOD.rage tune.mod": {
+  "3": "kick",
+  "4": "snare",
+  "10": "snare"
+ },
+ "MOD.rythm-of-life": {
+  "5": "bass",
+  "8": "kick",
+  "9": "chord",
+  "10": "chord",
+  "11": "speech",
+  "12": "snare",
+  "13": "keys",
+  "15": "keys"
+ },
+ "MOD.tiny tunes": {
+  "10": "kick",
+  "11": "snare",
+  "15": "hihat",
+  "17": "hihat"
+ },
+ "Mod.AcidJazz": {
+  "1": "snare",
+  "2": "snare",
+  "3": "hihat",
+  "4": "hihat",
+  "5": "hihat",
+  "6": "hihat",
+  "7": "snare",
+  "8": "hihat"
+ },
+ "WHERENOW.MOD": {
+  "1": "kick",
+  "3": "chord"
+ },
+ "WINNING.MOD": {
+  "2": "snare",
+  "3": "hihat",
+  "4": "kick",
+  "5": "bass"
+ },
+ "a-rooty-tooty.mod": {
+  "2": "kick",
+  "3": "snare",
+  "4": "kick"
+ },
+ "acid_jazz_part1.mod": {
+  "1": "snare",
+  "2": "snare",
+  "3": "hihat",
+  "4": "hihat",
+  "5": "hihat",
+  "6": "hihat",
+  "7": "snare",
+  "8": "hihat"
+ },
+ "acid_jazz_part2.mod": {
+  "1": "kick",
+  "2": "kick",
+  "5": "hihat",
+  "6": "kick",
+  "7": "snare",
+  "8": "snare",
+  "17": "snare",
+  "26": "snare"
+ },
+ "acidjaz2.mod": {
+  "1": "kick",
+  "2": "kick",
+  "5": "hihat",
+  "6": "kick",
+  "7": "snare",
+  "8": "snare",
+  "17": "snare",
+  "26": "snare"
+ },
+ "alicia.mod": {
+  "1": "kick",
+  "2": "snare",
+  "3": "hihat",
+  "4": "strings",
+  "5": "bass"
+ },
+ "anette-3.mod": {
+  "4": "bell",
+  "15": "snare",
+  "20": "bass"
+ },
+ "anette1.mod": {
+  "4": "bell",
+  "15": "snare",
+  "20": "bass"
+ },
+ "aquarius.mod": {
+  "5": "kick",
+  "6": "snare"
+ },
+ "around_you.disco.mod": {
+  "2": "snare",
+  "3": "snare",
+  "4": "hihat",
+  "6": "bass",
+  "12": "cymbal"
+ },
+ "aspirine.mod": {
   "2": "bass",
   "5": "bass"
  },
- "77_EMOTHERO.MOD": {
-  "1": "kick",
-  "2": "snare",
-  "6": "snare",
-  "7": "hihat"
- },
- "79_MOD.darkside_o.the_moon.mod": {
-  "6": "snare",
-  "12": "snare",
-  "14": "kick"
- },
- "80_Lost.mod": {
-  "4": "snare",
-  "8": "hihat",
-  "9": "hihat",
-  "10": "guitar",
-  "13": "guitar",
-  "14": "guitar",
-  "23": "keys",
-  "25": "bass"
- },
- "81_bad_motherfucker.mod": {
+ "bad motherfucker.mod": {
   "1": "bass",
   "2": "bass",
   "5": "snare",
@@ -1097,30 +1079,134 @@
   "11": "hihat",
   "12": "snare"
  },
- "83_i_got_you_babe.mod": {
+ "beat it!.mod": {
+  "3": "hihat",
+  "4": "hihat"
+ },
+ "brainless_2.chip tune.mod": {
+  "5": "bass"
+ },
+ "butterfl.mod": {
+  "5": "bass",
+  "7": "lead"
+ },
+ "clown.mod": {
+  "2": "kick",
+  "3": "chord",
+  "4": "hihat",
+  "9": "hihat"
+ },
+ "cortouchka.rock.mod": {
+  "2": "hihat"
+ },
+ "dirt.mod": {
+  "1": "hihat",
+  "3": "hihat",
+  "5": "snare",
+  "15": "bass"
+ },
+ "fby thriller.mod": {
+  "6": "keys"
+ },
+ "fields of green.mod": {
+  "23": "beat"
+ },
+ "fields(1).mod": {
+  "5": "kick",
+  "6": "snare",
+  "8": "snare",
+  "9": "snare"
+ },
+ "groovy_girl.mod": {
+  "14": "kick",
+  "16": "kick",
+  "20": "snare",
+  "22": "hihat"
+ },
+ "hnk-thriller.mod": {
+  "2": "snare"
+ },
+ "i got you babe.mod": {
   "17": "kick",
   "19": "hihat",
   "20": "hihat"
  },
- "84_mod.DistantCall": {
+ "jamaica_vibes-or.mod": {
+  "2": "kick",
+  "14": "snare"
+ },
+ "kaupunki(dizzy).mod": {
+  "4": "hihat",
+  "5": "kick",
+  "7": "snare",
+  "8": "snare",
+  "13": "kick",
+  "16": "hihat",
+  "19": "hihat"
+ },
+ "laughing_stacks.chip.mod": {
+  "9": "kick",
+  "14": "guitar",
+  "17": "bass",
+  "18": "bass",
+  "19": "bass",
+  "20": "bass",
+  "21": "bass",
+  "22": "bass",
+  "23": "bass",
+  "24": "bass"
+ },
+ "magic tubes.mod": {
+  "15": "hihat"
+ },
+ "megamix(final).mod": {
+  "2": "hihat",
+  "3": "kick"
+ },
+ "megamix-90ii.mod": {
+  "6": "strings",
+  "7": "guitar",
+  "15": "bass",
+  "18": "snare",
+  "19": "tom",
+  "20": "bass",
+  "21": "strings",
+  "22": "guitar",
+  "31": "strings"
+ },
+ "mod.DistantCall": {
   "5": "keys"
  },
- "86_alicia.mod": {
-  "1": "kick",
-  "2": "snare",
-  "3": "hihat",
-  "4": "strings",
-  "5": "bass"
+ "mod.Emotions.classic funk": {
+  "6": "hihat"
  },
- "87_BOPFLOP.MOD": {
-  "9": "bell"
+ "mod.blow your speakers!": {
+  "11": "bass"
  },
- "89_fields_of_green.mod": {
-  "18": "kick",
-  "20": "kick",
-  "21": "hihat"
+ "mod.uralvolga": {
+  "5": "wood",
+  "6": "wood",
+  "19": "cymbal",
+  "20": "brass",
+  "21": "bell",
+  "22": "guitar",
+  "24": "brass",
+  "25": "brass",
+  "26": "wood"
  },
- "90_rastaman.mod": {
+ "pacific.mod": {
+  "5": "kick",
+  "10": "hihat",
+  "12": "snare"
+ },
+ "phantasmagoria.mod": {
+  "7": "hihat"
+ },
+ "pleasure.mod": {
+  "10": "kick",
+  "13": "snare"
+ },
+ "rastaman.mod": {
   "2": "keys",
   "3": "keys",
   "4": "keys",
@@ -1128,26 +1214,1719 @@
   "6": "hihat",
   "10": "bass"
  },
- "93_Another_Day.mod": {
+ "resonance2.mod": {
+  "3": "strings",
+  "4": "strings",
+  "6": "bass",
+  "8": "kick",
+  "9": "snare",
+  "10": "hihat",
+  "12": "keys",
+  "13": "bass"
+ },
+ "run away.mod": {
+  "2": "bass",
+  "3": "snare",
+  "5": "kick",
+  "6": "brass",
+  "7": "strings",
+  "9": "hihat",
+  "13": "perc",
+  "14": "cymbal",
+  "15": "cymbal"
+ },
+ "spring_breeze.mod": {
+  "4": "kick"
+ },
+ "the last flight.mod": {
+  "2": "kick",
+  "5": "snare",
+  "7": "hihat",
+  "12": "bass",
+  "13": "bass",
+  "21": "bass",
+  "22": "bass"
+ },
+ " - move_your_body (funky flute).mod": {
+  "7": "kick",
+  "10": "snare",
+  "11": "snare",
+  "12": "hihat",
+  "27": "kick",
+  "29": "hihat",
+  "30": "snare"
+ },
+ "## delight ##.mod": {
+  "7": "kick",
+  "8": "kick",
+  "9": "kick"
+ },
+ "(Carthage_DFC)end game.mod": {
+  "2": "brass"
+ },
+ "(Carthage_DFC)title.mod": {
+  "2": "brass",
+  "3": "choir",
+  "4": "chord",
+  "5": "chord",
+  "6": "strings"
+ },
+ "(Carthage_DFC)victory.mod": {
+  "2": "brass",
+  "3": "choir",
+  "6": "strings"
+ },
+ "(Elysium Background.mod": {
+  "2": "strings",
+  "12": "brass",
+  "25": "wood",
+  "28": "chord",
+  "31": "strings"
+ },
+ "(Elysium menu.mod": {
+  "2": "strings",
+  "18": "guitar"
+ },
+ "(Legend Of Rome)sconfitta.mod": {
+  "9": "chord",
+  "10": "chord"
+ },
+ "(Rome AD 92)brit3.mod": {
+  "9": "kick"
+ },
+ "(elysium title.mod": {
+  "2": "strings",
+  "12": "brass",
+  "25": "wood",
+  "28": "chord",
+  "31": "strings"
+ },
+ "- .2b-funky.mod": {
+  "7": "kick",
+  "8": "hihat",
+  "9": "hihat",
+  "10": "hihat",
+  "12": "hihat",
+  "13": "kick",
+  "16": "kick"
+ },
+ "- .bombtrack.mod": {
+  "5": "chord",
   "6": "kick",
+  "8": "snare",
+  "9": "hihat",
+  "12": "snare"
+ },
+ "- 2CB_Venus.mod": {
+  "4": "kick",
+  "5": "snare",
+  "7": "snare"
+ },
+ "- 88_funky_avenue.mod": {
+  "10": "kick",
+  "12": "snare"
+ },
+ "- Soul_kitchen.mod": {
+  "3": "hihat"
+ },
+ "- Toe Touch - by Beathawk.mod": {
+  "22": "hihat",
+  "25": "kick",
+  "26": "snare",
+  "27": "hihat",
+  "28": "hihat"
+ },
+ "- ancient_days.groove funk.mod": {
+  "1": "speech",
+  "2": "speech",
+  "4": "hihat",
+  "5": "kick",
+  "6": "bass",
+  "7": "speech",
+  "8": "speech",
+  "11": "keys",
+  "13": "speech",
+  "17": "snare",
+  "18": "snare",
+  "19": "hihat"
+ },
+ "- announce - by Quincy.mod": {
+  "27": "snare"
+ },
+ "- dance-now!.by Mr Root.mod": {
+  "6": "kick"
+ },
+ "- delirious -by deelite.mod": {
+  "6": "kick"
+ },
+ "- everybody.mod": {
+  "4": "bass",
+  "6": "beat"
+ },
+ "- fabulous freddie - by deelite.mod": {
+  "9": "kick",
+  "11": "kick",
+  "17": "kick",
+  "24": "snare",
+  "30": "kick"
+ },
+ "- groove_technics.mod": {
+  "1": "kick",
+  "2": "snare",
+  "3": "hihat",
+  "4": "snare",
+  "7": "kick",
+  "8": "kick",
+  "11": "hihat",
+  "17": "speech",
+  "21": "wood"
+ },
+ "- living proof.mod": {
+  "18": "snare"
+ },
+ "- long term.mod": {
+  "1": "kick",
+  "3": "speech",
+  "5": "beat",
+  "12": "kick"
+ },
+ "- something good.mod": {
+  "14": "kick",
+  "15": "hihat",
+  "16": "snare",
+  "18": "snare",
+  "19": "snare",
+  "21": "hihat"
+ },
+ "- spice_4_the_flavour.mod": {
+  "13": "kick",
+  "25": "kick"
+ },
+ "- srm - do it now.mod": {
+  "2": "snare",
+  "3": "hihat",
+  "4": "hihat",
+  "8": "hihat"
+ },
+ "- strobo_-_electricity.mod": {
+  "16": "kick",
+  "18": "snare"
+ },
+ "- strobo_-_winter. - bass jazz funk.mod": {
+  "8": "kick"
+ },
+ "- take it to the top.mod": {
+  "1": "kick",
+  "2": "hihat",
+  "6": "hihat",
+  "9": "hihat",
+  "12": "snare",
+  "15": "hihat",
+  "27": "hihat",
+  "28": "hihat",
+  "29": "hihat"
+ },
+ "- wild again.mod": {
+  "16": "kick",
+  "22": "tom",
+  "26": "guitar",
+  "28": "kick",
+  "29": "bass",
+  "30": "bass"
+ },
+ "-- HOLLYWOOD - Spilt Milk.mod": {
+  "3": "snare"
+ },
+ "-- brown sugar.mod": {
+  "2": "hihat",
+  "5": "hihat",
+  "7": "kick",
+  "8": "snare",
+  "11": "strings",
+  "13": "tom",
+  "15": "cymbal",
+  "21": "snare"
+ },
+ "-- get high together.mod": {
+  "1": "kick"
+ },
+ "-- groove (dance).mod": {
+  "7": "kick",
+  "11": "kick",
+  "14": "kick"
+ },
+ "-- the kids.mod": {
+  "2": "kick",
+  "3": "hihat",
+  "10": "hihat",
+  "22": "hihat",
+  "30": "hihat",
+  "31": "hihat"
+ },
+ "-Jet scrambled eggs.mod": {
+  "1": "kick",
+  "4": "hihat"
+ },
+ "12th street rag.mod": {
+  "1": "keys",
+  "3": "keys",
+  "5": "keys",
+  "6": "keys"
+ },
+ "70s interlude.mod": {
+  "1": "kick",
+  "2": "kick",
+  "4": "snare"
+ },
+ "Baritone pacific.mod": {
+  "9": "hihat"
+ },
+ "Classical - Dolce Viola - hnk-dont cry remix.mod": {
+  "9": "hihat",
+  "10": "snare"
+ },
+ "Col7.mod": {
+  "1": "kick",
+  "2": "kick",
+  "5": "kick"
+ },
+ "Cosmogol brothers.mod": {
+  "2": "bass",
+  "3": "hihat",
+  "7": "keys",
+  "12": "snare",
+  "14": "bass"
+ },
+ "Days_of_the_week.mod": {
+  "25": "guitar"
+ },
+ "Earth is a golfball.mod": {
+  "1": "kick"
+ },
+ "Faerghail.mod": {
+  "1": "strings",
+  "3": "guitar",
+  "5": "hihat"
+ },
+ "Feel - by strobo (jazz funk).mod": {
+  "8": "kick",
+  "9": "snare",
+  "24": "snare"
+ },
+ "Got to be funky.mod": {
+  "9": "snare"
+ },
+ "Groove Caliber (70s chill jazz).mod": {
+  "3": "kick",
+  "4": "kick",
+  "8": "snare",
+  "24": "kick"
+ },
+ "Groove bombastic.mod": {
+  "10": "kick",
+  "18": "keys",
+  "19": "keys",
+  "20": "keys",
+  "21": "snare",
+  "22": "tom",
+  "23": "hihat",
+  "26": "keys",
+  "27": "cymbal",
+  "29": "keys"
+ },
+ "Groovy (demo) elektri'x'funk - remix.mod": {
+  "6": "hihat",
+  "10": "hihat",
+  "11": "kick",
+  "12": "kick"
+ },
+ "HQ2INGM.MOD": {
+  "4": "bell",
+  "5": "choir",
+  "6": "beat"
+ },
+ "INTERPHACE - Phunq Ethereal.mod": {
+  "17": "kick",
+  "19": "hihat"
+ },
+ "Iceicefx.mod": {
+  "7": "hihat",
+  "8": "hihat"
+ },
+ "IndependenceWay.MOD": {
+  "1": "kick",
+  "2": "kick"
+ },
+ "Justice_96_remix.mod": {
+  "10": "speech",
+  "12": "kick",
+  "16": "snare"
+ },
+ "MELOMANIAC - Resolution.mod": {
+  "22": "snare"
+ },
+ "MOD.!jazzflower.bebop.mod": {
+  "23": "kick",
+  "24": "kick"
+ },
+ "MOD.'it's_me'.mod": {
+  "13": "kick",
+  "16": "hihat"
+ },
+ "MOD.BANANA_FLIP.mod": {
+  "18": "snare"
+ },
+ "MOD.Magnum  Suxx mix.mod": {
+  "1": "hihat",
+  "4": "kick"
+ },
+ "MOD.Strawberry Fields.mod": {
   "7": "snare",
   "8": "hihat",
-  "11": "hihat"
+  "9": "hihat",
+  "10": "hihat"
  },
- "94_cortouchka.rock.mod": {
-  "2": "hihat"
+ "MOD.jump around.mod": {
+  "13": "kick",
+  "15": "chord"
  },
- "95_mod.Emotions.classic_funk": {
-  "6": "hihat"
+ "MOD.langsam(sledge-h.)groove cherry.mod": {
+  "1": "beat",
+  "5": "strings",
+  "6": "chord",
+  "7": "chord",
+  "9": "strings",
+  "10": "strings",
+  "12": "bass",
+  "18": "brass"
  },
- "99_hnk-thriller.mod": {
+ "MOD.new_sensation.mod": {
+  "1": "kick",
+  "2": "kick",
+  "5": "kick",
+  "6": "hihat",
+  "7": "hihat",
+  "11": "snare",
+  "15": "snare",
+  "24": "kick"
+ },
+ "MOD.oldskool.impressions.mod": {
+  "8": "kick",
+  "18": "hihat",
+  "21": "hihat",
+  "22": "snare",
+  "24": "hihat"
+ },
+ "MOD.venus.mod": {
+  "6": "snare"
+ },
+ "MorellisLesson.MOD": {
+  "2": "kick",
+  "3": "kick"
+ },
+ "OCCSANG.MOD": {
+  "1": "tom",
+  "3": "perc"
+ },
+ "PowerMonger.MOD": {
+  "2": "strings",
+  "7": "brass"
+ },
+ "RoadToBoston.MOD": {
+  "1": "kick",
+  "2": "kick",
+  "5": "kick"
+ },
+ "SuccessfulCampaign.MOD": {
+  "1": "kick",
+  "2": "kick",
+  "5": "kick"
+ },
+ "TheReveille.MOD": {
+  "1": "kick",
+  "2": "kick"
+ },
+ "ToArms.MOD": {
+  "1": "kick",
+  "2": "kick",
+  "5": "kick"
+ },
+ "UA1T.MOD": {
+  "2": "kick",
+  "3": "snare",
+  "4": "tom",
+  "5": "brass"
+ },
+ "UAA.MOD": {
+  "1": "brass",
+  "2": "bass",
+  "6": "hihat",
+  "9": "strings",
+  "10": "guitar"
+ },
+ "UIT.MOD": {
+  "2": "strings",
+  "3": "strings",
+  "5": "kick",
+  "7": "bass",
+  "8": "hihat"
+ },
+ "ULD.MOD": {
+  "1": "strings",
+  "2": "kick",
+  "4": "snare",
+  "5": "hihat",
+  "11": "bass",
+  "12": "bass"
+ },
+ "ULD1.MOD": {
+  "1": "strings",
+  "2": "kick",
+  "4": "snare",
+  "5": "hihat",
+  "11": "bass",
+  "12": "bass"
+ },
+ "UNDERGROUND.MOD": {
+  "5": "snare",
+  "10": "tom"
+ },
+ "UNIVERSE.MOD": {
+  "7": "bass",
+  "9": "strings"
+ },
+ "UNVEILED.MOD": {
+  "2": "kick",
+  "3": "snare"
+ },
+ "UPFRONT3.MOD": {
+  "7": "kick",
+  "10": "snare"
+ },
+ "UPFRONTT.MOD": {
+  "6": "hihat",
+  "13": "snare",
+  "14": "kick"
+ },
+ "UPFRONT_.MOD": {
+  "7": "kick",
+  "10": "snare"
+ },
+ "UPONME.MOD": {
+  "1": "kick",
+  "2": "snare",
+  "3": "hihat",
+  "5": "strings",
+  "6": "strings",
+  "7": "bass",
+  "8": "brass",
+  "10": "strings",
+  "13": "fx",
+  "14": "fx"
+ },
+ "UPRISING.MOD": {
+  "5": "kick"
+ },
+ "UPSIDDWN.MOD": {
+  "1": "bass",
+  "2": "kick",
+  "3": "snare",
+  "6": "chord"
+ },
+ "UPSIDE.MOD": {
+  "1": "bass",
+  "3": "kick",
+  "5": "hihat",
+  "6": "brass",
+  "7": "strings"
+ },
+ "URAN_CHR.MOD": {
+  "8": "snare"
+ },
+ "USA92.MOD": {
+  "1": "kick",
+  "3": "kick"
+ },
+ "V42.MOD": {
+  "1": "keys",
+  "2": "keys",
+  "3": "snare",
+  "4": "snare",
+  "5": "kick",
+  "6": "bass"
+ },
+ "V48.MOD": {
+  "1": "perc",
+  "3": "perc",
+  "4": "snare",
+  "5": "kick",
+  "6": "bass",
+  "8": "keys"
+ },
+ "VARA.MOD": {
+  "1": "keys",
+  "2": "bass",
+  "8": "snare"
+ },
+ "VECTORBA.MOD": {
+  "1": "kick",
+  "3": "bass",
+  "9": "hihat"
+ },
+ "VERTIGO1.MOD": {
+  "3": "hihat",
+  "4": "hihat",
+  "7": "keys"
+ },
+ "VICTIM.MOD": {
+  "2": "choir",
+  "3": "snare",
+  "6": "bass",
+  "9": "kick"
+ },
+ "VIOLENCE.MOD": {
+  "1": "bass",
+  "2": "strings",
+  "4": "kick",
+  "5": "snare"
+ },
+ "VIOLENT.MOD": {
+  "3": "kick"
+ },
+ "VIR.MOD": {
+  "2": "kick",
+  "3": "snare",
+  "4": "brass",
+  "5": "keys"
+ },
+ "VIRGIN.MOD": {
+  "2": "kick",
+  "3": "snare",
+  "4": "brass",
+  "5": "keys"
+ },
+ "VIRUSMOD.MOD": {
+  "1": "kick",
+  "2": "snare",
+  "7": "snare",
+  "14": "bass",
+  "15": "hihat",
+  "16": "snare",
+  "17": "kick",
+  "18": "snare",
+  "19": "hihat",
+  "20": "hihat",
+  "24": "bass",
+  "25": "speech"
+ },
+ "VIS.MOD": {
+  "2": "strings",
+  "4": "bass",
+  "5": "strings",
+  "6": "keys",
+  "9": "perc",
+  "14": "speech",
+  "15": "strings"
+ },
+ "VIVAREV.MOD": {
+  "1": "guitar",
+  "2": "guitar",
+  "3": "guitar",
+  "4": "guitar",
+  "5": "guitar",
+  "6": "guitar",
+  "7": "bell",
+  "8": "guitar",
+  "9": "kick",
+  "10": "snare",
+  "11": "tom",
+  "12": "bass"
+ },
+ "VOL4.MOD": {
+  "1": "kick",
+  "3": "perc"
+ },
+ "VOYAGE.MOD": {
+  "1": "guitar",
+  "2": "chord",
+  "3": "chord",
+  "5": "kick",
+  "6": "bass",
+  "8": "strings",
+  "9": "strings",
+  "12": "guitar",
+  "13": "hihat",
+  "14": "strings"
+ },
+ "VOYAGER.MOD": {
+  "6": "kick"
+ },
+ "VYPEOUT.MOD": {
+  "8": "bass",
+  "12": "hihat",
+  "14": "bass"
+ },
+ "WAIT4U.MOD": {
+  "17": "kick",
+  "23": "kick"
+ },
+ "WAITING.MOD": {
+  "1": "kick",
+  "2": "snare",
+  "5": "chord",
+  "7": "chord",
+  "8": "chord",
+  "9": "strings",
+  "10": "keys",
+  "11": "brass",
+  "13": "bell"
+ },
+ "WALKAWAY.MOD": {
+  "2": "kick",
+  "9": "bass",
+  "11": "guitar"
+ },
+ "WALKMAN.MOD": {
+  "1": "kick",
+  "2": "snare",
+  "3": "guitar",
+  "5": "guitar",
+  "6": "guitar",
+  "7": "guitar"
+ },
+ "WALKMAN3.MOD": {
+  "1": "kick",
+  "2": "snare",
+  "3": "guitar",
+  "5": "guitar",
+  "6": "guitar",
+  "7": "guitar"
+ },
+ "WALKMANS.MOD": {
+  "1": "kick",
+  "2": "snare",
+  "4": "guitar",
+  "6": "cymbal"
+ },
+ "WAR.MOD": {
+  "3": "kick",
+  "7": "brass"
+ },
+ "WAS.MOD": {
+  "5": "snare",
+  "6": "strings",
+  "9": "kick",
+  "10": "strings",
+  "11": "snare",
+  "13": "hihat"
+ },
+ "WAVE.MOD": {
+  "3": "wood",
+  "4": "snare",
+  "6": "tom",
+  "7": "hihat",
+  "10": "fx",
+  "12": "bass"
+ },
+ "WEAKNOIS.MOD": {
+  "1": "bass",
+  "2": "kick",
+  "5": "snare",
+  "7": "guitar",
+  "9": "guitar"
+ },
+ "WEAPON.MOD": {
+  "1": "kick",
   "2": "snare"
  },
- "9_Crazytrain.mod": {
+ "WEIRDDAY.MOD": {
+  "5": "kick",
+  "6": "bass",
+  "8": "strings",
+  "10": "snare"
+ },
+ "WEIRD_LI.MOD": {
+  "5": "snare"
+ },
+ "WELCOME.MOD": {
+  "2": "bass",
+  "14": "chord"
+ },
+ "WELCOME1.MOD": {
+  "1": "strings",
+  "2": "bass",
+  "7": "hihat",
+  "11": "cymbal",
+  "12": "snare",
+  "14": "strings"
+ },
+ "WERETHED.MOD": {
+  "2": "bass",
+  "3": "keys",
+  "4": "kick",
+  "5": "snare",
+  "8": "bell",
+  "9": "strings",
+  "10": "chord",
+  "11": "chord"
+ },
+ "WERWERU.MOD": {
+  "8": "bass",
+  "9": "snare"
+ },
+ "WESTERN.MOD": {
+  "5": "bass",
+  "6": "strings",
+  "8": "strings",
+  "9": "strings",
+  "10": "strings",
+  "11": "strings"
+ },
+ "WE_RE.MOD": {
+  "2": "kick",
+  "6": "snare",
+  "7": "bass",
+  "8": "bass",
+  "11": "bass",
+  "15": "bass",
+  "18": "chord",
+  "19": "chord"
+ },
+ "WHATEVUH.MOD": {
+  "2": "snare",
+  "4": "kick"
+ },
+ "WHATSUP.MOD": {
+  "1": "strings",
+  "4": "brass",
+  "6": "snare",
+  "7": "perc"
+ },
+ "WHE.MOD": {
+  "2": "kick",
+  "7": "bass",
+  "11": "snare",
+  "12": "hihat",
+  "15": "speech",
+  "16": "snare",
+  "17": "snare",
+  "20": "keys"
+ },
+ "WHITE.MOD": {
+  "19": "keys"
+ },
+ "WHY.MOD": {
   "1": "kick",
-  "11": "guitar",
+  "7": "brass",
   "13": "bass",
-  "14": "cymbal",
+  "14": "snare",
+  "15": "strings",
+  "16": "speech"
+ },
+ "WILDCOPP.MOD": {
+  "1": "kick",
+  "2": "snare",
+  "3": "perc",
+  "4": "bass",
+  "5": "bell",
+  "11": "speech",
+  "12": "strings",
+  "14": "speech",
+  "15": "strings"
+ },
+ "WILDRAP.MOD": {
+  "1": "snare",
+  "3": "bass",
+  "4": "snare",
+  "5": "keys",
+  "7": "brass",
+  "8": "keys"
+ },
+ "WILDWEST (chill groove).MOD": {
+  "1": "keys",
+  "2": "keys",
+  "3": "keys",
+  "4": "keys",
+  "5": "keys",
+  "6": "keys",
+  "10": "bass",
+  "13": "snare",
+  "14": "perc",
+  "15": "cymbal",
+  "18": "strings",
+  "19": "wood"
+ },
+ "WINGS.MOD": {
+  "2": "strings",
+  "4": "brass"
+ },
+ "WIR.MOD": {
+  "2": "kick",
+  "6": "snare",
+  "7": "bass",
+  "8": "bass",
+  "11": "bass",
+  "15": "bass",
+  "18": "chord",
+  "19": "chord"
+ },
+ "WIZ2.MOD": {
+  "1": "bass",
+  "2": "kick",
+  "3": "snare",
+  "4": "hihat",
+  "5": "strings",
+  "15": "bell"
+ },
+ "WIZARD.MOD": {
+  "1": "bass",
+  "3": "wood",
+  "4": "cymbal",
+  "5": "bell",
+  "12": "perc"
+ },
+ "WOBBLER.MOD": {
+  "7": "kick",
+  "8": "snare"
+ },
+ "WOLFEN.MOD": {
+  "19": "snare",
+  "29": "snare",
+  "30": "bass"
+ },
+ "WONDERTE.MOD": {
+  "1": "kick",
+  "6": "snare",
+  "10": "perc"
+ },
+ "WOODSPIR.MOD": {
+  "1": "kick",
+  "2": "strings",
+  "3": "strings",
+  "6": "snare",
+  "8": "hihat",
+  "9": "guitar",
+  "10": "cymbal",
+  "11": "tom"
+ },
+ "WOTROCKO.MOD": {
+  "1": "kick",
+  "3": "bass",
+  "6": "snare",
+  "7": "perc",
+  "8": "snare"
+ },
+ "WOULD.MOD": {
+  "6": "hihat",
+  "7": "snare",
+  "8": "bass"
+ },
+ "WOW.MOD": {
+  "1": "bass",
+  "4": "strings"
+ },
+ "WOWOW.MOD": {
+  "2": "bass",
+  "5": "kick",
+  "6": "snare",
+  "7": "hihat",
+  "10": "bass",
+  "12": "strings"
+ },
+ "WRLD_WAR.MOD": {
+  "1": "bass",
+  "6": "strings",
+  "8": "strings",
+  "12": "brass",
+  "14": "bass",
+  "15": "cymbal",
+  "17": "guitar",
+  "19": "cymbal"
+ },
+ "WTNEWRK5.MOD": {
+  "2": "bass",
+  "3": "hihat",
+  "7": "lead",
+  "8": "guitar",
+  "9": "keys"
+ },
+ "Who needs a tune.mod": {
+  "7": "bass",
+  "9": "bass"
+ },
+ "XENOPHOB.MOD": {
+  "3": "keys",
+  "4": "bass",
+  "5": "kick",
+  "6": "snare",
+  "7": "bass",
+  "9": "strings",
+  "10": "keys",
+  "11": "speech"
+ },
+ "XTASE.MOD": {
+  "1": "kick",
+  "4": "snare",
+  "7": "bass",
+  "8": "bass",
+  "10": "guitar",
+  "18": "speech"
+ },
+ "YorkFusiliers.MOD": {
+  "2": "kick",
+  "3": "kick"
+ },
+ "a way of living.mod": {
+  "3": "kick",
+  "5": "hihat"
+ },
+ "absolute nirvana.mod": {
+  "4": "hihat",
+  "5": "snare",
+  "9": "hihat",
+  "19": "kick"
+ },
+ "all you need.mod": {
+  "5": "snare",
+  "6": "kick",
+  "9": "snare",
+  "16": "snare"
+ },
+ "ambient house rmix.mod": {
+  "12": "speech",
+  "14": "hihat",
+  "18": "kick"
+ },
+ "animals - gabba_mix - by DeeJay Jones.mod": {
+  "4": "snare"
+ },
+ "anthem(1).mod": {
+  "3": "snare",
+  "4": "kick",
+  "9": "hihat"
+ },
+ "aqua.mod": {
+  "4": "kick",
+  "12": "kick",
+  "22": "snare"
+ },
+ "aquarius(2).mod": {
+  "6": "hihat",
+  "9": "kick",
+  "10": "kick",
+  "16": "snare",
+  "18": "hihat",
+  "19": "snare",
+  "20": "snare"
+ },
+ "back for good!.ed2.mod": {
+  "6": "kick",
+  "8": "hihat",
+  "10": "snare"
+ },
+ "back in town(1).mod": {
+  "4": "guitar",
+  "9": "kick",
+  "12": "hihat"
+ },
+ "beach of jamaica.mod": {
+  "17": "hihat",
+  "18": "hihat",
+  "22": "snare",
+  "27": "bass"
+ },
+ "ben w out walking.mod": {
+  "1": "kick",
+  "17": "hihat",
+  "18": "kick",
+  "19": "snare",
+  "20": "kick",
+  "22": "kick",
+  "23": "snare",
+  "24": "kick",
+  "25": "kick"
+ },
+ "better get it.mod": {
+  "4": "hihat",
+  "5": "snare",
+  "6": "hihat",
+  "9": "snare",
+  "10": "hihat",
+  "12": "snare",
+  "30": "hihat"
+ },
+ "big boy now.mod": {
+  "3": "kick",
+  "4": "snare",
+  "6": "cymbal"
+ },
+ "black beauty.mod": {
+  "2": "kick",
+  "5": "snare"
+ },
+ "boombastic anadune.mod": {
+  "6": "kick"
+ },
+ "bounce.mod": {
+  "1": "beat",
+  "26": "snare",
+  "28": "kick",
+  "29": "kick",
+  "31": "snare"
+ },
+ "breakfast.mod": {
+  "3": "kick",
+  "6": "kick",
+  "7": "kick",
+  "10": "hihat"
+ },
+ "chart-track.mod": {
+  "6": "kick"
+ },
+ "crazy,sexy,cool..mod": {
+  "10": "kick",
+  "16": "kick",
+  "17": "kick",
+  "23": "kick"
+ },
+ "dabuzz.mod": {
+  "3": "snare",
+  "12": "beat"
+ },
+ "dedication to dub.mod": {
+  "9": "tom",
+  "14": "kick"
+ },
+ "desire - drum and bass dub.mod": {
+  "11": "beat",
+  "20": "snare"
+ },
+ "do the funky.mod": {
+  "7": "snare",
+  "10": "snare"
+ },
+ "dreams.mod": {
+  "11": "snare",
+  "13": "snare",
+  "15": "hihat",
+  "16": "snare"
+ },
+ "dub-party3.mod": {
+  "19": "bass",
+  "25": "kick"
+ },
+ "dubby_categories.mod": {
+  "13": "kick",
+  "14": "kick",
+  "15": "beat",
+  "16": "kick",
+  "18": "snare",
+  "19": "kick",
+  "20": "snare",
+  "21": "kick"
+ },
+ "dubhead.mod": {
+  "3": "bass",
+  "5": "kick"
+ },
+ "dum-ba-ragga.mod": {
+  "9": "kick"
+ },
+ "dupa kosciotrupa.mod": {
+  "2": "snare",
+  "8": "hihat",
+  "10": "hihat",
+  "11": "kick"
+ },
+ "ecstacy in...erm.mod": {
+  "2": "kick"
+ },
+ "electro-groove.mod": {
+  "20": "snare"
+ },
+ "fields.mod": {
+  "5": "kick"
+ },
+ "fleetwood.mod": {
+  "2": "hihat",
+  "3": "hihat"
+ },
+ "flowerchild - by deelite.mod": {
+  "2": "kick",
+  "3": "kick",
+  "5": "speech"
+ },
+ "flying high.mod": {
+  "2": "tom",
+  "13": "kick",
+  "15": "snare"
+ },
+ "follow me.mod": {
+  "15": "snare"
+ },
+ "fun-k-adelic.mod": {
+  "8": "snare",
+  "18": "kick",
+  "20": "snare"
+ },
+ "funk it.mod": {
+  "1": "kick",
+  "3": "guitar",
+  "4": "hihat",
+  "5": "snare",
+  "7": "snare",
+  "8": "bass",
+  "9": "bass",
+  "10": "tom",
+  "14": "bass",
+  "22": "hihat"
+ },
+ "funky beat(1).mod": {
+  "1": "kick",
+  "2": "snare",
+  "6": "keys",
+  "8": "snare",
+  "10": "bass",
+  "11": "bass",
+  "13": "strings",
+  "17": "chord"
+ },
+ "funky piano.mod": {
+  "3": "kick",
+  "6": "hihat",
+  "7": "hihat",
+  "11": "choir"
+ },
+ "funky trousers.mod": {
+  "11": "kick",
+  "13": "hihat",
+  "15": "snare",
+  "17": "kick",
+  "28": "snare"
+ },
+ "gangsta cho0n.mod": {
+  "3": "kick",
+  "4": "kick",
+  "9": "snare",
+  "10": "kick"
+ },
+ "get with it mama.mod": {
+  "3": "snare",
+  "4": "hihat",
+  "6": "hihat",
+  "9": "strings"
+ },
+ "gnomish-jean.mod": {
+  "13": "kick"
+ },
+ "goa x.mod": {
+  "5": "beat",
+  "7": "beat",
+  "9": "beat",
+  "10": "beat",
+  "25": "beat"
+ },
+ "golden b.o.d.mod": {
+  "1": "kick",
+  "4": "kick",
+  "10": "kick",
+  "11": "kick",
+  "17": "kick",
+  "22": "kick",
+  "23": "kick",
+  "24": "kick",
+  "25": "kick"
+ },
+ "good vibrations.mod": {
+  "6": "bell",
+  "7": "hihat",
+  "9": "guitar",
+  "11": "kick"
+ },
+ "grooooooove.mod": {
+  "2": "kick",
+  "4": "hihat"
+ },
+ "groove thang'.mod": {
+  "1": "bass",
+  "2": "bass",
+  "4": "bass",
+  "7": "keys",
+  "8": "keys",
+  "9": "snare",
+  "11": "hihat",
+  "12": "keys",
+  "13": "keys",
+  "14": "keys",
+  "15": "keys"
+ },
+ "groove yard.mod": {
+  "7": "chord",
+  "11": "hihat",
+  "13": "hihat",
+  "18": "kick",
+  "19": "hihat",
+  "20": "snare"
+ },
+ "groovev5.mod": {
+  "5": "bass",
+  "6": "bass",
+  "7": "bass",
+  "8": "bass",
+  "9": "brass",
+  "11": "brass",
+  "12": "brass",
+  "13": "chord",
+  "14": "chord",
+  "15": "chord",
+  "19": "beat",
+  "24": "guitar",
+  "25": "guitar",
+  "26": "guitar",
+  "28": "guitar",
+  "29": "guitar"
+ },
+ "groovin' moomin.mod": {
+  "7": "kick",
+  "10": "snare",
+  "12": "kick",
+  "13": "snare",
+  "14": "hihat"
+ },
+ "happy movement.mod": {
+  "2": "guitar",
+  "7": "guitar",
+  "11": "guitar",
+  "14": "beat",
   "16": "guitar"
+ },
+ "heat (da mix).mod": {
+  "25": "snare",
+  "26": "snare",
+  "28": "snare",
+  "29": "hihat",
+  "30": "hihat"
+ },
+ "hey mr dee jay - Jungle remix.mod": {
+  "12": "beat",
+  "13": "fx"
+ },
+ "hey skat.long.mod": {
+  "10": "snare",
+  "11": "snare",
+  "14": "snare",
+  "21": "strings",
+  "24": "hihat",
+  "27": "hihat",
+  "28": "hihat"
+ },
+ "imagination.mod": {
+  "15": "kick"
+ },
+ "in livin' color.mod": {
+  "8": "kick",
+  "9": "hihat",
+  "11": "kick",
+  "20": "kick",
+  "22": "snare",
+  "24": "perc",
+  "26": "speech",
+  "27": "hihat",
+  "28": "kick"
+ },
+ "in the mood - by chronic.mod": {
+  "3": "hihat",
+  "10": "kick",
+  "11": "snare"
+ },
+ "irc-compo.by prodigy.mod": {
+  "2": "snare",
+  "5": "snare",
+  "7": "hihat",
+  "8": "hihat",
+  "12": "kick"
+ },
+ "it is fantastic.mod": {
+  "1": "kick",
+  "3": "hihat"
+ },
+ "jah cometh in dub+.mod": {
+  "3": "kick"
+ },
+ "jah way.mod": {
+  "6": "hihat",
+  "10": "speech"
+ },
+ "joyride(1).mod": {
+  "1": "snare",
+  "3": "snare",
+  "4": "kick",
+  "5": "kick",
+  "7": "kick"
+ },
+ "jsingame.mod": {
+  "4": "snare"
+ },
+ "jstitle.mod": {
+  "4": "snare",
+  "21": "kick",
+  "22": "snare"
+ },
+ "knulla-kuk by Moby.mod": {
+  "1": "snare",
+  "3": "kick",
+  "4": "hihat",
+  "5": "hihat",
+  "16": "lead"
+ },
+ "m.rap-on.mod": {
+  "1": "kick",
+  "2": "kick",
+  "4": "kick",
+  "5": "kick"
+ },
+ "malabar.by moby.mod": {
+  "9": "kick",
+  "11": "hihat",
+  "12": "snare",
+  "14": "snare"
+ },
+ "mighty voodoo.mod": {
+  "1": "kick"
+ },
+ "miles away.mod": {
+  "2": "hihat",
+  "3": "hihat",
+  "4": "hihat",
+  "9": "hihat",
+  "13": "hihat",
+  "14": "hihat",
+  "19": "kick",
+  "20": "snare"
+ },
+ "mobyle - From Arte Demo.mod": {
+  "13": "kick",
+  "14": "hihat",
+  "15": "hihat"
+ },
+ "money.quiet funk.mod": {
+  "4": "snare",
+  "5": "snare",
+  "6": "hihat",
+  "7": "snare"
+ },
+ "move the groove.mod": {
+  "2": "snare",
+  "3": "kick",
+  "4": "hihat",
+  "8": "kick",
+  "19": "snare"
+ },
+ "my one and only (piano).mod": {
+  "5": "keys"
+ },
+ "nathan - drum and bass dub.mod": {
+  "2": "speech",
+  "4": "snare",
+  "8": "snare",
+  "10": "bass",
+  "13": "speech"
+ },
+ "neuro shamanix.mod": {
+  "6": "kick",
+  "23": "hihat",
+  "24": "snare"
+ },
+ "no smoking funk.mod": {
+  "1": "kick",
+  "2": "snare",
+  "5": "hihat",
+  "10": "guitar",
+  "11": "bass",
+  "16": "snare",
+  "19": "kick"
+ },
+ "now and forever.mod": {
+  "21": "snare",
+  "22": "snare",
+  "23": "snare"
+ },
+ "old movie tribute.mod": {
+  "19": "bass",
+  "27": "kick",
+  "28": "snare",
+  "30": "hihat"
+ },
+ "ordinary.mod": {
+  "9": "kick"
+ },
+ "out of control!.mod": {
+  "24": "keys",
+  "26": "kick",
+  "28": "snare"
+ },
+ "paradise(3).mod": {
+  "3": "wood",
+  "5": "kick",
+  "20": "hihat",
+  "21": "hihat",
+  "23": "snare"
+ },
+ "paranoimia. jaco96.mod": {
+  "1": "kick",
+  "6": "hihat"
+ },
+ "peace.mod": {
+  "2": "kick",
+  "7": "kick",
+  "10": "chord",
+  "11": "kick",
+  "12": "kick",
+  "15": "kick",
+  "16": "kick",
+  "19": "snare",
+  "21": "snare"
+ },
+ "planet earth.mod": {
+  "2": "beat",
+  "16": "snare",
+  "29": "kick",
+  "31": "kick"
+ },
+ "prayer(2).mod": {
+  "4": "brass"
+ },
+ "progressive-funk.by moby.mod": {
+  "6": "kick",
+  "7": "hihat"
+ },
+ "pusherman.mod": {
+  "12": "kick",
+  "15": "kick",
+  "20": "kick"
+ },
+ "ragga bizznis.mod": {
+  "3": "hihat",
+  "17": "kick",
+  "18": "snare",
+  "19": "snare"
+ },
+ "ray.mod": {
+  "3": "kick",
+  "4": "hihat",
+  "6": "snare",
+  "8": "hihat"
+ },
+ "reach the top.mod": {
+  "13": "kick",
+  "15": "hihat",
+  "16": "guitar",
+  "17": "guitar",
+  "18": "guitar",
+  "27": "brass"
+ },
+ "real love.mod": {
+  "1": "kick",
+  "2": "snare",
+  "4": "hihat",
+  "5": "kick",
+  "11": "kick",
+  "12": "kick",
+  "13": "kick",
+  "14": "kick"
+ },
+ "relax.mod": {
+  "4": "kick",
+  "6": "hihat",
+  "7": "hihat"
+ },
+ "release me (rel).mod": {
+  "14": "kick",
+  "23": "chord"
+ },
+ "release.mod": {
+  "5": "hihat",
+  "6": "hihat",
+  "7": "hihat",
+  "10": "hihat"
+ },
+ "reload - by U4IA.mod": {
+  "2": "kick"
+ },
+ "ruff timez.mod": {
+  "1": "kick",
+  "3": "hihat",
+  "4": "kick",
+  "5": "hihat",
+  "6": "snare",
+  "17": "speech"
+ },
+ "saturday m0rning.by panik.mod": {
+  "16": "snare"
+ },
+ "selton.mod": {
+  "1": "kick",
+  "2": "snare",
+  "3": "hihat",
+  "4": "hihat",
+  "5": "kick",
+  "23": "kick",
+  "24": "snare",
+  "25": "snare"
+ },
+ "session.mod": {
+  "2": "snare",
+  "8": "hihat",
+  "10": "hihat",
+  "12": "kick"
+ },
+ "sexy you.mod": {
+  "8": "kick",
+  "15": "kick"
+ },
+ "shaggy dog story.mod": {
+  "24": "kick",
+  "25": "kick",
+  "27": "kick",
+  "29": "snare",
+  "30": "kick"
+ },
+ "soar - by substance.mod": {
+  "7": "kick",
+  "12": "kick"
+ },
+ "soft_parade.mod": {
+  "8": "snare",
+  "9": "kick"
+ },
+ "sometimes(1).mod": {
+  "26": "snare",
+  "28": "hihat",
+  "30": "hihat"
+ },
+ "soul.mod": {
+  "3": "kick",
+  "4": "speech",
+  "5": "kick",
+  "6": "kick",
+  "7": "kick",
+  "9": "kick"
+ },
+ "srm - dance of victory.mod": {
+  "1": "kick",
+  "4": "hihat",
+  "8": "hihat"
+ },
+ "srm - history.mod": {
+  "4": "kick"
+ },
+ "stay.mod": {
+  "5": "hihat",
+  "27": "kick"
+ },
+ "stomp - by Substance.mod": {
+  "1": "kick",
+  "3": "kick",
+  "8": "kick",
+  "9": "speech",
+  "13": "kick",
+  "22": "beat"
+ },
+ "summertime.mod": {
+  "4": "kick",
+  "18": "snare",
+  "24": "tom"
+ },
+ "supernova in b ass.mod": {
+  "1": "kick",
+  "3": "snare",
+  "4": "snare",
+  "6": "kick",
+  "7": "kick",
+  "10": "kick",
+  "11": "snare"
+ },
+ "swamp vamp.mod": {
+  "21": "kick",
+  "23": "hihat"
+ },
+ "sweet dreams v01.mod": {
+  "1": "kick",
+  "2": "snare",
+  "3": "hihat"
+ },
+ "sweet erotica.mod": {
+  "6": "kick",
+  "7": "hihat",
+  "9": "snare"
+ },
+ "sweet harmony.mod": {
+  "4": "kick"
+ },
+ "take it eazy.mod": {
+  "6": "kick",
+  "9": "hihat"
+ },
+ "tomorrow(1).mod": {
+  "1": "kick",
+  "2": "snare",
+  "3": "hihat",
+  "4": "hihat",
+  "5": "bass",
+  "9": "wood"
+ },
+ "tomorrow.mod": {
+  "8": "hihat",
+  "9": "hihat",
+  "12": "hihat"
+ },
+ "toto.mod": {
+  "2": "bass",
+  "3": "bass",
+  "9": "keys"
+ },
+ "true(1).mod": {
+  "1": "hihat",
+  "9": "snare",
+  "10": "hihat"
+ },
+ "unity in dub.mod": {
+  "13": "snare",
+  "14": "snare",
+  "16": "snare",
+  "22": "snare",
+  "23": "snare",
+  "24": "kick"
+ },
+ "vibrations - case and flippetto.mod": {
+  "21": "snare",
+  "27": "hihat"
+ },
+ "volume.mod": {
+  "1": "kick",
+  "3": "hihat",
+  "7": "hihat",
+  "8": "hihat",
+  "9": "snare"
+ },
+ "weekend.mod": {
+  "3": "snare",
+  "12": "kick",
+  "15": "kick"
+ },
+ "white night.mod": {
+  "1": "kick",
+  "3": "hihat",
+  "5": "tom",
+  "6": "tom",
+  "9": "bass",
+  "10": "guitar",
+  "11": "bass"
+ },
+ "who knows.by Mr Root.mod": {
+  "5": "kick",
+  "6": "hihat",
+  "7": "snare",
+  "14": "snare"
  }
 }

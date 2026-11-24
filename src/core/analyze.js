@@ -3,9 +3,10 @@
 import { analyzeSample, sampleUsage, realNote, DRUM_CLASSES } from './features.js';
 import { classify } from './classifier.js';
 import { CLASS_PRESETS, PRESET_BY_ID } from './library.js';
+import { decomposeBeat, voiceWavetable } from './beat.js';
 
 export const WEIGHT = { lead: 10, wood: 9, brass: 8, bass: 9, kick: 8, snare: 8, guitar: 8, keys: 7, strings: 6, chord: 6,
-  bell: 6, pad: 5, choir: 5, tom: 5, perc: 4, hihat: 3.5, cymbal: 3, fx: 2, speech: 0 };
+  bell: 6, pad: 5, choir: 5, tom: 5, perc: 4, hihat: 3.5, cymbal: 3, fx: 2, speech: 6, beat: 8 };
 
 const ATT_T = [0.002, 0.008, 0.016, 0.024, 0.038, 0.056, 0.068, 0.08, 0.1, 0.25, 0.5, 0.8, 1, 3, 5, 8];
 const DEC_T = [0.006, 0.024, 0.048, 0.072, 0.114, 0.168, 0.204, 0.24, 0.3, 0.75, 1.5, 2.4, 3, 9, 15, 24];
@@ -34,8 +35,16 @@ export function rankPresets(cls, d) {
 }
 
 // fitted ADSR from the sample's envelope
-export function fitADSR(preset, info, s) {
-  if (preset.cat === 'drums' || preset.drum || preset.cat === 'fx' || preset.id === 'mute') return { ad: preset.ad, sr: preset.sr };
+export function fitADSR(preset, info, s, cls) {
+  if (preset.cat === 'drums' || preset.drum || preset.cat === 'fx' || preset.cat === 'auto' || preset.id === 'mute') return { ad: preset.ad, sr: preset.sr };
+  const longOne = !s.looped && s.data.length / info.rate;
+  if ((cls === 'strings' || cls === 'pad' || cls === 'choir' || preset.cat === 'strings' || preset.cat === 'pad') && (s.looped || longOne > 0.6)) {
+    // long strings / pads: keep the swell, hold the note for the whole sample, release like its tail
+    const a = nearest(ATT_T, Math.max(0.002, info.attack * 0.9));
+    const S = Math.max(10, Math.round(Math.min(1, Math.max(0.6, info.sustain * 1.4)) * 15));
+    const rel = s.looped ? 0.3 : Math.max(0.1, Math.min(2.4, info.decay * 0.6, longOne * 0.4));
+    return { ad: (a << 4) | 0x0, sr: (S << 4) | nearest(DEC_T, rel) };
+  }
   const pa = preset.ad >> 4, pdk = preset.ad & 15, ps = preset.sr >> 4, pr = preset.sr & 15;
   const a = info.attack > 0.03 ? nearest(ATT_T, info.attack * 0.8) : Math.min(pa, 1);
   let sus = s.looped ? Math.round(Math.min(1, info.sustain * 1.35) * 15) : (info.sustain > 0.45 ? Math.round(info.sustain * 15) : 0);
@@ -60,7 +69,7 @@ export function analyzeMod(mod, replay, { seed = 1, creativity = 0, memory = [] 
     if (creativity > 0 && ranking[1].p > ranking[0].p * (1 - 0.5 * creativity) && R() < 0.5 * creativity) cls = ranking[1].cls;
     if (cls === 'chord' && !info.chord) cls = ranking.find(r => r.cls !== 'chord').cls;
     // only mute as speech when the model is quite sure
-    if (cls === 'speech' && ranking[0].p < 0.55) cls = ranking.find(r => r.cls !== 'speech' && r.cls !== 'chord').cls;
+    if (cls === 'speech' && ranking[0].p < 0.45) cls = ranking.find(r => r.cls !== 'speech' && r.cls !== 'chord').cls;
     // learned user choice for a very similar sample overrides everything
     let learned = null;
     if (memory && memory.length) {
@@ -69,18 +78,30 @@ export function analyzeMod(mod, replay, { seed = 1, creativity = 0, memory = [] 
       if (!(bd < 0.02 * features.length)) learned = null;
       if (learned) cls = learned.cls || cls;
     }
+    // a drum loop that does not split into hits is treated as its loudest drum
+    let beat = null, voice = null;
+    if (cls === 'beat') {
+      // only a real drum loop: confident model, played on few notes, several drum hits
+      const pb = ranking.find(r => r.cls === 'beat').p;
+      beat = (pb >= 0.4 && u.distinct <= 3 && info.durS > 0.35) ? decomposeBeat(s, info) : null;
+      if (beat && (beat.hits.length < 3 || beat.hits.length / Math.max(0.1, beat.duration) > 14)) beat = null;
+      if (!beat) cls = ranking.find(r => r.cls !== 'beat' && r.cls !== 'speech').cls;
+    }
+    if (cls === 'speech') voice = voiceWavetable(s, info);
     const d = descriptor(info, s);
     const presets = rankPresets(cls, d);
     let pick = 0;
     if (creativity > 0) { const r = R(); if (r < 0.45 * creativity) pick = 1; else if (r < 0.6 * creativity) pick = 2; }
     pick = Math.min(pick, presets.length - 1);
+    if (cls === 'speech' && voice) { const k = presets.indexOf('voice_auto'); if (k > 0) presets.splice(k, 1); if (k !== 0) presets.unshift('voice_auto'); if (!creativity) pick = 0; }
     if (learned && PRESET_BY_ID[learned.preset]) { presets.unshift(learned.preset); pick = 0; }
     // note mapping: median real note -> sensible octave for the SID
-    const notes = u.periods.map(p => realNote(info, p)).filter(n => n !== null);
+    const ninfo = voice ? { ...info, f0norm: voice.ref } : info;
+    const notes = u.periods.map(p => realNote(ninfo, p)).filter(n => n !== null);
     let med = notes.length ? notes.slice().sort((a, b) => a - b)[notes.length >> 1] : null;
     let shift = 0;
     if (med !== null) {
-      const [lo, hi] = cls === 'bass' ? [21, 50] : DRUM_CLASSES.has(cls) ? [0, 95] : (cls === 'pad' || cls === 'chord' || cls === 'strings') ? [36, 76] : [40, 84];
+      const [lo, hi] = cls === 'bass' ? [21, 50] : DRUM_CLASSES.has(cls) ? [0, 95] : (cls === 'pad' || cls === 'chord' || cls === 'strings' || cls === 'speech') ? [36, 76] : [40, 84];
       while (med + shift < lo) shift += 12;
       while (med + shift > hi) shift -= 12;
     }
@@ -88,7 +109,7 @@ export function analyzeMod(mod, replay, { seed = 1, creativity = 0, memory = [] 
       index: s.index, name: s.name, used: true, features, info, ranking, cls, presets, presetId: presets[pick],
       noteShift: shift, medianNote: med, hits: u.hits, weight: WEIGHT[cls] ?? 5,
       sustained: s.looped || info.sustain > 0.35, lengthSec: s.looped ? 1e9 : s.data.length / info.rate,
-      chord: (cls === 'chord' && info.chord) ? info.chord : null, learned: !!learned,
+      chord: (cls === 'chord' && info.chord) ? info.chord : null, learned: !!learned, beat, voice,
     });
   }
   return { samples: out, usage };

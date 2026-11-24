@@ -8,7 +8,7 @@ from scipy.signal import lfilter
 
 rng = np.random.default_rng(1234)
 CLASSES = ['kick', 'snare', 'hihat', 'cymbal', 'tom', 'perc', 'bass', 'lead', 'pad', 'strings', 'brass',
-           'wood', 'guitar', 'keys', 'bell', 'choir', 'chord', 'fx', 'speech']
+           'wood', 'guitar', 'keys', 'bell', 'choir', 'chord', 'fx', 'speech', 'beat']
 PAULA = 3546895
 
 def U(a, b): return rng.uniform(a, b)
@@ -203,6 +203,23 @@ def gen(cls):
         else: x = noise(n) * (0.5 + 0.5 * np.sin(2 * np.pi * U(3, 20) * t)) + osc('sq', U(50, 200), n, R) * 0.3
         x *= adsr(n, R, U(0.001, 0.8), U(0.2, 2), U(0, 0.8))
         use = dict(distinct=rng.integers(1, 4), range=U(0, 5), dur=rng.choice([4, 8, 16, 32]), density=U(0.002, 0.03))
+    elif cls == 'beat':
+        bpm = U(80, 175); step = 60.0 / bpm / 4; nsteps = int(rng.choice([8, 16, 16, 32]))
+        n = int(R * step * nsteps); x = np.zeros(n)
+        kit = {}
+        for d in ('kick', 'snare', 'hihat'):
+            q, m = gen(d); h = q.astype(float) / 127
+            idx = (np.arange(int(len(h) * R / m['rate'])) * m['rate'] / R).astype(int)
+            kit[d] = h[np.clip(idx, 0, len(h) - 1)]
+        pat = {'kick': [i for i in range(nsteps) if i % 8 == 0 or rng.random() < 0.12],
+               'snare': [i for i in range(nsteps) if i % 8 == 4 or rng.random() < 0.06],
+               'hihat': [i for i in range(nsteps) if (i % 2 == 0 and rng.random() < 0.9) or rng.random() < 0.15]}
+        for d, steps in pat.items():
+            for st in steps:
+                a = int(st * step * R); h = kit[d][:n - a] * U(0.6, 1.0)
+                x[a:a + len(h)] += h
+        loop = rng.random() < 0.7
+        use = dict(distinct=rng.integers(1, 3), range=U(0, 2), dur=rng.choice([16, 32, 64]), density=U(0.005, 0.06))
     elif cls == 'speech':
         n = int(R * U(0.5, 3.0)); t = np.arange(n) / R
         f0c = U(90, 220) * (1 + 0.15 * np.sin(2 * np.pi * U(0.5, 2) * t) + 0.05 * np.sin(2 * np.pi * U(3, 6) * t))
@@ -225,9 +242,9 @@ def gen(cls):
     L = len(q)
     ls, ll = 0, 0
     if loop:
-        ls = int(L * U(0.2, 0.7)) & ~1; ll = (L - ls) & ~1
+        ls = (0 if cls == 'beat' else int(L * U(0.2, 0.7))) & ~1; ll = (L - ls) & ~1
         if ll < 4: ls, ll = 0, 0
-    beatr = {'kick': (0.6, 1), 'snare': (0.3, 1), 'hihat': (0.15, 0.6), 'cymbal': (0.5, 1), 'pad': (0.6, 1), 'strings': (0.5, 1), 'chord': (0.4, 1), 'speech': (0.4, 1), 'fx': (0.3, 1)}.get(cls, (0.2, 0.8))
+    beatr = {'kick': (0.6, 1), 'snare': (0.3, 1), 'hihat': (0.15, 0.6), 'cymbal': (0.5, 1), 'pad': (0.6, 1), 'strings': (0.5, 1), 'chord': (0.4, 1), 'speech': (0.4, 1), 'fx': (0.3, 1), 'beat': (0.8, 1)}.get(cls, (0.2, 0.8))
     use['beat'] = U(*beatr)
     use = {k: (int(v) if k in ('distinct', 'dur') else float(v)) for k, v in use.items()}
     period = PAULA / (2 * R)

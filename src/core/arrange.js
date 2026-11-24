@@ -4,7 +4,8 @@ import { PAULA_PAL } from './mod.js';
 import { realNote, DRUM_CLASSES } from './features.js';
 import { PRESET_BY_ID, presetName } from './library.js';
 import { GTSong, REST, KEYOFF, MAX_PATTERNS } from './gtsong.js';
-import { fitADSR, rng } from './analyze.js';
+import { fitADSR, rng, WEIGHT } from './analyze.js';
+import { decomposeBeat, voiceWavetable } from './beat.js';
 
 const PAL = 985248;
 export const FREQ = Array.from({ length: 96 }, (_, n) => Math.min(0xFFFF, Math.round(440 * 2 ** ((n - 57) / 12) * 16777216 / PAL)));
@@ -17,21 +18,44 @@ export function convertSong(mod, replay, analysis, opts = {}) {
   const rows = replay.rows, N = rows.length;
   // ------------------------------------------------------------ samples
   const S = {};
+  // wavetable budget for pitch-contour voices (the table has 255 rows for everything)
+  const nVoice = analysis.samples.filter(a => a.used && (PRESET_BY_ID[o.assignments[a.index] || a.presetId] || {}).auto === 'voice').length;
+  const voiceBudget = nVoice ? Math.max(12, Math.min(48, Math.floor(110 / nVoice))) : 48;
   for (const a of analysis.samples) {
     if (!a.used) continue;
     const pid = o.assignments[a.index] || a.presetId;
-    const preset = PRESET_BY_ID[pid] || PRESET_BY_ID.lead_pulse;
+    let preset = PRESET_BY_ID[pid] || PRESET_BY_ID.lead_pulse;
     const smp = mod.samples[a.index - 1];
-    const env = o.fitEnvelope ? fitADSR(preset, a.info, smp) : { ad: preset.ad, sr: preset.sr };
+    let beat = null;
+    if (preset.auto === 'voice') {
+      // speech: follow the pitch contour of the sample frame by frame
+      let vw = a.voice;
+      if (!vw || vw.steps.length > voiceBudget) vw = voiceWavetable(smp, a.info, { maxSteps: voiceBudget });
+      if (vw) preset = { ...preset, wave: vw.steps, voiceRef: vw.ref };
+    } else if (preset.auto === 'beat') {
+      if (!a.beat) a.beat = decomposeBeat(smp, a.info);
+      beat = a.beat;
+      if (!beat) preset = PRESET_BY_ID.kick;
+    }
+    const env = o.fitEnvelope ? fitADSR(preset, a.info, smp, a.cls) : { ad: preset.ad, sr: preset.sr };
     const drumAbs = !!preset.drum;
     const isDrum = drumAbs || preset.cat === 'drums';
     const cls = a.cls;
-    const chord = (a.chord && !isDrum && preset.cat !== 'fx' && preset.cat !== 'mute') ? a.chord : null;
+    const chord = (a.chord && !isDrum && preset.cat !== 'fx' && preset.cat !== 'mute' && preset.cat !== 'auto') ? a.chord : null;
     S[a.index] = {
       a, preset, env, drumAbs, isDrum, muted: preset.id === 'mute', chord, weight: a.weight || 5,
       sustained: (env.sr >> 4) > 0, short: isDrum || ((env.sr >> 4) === 0 && (env.ad & 15) <= 8),
-      shift: a.noteShift || 0, smp,
+      shift: a.noteShift || 0, smp, voiceRef: preset.voiceRef || 0,
     };
+    if (beat) {
+      // one SID drum per cluster of similar hits: repeated hits share one instrument
+      S[a.index].beat = { ...beat, keys: beat.clusters.map((cl, k) => {
+        const key = a.index + ':b' + k, pr = PRESET_BY_ID[cl.presetId] || PRESET_BY_ID.kick;
+        S[key] = { a, preset: pr, env: { ad: pr.ad, sr: pr.sr }, drumAbs: !!pr.drum, isDrum: true, muted: false, chord: null,
+          weight: WEIGHT[cl.type] || 5, sustained: false, short: true, shift: 0, smp, sub: true };
+        return key;
+      }) };
+    }
   }
   // ------------------------------------------------------------ per channel row info + note events
   const rowSec = rows.map(r => r.ticks.length * 2.5 / r.bpm);
@@ -66,7 +90,7 @@ export function convertSong(mod, replay, analysis, opts = {}) {
   const noteOf = (smpIdx, per) => {
     const s = S[smpIdx]; if (!s) return 48;
     if (s.drumAbs) return 48;
-    let real = realNote(s.a.info, per);
+    let real = realNote(s.voiceRef ? { ...s.a.info, f0norm: s.voiceRef } : s.a.info, per);
     if (real === null) real = 48 + 12 * Math.log2(428 / per);
     if (s.chord) {
       // root note of the chord at this period
@@ -83,6 +107,23 @@ export function convertSong(mod, replay, analysis, opts = {}) {
       const inf = CH[c][i];
       if (!inf.trig || !inf.smp || !S[inf.smp] || S[inf.smp].muted) continue;
       if (inf.e === 3 || inf.e === 5) continue;
+      const bt = S[inf.smp].beat;
+      if (bt) {
+        // drum loop: replay its hits row by row with the clustered SID drums
+        const scale = S[inf.smp].a.info.rate / (PAULA_PAL / (2 * Math.max(57, inf.per)));
+        const dur = bt.duration * scale, looped = S[inf.smp].smp.looped;
+        let next = N; for (let j = i + 1; j < N; j++) if (CH[c][j].trig) { next = j; break; }
+        let t = 0;
+        for (let j = i; j < next; j++) {
+          const t0 = looped ? t % dur : t, t1 = t0 + rowSec[j];
+          if (!looped && t0 >= dur) break;
+          let best = null;
+          for (const h of bt.hits) { const ht = h.t * scale; if (ht >= t0 - 1e-6 && ht < t1 && (!best || h.level > best.level)) best = h; }
+          if (best) notes[c].push({ ch: c, start: j, smp: bt.keys[best.c], per: inf.per, vol: Math.round(inf.vol0 * Math.min(1, 0.4 + best.level)), note: 48, end: N, sub: true });
+          t += rowSec[j];
+        }
+        continue;
+      }
       notes[c].push({ ch: c, start: i, smp: inf.smp, per: inf.per, vol: inf.vol0, note: noteOf(inf.smp, inf.per), end: N });
     }
     // note ends: next note, volume 0, or end of a one-shot sample
@@ -91,6 +132,7 @@ export function convertSong(mod, replay, analysis, opts = {}) {
       const ev = ns[k], nextStart = k + 1 < ns.length ? ns[k + 1].start : N;
       let end = nextStart;
       const s = S[ev.smp];
+      if (ev.sub) { ev.end = Math.max(ev.start + 1, Math.min(nextStart, ev.start + 2)); ev.w = s.weight; ev.short = true; ev.drum = true; ev.sus = false; continue; }
       const smp = s.smp;
       let lenSec = smp.looped ? 1e9 : smp.data.length / (PAULA_PAL / (2 * ev.per));
       let t = 0;
@@ -194,7 +236,7 @@ export function convertSong(mod, replay, analysis, opts = {}) {
   })));
   const fu3 = filterUse.slice(0, 3);
   const filterVoice = fu3.some(x => x > 0) ? fu3.indexOf(Math.max(...fu3)) : -1;
-  const insOf = {}; const waveOf = {};
+  const insOf = {}; const waveOf = {}; let degraded = 0;
   const mainWave = (steps) => { const s = steps.find(x => typeof x[0] === 'number' && x[0] >= 0x10); return s ? s[0] : 0x41; };
   const wavesFor = (s) => s.chord ? [...s.chord.iv.map(iv => [mainWave(s.preset.wave), iv]), ['J', 0]] : s.preset.wave;
   const instrFor = (smpIdx, voice, plain = false) => {
@@ -204,7 +246,12 @@ export function convertSong(mod, replay, analysis, opts = {}) {
     if (insOf[key]) return insOf[key];
     const pr = s.preset;
     const steps = (plain && s.chord) ? pr.wave : wavesFor(s);
-    const wv = song.addWave(steps);
+    const ov = song.overflow;
+    let wv = song.addWave(steps);
+    if (!wv && steps.length > 1) { // wavetable full: fall back to a plain waveform
+      wv = song.addWave(s.drumAbs ? steps.filter(x => typeof x[0] === 'number').slice(0, 2).concat([['S']]) : [[mainWave(steps), 0], ['S']]);
+      if (wv) { song.overflow = ov; degraded++; }
+    }
     if (!(plain && s.chord)) waveOf[smpIdx] = steps;
     const pu = song.addPulse(pr.pulse);
     const fi = useF ? song.addFilter(pr.filter, 1 << filterVoice) : 0;
@@ -220,6 +267,7 @@ export function convertSong(mod, replay, analysis, opts = {}) {
     const d = S[drumIdx].preset, m = S[melIdx];
     const pre = d.wave.filter(x => typeof x[0] === 'number').slice(0, Math.max(1, d.prefix || 2));
     const mel = waveOf[melIdx] || wavesFor(m);
+    if (mel.length > 12) return 0; // long tables (voice contours) would be copied for every drum
     // make the melodic part start with an explicit relative note 0 so the pitch returns
     const melSteps = mel.map((st, k) => (k === 0 && typeof st[0] === 'number' && st[1] === 'k') ? [st[0], 0] : st);
     return song.addWave([...pre.map(st => [st[0], typeof st[1] === 'number' ? (S[drumIdx].drumAbs ? st[1] : st[1]) : st[1]]), ...shiftSteps(melSteps, pre.length)]);
@@ -432,7 +480,7 @@ export function convertSong(mod, replay, analysis, opts = {}) {
     return { start: s.start, end: s.end, pos: rows[s.start].pos, pat: rows[s.start].pat, voices: plans[k].voices, dropped: plans[k].dropped, cost: plans[k].cost, spare };
   });
   return {
-    song, voices: NV, initTempo, gate: GATE, filterVoice, segments: segInfo, loopSeg, truncated, overflow: song.overflow,
+    song, voices: NV, initTempo, gate: GATE, filterVoice, segments: segInfo, loopSeg, truncated, overflow: song.overflow, degraded,
     rowsTotal: N, seconds: rowSec.reduce((a, b) => a + b, 0),
     instrumentMap: Object.fromEntries(Object.entries(insOf)),
   };

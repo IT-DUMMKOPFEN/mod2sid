@@ -6,9 +6,15 @@ const still = (w) => [PW(w), ['S']];
 const A = (n) => ({ a: n });
 const p = (o) => Object.assign({ gate: 2, fw: 0x09, pulse: null, filter: null, vib: null, drum: false, prefix: 0 }, o);
 
-export const EXTRA_CATEGORIES = [['world', 'Welt / Ethno', 'World / ethnic'], ['chip', 'Chiptune', 'Chiptune']];
+export const EXTRA_CATEGORIES = [['auto', 'KI-Automatik', 'AI automatic'], ['world', 'Welt / Ethno', 'World / ethnic'], ['chip', 'Chiptune', 'Chiptune']];
 
 export const EXTRA_PRESETS = [
+  // ---- built per sample by the KI (the wave shown here is only the library demo)
+  p({ id: 'beat_auto', cat: 'auto', auto: 'beat', de: 'Beat zerlegen (KI)', en: 'Split beat (AI)', ad: 0x08, sr: 0x00, drum: true, prefix: 3,
+    wave: [[0x81, A(80)], [0x41, A(40)], [0x41, A(36)], [0x41, A(30)], ['S']], pulse: still(0x800), desc: { bright: .5, slow: 0, sus: 0 } }),
+  p({ id: 'voice_auto', cat: 'auto', auto: 'voice', de: 'Stimme mit Tonverlauf (KI)', en: 'Voice with pitch contour (AI)', ad: 0x10, sr: 0xF4,
+    wave: [[0x41, -5], [2, 'k'], [0x41, -3], [2, 'k'], [0x41, 0], [4, 'k'], [0x41, 2], [3, 'k'], [0x41, 4], [8, 'k'], [0x40, 'k'], ['S']],
+    pulse: sweep(0x300, 0x20, 0x18), desc: { bright: .5, slow: .1, sus: .8 } }),
   // ---- bass
   p({ id: 'bass_wobble', cat: 'bass', de: 'Wobble-Bass', en: 'Wobble bass', ad: 0x08, sr: 0xA9, wave: [[0x41, 0], ['S']], pulse: sweep(0x100, 0x06, 0x90), desc: { bright: .6, slow: 0, sus: .7 } }),
   p({ id: 'bass_reese', cat: 'bass', de: 'Reese-Bass', en: 'Reese bass', ad: 0x08, sr: 0xB9, wave: [[0x21, 0], [0x41, 0], ['J', 0]], pulse: still(0x700), vib: [2, 0x06, 1], desc: { bright: .7, slow: 0, sus: .8 } }),
@@ -107,6 +113,8 @@ export const EXTRA_PRESETS = [
 
 // extended class → preset suggestions (first = default)
 export const CLASS_PRESETS_EXT = {
+  beat: ['beat_auto', 'mute'],
+  speech: ['voice_auto', 'mute', 'fx_noise', 'choir'],
   kick: ['kick', 'kick_hard', 'kick808', 'kick_click', 'kick_deep'],
   snare: ['snare', 'snare_fat', 'snare_tight', 'snare_noise', 'snare_808', 'snare_rim', 'clap'],
   hihat: ['hihat', 'hihat_open', 'hihat_pedal', 'hihat_metal', 'shaker', 'tambourine'],

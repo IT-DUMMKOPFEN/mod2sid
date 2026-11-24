@@ -27,6 +27,7 @@ for (const dir of dirs) for (const f of fs.readdirSync(dir)) {
       bass: med !== null && med < 52 && uu.distinct >= 2, lead: uu.distinct >= 3, pad: uu.distinct >= 2, strings: uu.distinct >= 2,
       brass: uu.distinct >= 2, wood: uu.distinct >= 2, guitar: uu.distinct >= 2, keys: uu.distinct >= 2, bell: uu.distinct >= 2,
       choir: uu.distinct >= 1, chord: !!info.chord || uu.distinct <= 6, fx: uu.distinct <= 4,
+      speech: uu.distinct <= 3 && info.durS > 0.25, beat: uu.distinct <= 2 && info.durS > 0.4 && info.onsets && info.onsets.length >= 3,
     };
     if (hint && ok[hint]) cls = hint;
     else if (!hint && s.looped && s.data.length <= 400 && uu.distinct >= 3) {

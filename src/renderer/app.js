@@ -6,6 +6,8 @@ import { PRESETS, PRESET_BY_ID, CATEGORIES, CLASS_PRESETS, presetName } from '..
 import { renderMod, PAULA_PAL } from '../core/mod.js';
 import { fitADSR } from '../core/analyze.js';
 import { auditionSID } from '../core/audition.js';
+import { decomposeBeat, voiceWavetable } from '../core/beat.js';
+import { realNote } from '../core/features.js';
 import { T, CLASS_NAMES, HELP } from './i18n.js';
 
 const $ = (s) => document.querySelector(s);
@@ -157,10 +159,18 @@ async function auditionPreset(presetId, a, btn) {
   let note = 48, env = null, chord = null;
   if (a) {
     note = pr.drum ? 48 : Math.max(12, Math.min(84, Math.round((a.medianNote ?? 48) + (a.noteShift || 0))));
-    if ($('#optFitEnv').checked) env = fitADSR(pr, a.info, S.ctx.mod.samples[a.index - 1]);
+    if ($('#optFitEnv').checked) env = fitADSR(pr, a.info, S.ctx.mod.samples[a.index - 1], a.cls);
     if (a.chord && a.cls === 'chord' && !pr.drum && pr.cat !== 'drums') chord = a.chord;
   } else if (pr.cat === 'bass') note = 28; else if (pr.cat === 'drums') note = 48; else note = 52;
-  const psid = auditionSID(pr, { note, env, chord, model: $('#optModel').value });
+  let voice = null, beat = null, timeScale = 1;
+  if (a && pr.auto === 'voice') voice = a.voice || voiceWavetable(S.ctx.mod.samples[a.index - 1], a.info);
+  if (a && pr.auto === 'beat') {
+    beat = a.beat || decomposeBeat(S.ctx.mod.samples[a.index - 1], a.info);
+    const per = S.analysis.usage[a.index] ? S.analysis.usage[a.index].medianPeriod : 0;
+    if (per) timeScale = a.info.rate / (3546895 / (2 * per));
+  }
+  if (voice && voice.ref && a) { const n = realNote({ ...a.info, f0norm: voice.ref }, S.analysis.usage[a.index].medianPeriod); if (n !== null) note = Math.max(12, Math.min(84, Math.round(n + (a.noteShift || 0)))); }
+  const psid = auditionSID(pr, { note, env, chord, model: $('#optModel').value, voice, beat, timeScale });
   sidMsg({ type: 'load', psid, model: $('#optModel').value, mute: [false, false, false], autoplay: true, stopAfter: 4.5 });
   S.loaded = 'audition'; auditionBtn = btn; btn.classList.add('on'); btn.textContent = '■';
 }
@@ -249,7 +259,7 @@ function renderKiInfo() {
   const i = modelInfo();
   $('#kiInfo').innerHTML = i ? `<div><span>${t('kiAcc')}</span></div><div><span>${t('classAcc')}</span><span>${Math.round(i.loo_acc * 100)} %</span></div>` +
     `<div><span>${t('family')}</span><span>${Math.round(i.loo_family_acc * 100)} %</span></div>` +
-    `<div><span>Training</span><span>${i.synthetic} + ${i.real}</span></div>` : '';
+    `<div><span>Training</span><span>${i.synthetic} + ${i.wav || 0} + ${i.real}</span></div>` : '';
 }
 function renderStats() {
   if (!S.result) return;
@@ -298,7 +308,8 @@ function renderSamples() {
     const tags = `<span class="tag main ${a.cls === 'speech' ? 'speech' : ''}">${esc(cname(a.cls))}</span><span class="conf" title="${p0}%"><b style="width:${p0}%"></b></span> ` +
       top.filter(x => x.cls !== a.cls).slice(0, 2).map(x => `<span class="tag alt" data-cls="${x.cls}" title="${Math.round(x.p * 100)}%">${esc(cname(x.cls))}</span>`).join('') +
       (S.manual.has(a.index) ? `<span class="tag manual">${t('manual')}</span>` : a.learned ? `<span class="tag manual">${t('learned')}</span>` : '') +
-      (a.chord ? `<span class="tag">${esc(a.chord.type)}</span>` : '');
+      (a.chord ? `<span class="tag">${esc(a.chord.type)}</span>` : '') +
+      (a.beat ? `<span class="tag" title="${a.beat.hits.length} ${t('hitsWord')}">${a.beat.clusters.length} ${t('drumsWord')}</span>` : '');
     tr.innerHTML = `<td>${a.index}</td><td title="${esc(a.name)}">${esc(a.name || '—')}</td><td>${tags}</td>` +
       `<td><select>${presetOptions(sel, a.cls)}</select></td><td><button class="pbtn" data-a="orig">▶</button></td>` +
       `<td><button class="pbtn" data-a="sid">▶</button></td><td class="muted">${a.hits}</td>`;
@@ -366,7 +377,7 @@ async function showInfo() {
   <ul>
     <li>${S.lang === 'de' ? 'SNG-Format: GoatTracker 2 von Lasse Öörni (Cadaver), GPL' : 'SNG format: GoatTracker 2 by Lasse Öörni (Cadaver), GPL'}</li>
     <li>${S.lang === 'de' ? 'Eigener 6502-Player, 6502-Emulation und SID-Emulation (mod2sid)' : 'Own 6502 player, 6502 emulation and SID emulation (mod2sid)'}</li>
-    <li>${S.lang === 'de' ? 'KI-Klassifizierer: Extra-Trees, trainiert mit' : 'AI classifier: extra-trees, trained on'} ${mi.synthetic || '?'} + ${mi.real || '?'} Samples</li>
+    <li>${S.lang === 'de' ? 'KI-Klassifizierer: Extra-Trees, trainiert mit' : 'AI classifier: extra-trees, trained on'} ${mi.synthetic || '?'} + ${mi.wav || 0} + ${mi.real || '?'} Samples</li>
     <li>Electron (MIT) · electron-builder (MIT)</li>
   </ul>
   <p class="small muted">Electron ${esc(i.electron || '')} · ${esc(i.platform || '')} ${esc(i.arch || '')}</p>`);

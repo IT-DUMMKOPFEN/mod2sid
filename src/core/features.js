@@ -3,13 +3,13 @@
 import { PAULA_PAL } from './mod.js';
 
 export const CLASSES = ['kick', 'snare', 'hihat', 'cymbal', 'tom', 'perc', 'bass', 'lead', 'pad',
-  'strings', 'brass', 'wood', 'guitar', 'keys', 'bell', 'choir', 'chord', 'fx', 'speech'];
+  'strings', 'brass', 'wood', 'guitar', 'keys', 'bell', 'choir', 'chord', 'fx', 'speech', 'beat'];
 export const DRUM_CLASSES = new Set(['kick', 'snare', 'hihat', 'cymbal', 'tom', 'perc']);
 
 export const FEATURE_NAMES = ['logDur', 'looped', 'logAttack', 'logDecay', 'sustain', 'logCentroid', 'logRolloff',
   'flatness', 'flatEarly', 'zcr', 'lowRatio', 'midRatio', 'highRatio', 'harmonicity', 'logF0', 'pitchStab',
   'chordness', 'envMod', 'flux', 'useNotes', 'useRange', 'useDur', 'useDensity', 'usePitch', 'pitchDrop',
-  'hfDecay', 'centroidVar', 'logLen', 'loopRatio', 'peakiness', 'useBeat'];
+  'hfDecay', 'centroidVar', 'logLen', 'loopRatio', 'peakiness', 'useBeat', 'onsetRate', 'onsetCount', 'ioiRegularity'];
 
 // ---------------- FFT ----------------
 function fft(re, im) {
@@ -261,6 +261,20 @@ export function analyzeSample(s, u) {
     const sc = inS / T.iv.length - outS / (12 - T.iv.length) * 1.5 + (T.iv.length >= 3 ? 0.05 : 0);
     if (sc > bestScore) { bestScore = sc; bestT = T; bestRoot = r; }
   }
+  // onsets (beat / loop detection) on the one-shot audio
+  const one = sampleAudio({ ...s, looped: false }, 0);
+  const durOne = one.length / rate;
+  const onsets = detectOnsets(one, rate);
+  let ioiReg = 0;
+  if (onsets.length >= 3) {
+    const io = []; for (let i = 1; i < onsets.length; i++) io.push(onsets[i].t - onsets[i - 1].t);
+    const m = io.reduce((a, b) => a + b, 0) / io.length;
+    const sd = Math.sqrt(io.reduce((a, b) => a + (b - m) ** 2, 0) / io.length);
+    // regularity: how well the onsets fit a grid of the smallest common step
+    const step = Math.min(...io.filter(x => x > 0.04));
+    const fit = io.reduce((a, x) => a + Math.abs(x / step - Math.round(x / step)), 0) / io.length;
+    ioiReg = Math.max(0, 1 - fit * 2) * (sd / (m + 1e-9) < 2 ? 1 : 0.5);
+  }
   // usage
   const usePitch = u ? (f0Hz > 0 ? Math.log2(Math.max(20, f0Hz)) : Math.log2(cen + 1)) : Math.log2(cen + 1);
   const lp = s.looped ? s.loopLength / Math.max(1, s.data.length) : 0;
@@ -269,12 +283,13 @@ export function analyzeSample(s, u) {
     Math.log2(cen + 1), Math.log2(roll + 1), flat, flatE, zcr, low, mid, high, conf, Math.log2(f0Hz + 1), Math.min(3, stab),
     strong / 12, Math.min(2, envMod * 10), Math.min(2, flux), u ? Math.log2(1 + u.distinct) : 0, u ? Math.min(3, u.range / 24) : 0,
     u ? Math.log2(1 + u.medianDur) : 2, u ? Math.min(1, u.density * 4) : 0, usePitch, Math.max(-24, Math.min(24, pitchDrop)) / 12,
-    Math.log2((hfLast + 1e-4) / (hfFirst + 1e-4)) / 4, Math.min(2, cvar * 4), Math.log2(s.data.length + 1), lp, Math.min(8, pkn) / 8, u && u.beatFrac !== undefined ? u.beatFrac : 0.5];
+    Math.log2((hfLast + 1e-4) / (hfFirst + 1e-4)) / 4, Math.min(2, cvar * 4), Math.log2(s.data.length + 1), lp, Math.min(8, pkn) / 8, u && u.beatFrac !== undefined ? u.beatFrac : 0.5,
+    Math.min(16, onsets.length / Math.max(0.05, durOne)) / 8, Math.log2(1 + onsets.length) / 4, ioiReg];
   vals.forEach((v, i) => { f[i] = Number.isFinite(v) ? v : 0; });
   Object.assign(info, {
     f0norm, f0Hz, pitchConf: conf, rate, refPeriod: per, attack, decay, sustain, centroid: cen, flatness: flat, durS,
     chord: (bestT && bestT.iv.length >= 3 && strong >= 3 && bestScore > 0.42) ? { type: bestT.name, iv: bestT.iv, rootPc: bestRoot, score: bestScore } : null,
-    chroma: cn, pitchDrop, low, high, envMod,
+    chroma: cn, pitchDrop, low, high, envMod, onsets, durOne,
   });
   return { features: Array.from(f), info };
 }
@@ -284,4 +299,54 @@ export function realNote(info, period) {
   if (!info.f0norm || !period) return null;
   const hz = info.f0norm * PAULA_PAL / (2 * period);
   return 12 * Math.log2(hz / 440) + 57;
+}
+
+
+// ---------------- onset detection (energy flux, 5 ms hop) ----------------
+export function detectOnsets(x, rate, { minGap = 0.045 } = {}) {
+  const hop = Math.max(16, Math.round(rate * 0.005));
+  const n = Math.floor(x.length / hop);
+  if (n < 4) return x.length ? [{ t: 0, strength: 1, i: 0 }] : [];
+  const e = new Float64Array(n), hf = new Float64Array(n);
+  for (let k = 0; k < n; k++) {
+    let s = 0, d = 0, prev = x[k * hop] || 0;
+    for (let i = 0; i < hop; i++) { const v = x[k * hop + i] || 0; s += v * v; d += (v - prev) * (v - prev); prev = v; }
+    e[k] = Math.log10(1e-6 + s / hop) * 10; hf[k] = Math.log10(1e-6 + d / hop) * 10;
+  }
+  const peak = Math.max(...e);
+  const out = [];
+  let last = -1e9;
+  for (let k = 0; k < n; k++) {
+    let base = Infinity; for (let j = Math.max(0, k - 6); j < k; j++) base = Math.min(base, e[j]);
+    if (k === 0) base = -60;
+    const rise = e[k] - base, rise2 = k ? hf[k] - Math.min(...Array.from(hf.slice(Math.max(0, k - 6), k))) : 60;
+    const t = k * hop / rate;
+    if ((rise > 7 || rise2 > 10) && e[k] > peak - 30 && t - last >= minGap) {
+      // refine to the local energy maximum within 20 ms
+      let best = k; for (let j = k; j < Math.min(n, k + 4); j++) if (e[j] > e[best]) best = j;
+      out.push({ t, strength: rise, i: k * hop });
+      last = t;
+    }
+  }
+  if (!out.length || out[0].t > 0.03) out.unshift({ t: 0, strength: 10, i: 0 });
+  return out;
+}
+
+// ---------------- pitch contour, one value per SID frame (20 ms) ----------------
+export function pitchContour(s, rate, frameSec = 0.02) {
+  const x = sampleAudio({ ...s, looped: false }, 0);
+  const hop = Math.max(1, Math.round(rate * frameSec));
+  const maxLag = Math.min(1200, Math.floor(rate / 60)), minLag = Math.max(2, Math.floor(rate / 1100));
+  const W = Math.max(128, Math.min(512, maxLag));
+  const frames = [];
+  let peak = 1e-9;
+  for (let st = 0; st + 8 < x.length; st += hop) {
+    let e = 0, z = 0; const end = Math.min(x.length, st + hop);
+    for (let i = st; i < end; i++) { e += x[i] * x[i]; if (i > st && (x[i] >= 0) !== (x[i - 1] >= 0)) z++; }
+    const rms = Math.sqrt(e / Math.max(1, end - st)); peak = Math.max(peak, rms);
+    let f0 = 0, conf = 0;
+    if (st + W + maxLag < x.length) { const y = yin(x, st, W, minLag, maxLag); conf = y.conf; f0 = 1 / y.period; }
+    frames.push({ f0, conf, rms, zcr: z / Math.max(1, end - st) });
+  }
+  return frames.map(f => ({ ...f, level: f.rms / peak }));
 }

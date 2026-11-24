@@ -1,3 +1,9 @@
+## mod2sid 1.3
+
+**DE:** KI neu trainiert mit der Amiga-Sample-Bibliothek (5 304 WAV-Samples) und 492 MODs: 80 % Klasse / 88 % Familie bei unbekannten MODs. Neu: Drum-Loops werden in Einzelschläge zerlegt, gleich klingende Schläge teilen sich ein SID-Instrument. Stimmen werden mit ihrem Tonhöhenverlauf nachgebaut statt stummgeschaltet. Lange Streicher und Flächen halten so lange wie das Original. Neue Instrumente „Beat zerlegen (KI)“ und „Stimme mit Tonverlauf (KI)“.
+
+**EN:** AI retrained with the Amiga sample library (5,304 WAV samples) and 492 MODs: 80 % class / 88 % family on unseen MODs. New: drum loops are split into single hits, and similar hits share one SID instrument. Voices are rebuilt with their pitch contour instead of being muted. Long strings and pads ring as long as the original. New instruments “Split beat (AI)” and “Voice with pitch contour (AI)”.
+
 ## mod2sid 1.2
 
 **DE:** Neu: Versionen für macOS Apple Silicon + Intel, Windows (Installer + Portable) und Linux (AppImage + deb); kleinere Pakete (nur DE/EN-Sprachdateien, maximale Kompression); KI mit 203 MODs neu trainiert (79 % Klasse / 89 % Familie); MOD-Dateien per Doppelklick öffnen.
