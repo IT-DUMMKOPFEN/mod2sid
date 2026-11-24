@@ -1,3 +1,9 @@
+## mod2sid 2.0.1
+
+**DE:** Neuer Lautstärkeregler im Player (gilt für SID, Original und Vorhören). Ein Klick auf den Lautsprecher schaltet stumm. Die Einstellung bleibt gespeichert.
+
+**EN:** New volume slider in the player (for SID, original and auditions). Click the speaker to mute. The setting is remembered.
+
 ## mod2sid 2.0
 
 **DE:**

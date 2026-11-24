@@ -3,7 +3,7 @@ export const T = {
   de: {
     open: 'Modul öffnen', reconvert: 'Neu konvertieren', save: 'Speichern', help: 'Hilfe', info: 'Info',
     dropTitle: 'Modul hier ablegen', dropSub: 'oder „Modul öffnen“ klicken – MOD, OctaMED (MMD0–3), XM, IT, DigiBooster Pro (DBM) und Art Of Noise (AON4/AON8)',
-    song: 'Song', title: 'Titel', format: 'Format', length: 'Länge', positions: 'Positionen', tempo: 'Tempo', samples: 'Samples', channels: 'Kanäle', sidAuto: 'Auto (nach Kanälen)',
+    song: 'Song', title: 'Titel', format: 'Format', length: 'Länge', positions: 'Positionen', tempo: 'Tempo', samples: 'Samples', channels: 'Kanäle', sidAuto: 'Auto (nach Kanälen)', volume: 'Lautstärke (Klick auf den Lautsprecher: stumm)',
     options: 'Einstellungen', model: 'SID-Modell', creativity: 'Kreativität bei „Neu konvertieren“', fitEnv: 'Hüllkurven an Samples anpassen',
     useFilter: 'SID-Filter verwenden', loadAddr: 'Ladeadresse', kiInfo: 'KI-Klassifizierer', kiAcc: 'Trefferquote (echte Samples, nie gesehen)',
     family: 'Familie', classAcc: 'Klasse', player: 'Vorhören', srcSid: 'SID', srcMod: 'Original', voice: 'Stimme', solo: 'Solo', mute: 'Stumm',
@@ -21,7 +21,7 @@ export const T = {
   en: {
     open: 'Open module', reconvert: 'Convert again', save: 'Save', help: 'Help', info: 'About',
     dropTitle: 'Drop a module here', dropSub: 'or click “Open module” – MOD, OctaMED (MMD0–3), XM, IT, DigiBooster Pro (DBM) and Art Of Noise (AON4/AON8)',
-    song: 'Song', title: 'Title', format: 'Format', length: 'Length', positions: 'Positions', tempo: 'Tempo', samples: 'Samples', channels: 'Channels', sidAuto: 'Auto (by channels)',
+    song: 'Song', title: 'Title', format: 'Format', length: 'Length', positions: 'Positions', tempo: 'Tempo', samples: 'Samples', channels: 'Channels', sidAuto: 'Auto (by channels)', volume: 'Volume (click the speaker to mute)',
     options: 'Settings', model: 'SID model', creativity: 'Creativity for “Convert again”', fitEnv: 'Fit envelopes to samples',
     useFilter: 'Use SID filter', loadAddr: 'Load address', kiInfo: 'AI classifier', kiAcc: 'Accuracy (real, unseen samples)',
     family: 'family', classAcc: 'class', player: 'Preview', srcSid: 'SID', srcMod: 'Original', voice: 'Voice', solo: 'Solo', mute: 'Mute',

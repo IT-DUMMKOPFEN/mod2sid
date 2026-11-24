@@ -45,13 +45,23 @@ function applyLang() {
 }
 function applyTheme() { document.body.classList.toggle('light', S.theme === 'light'); document.documentElement.classList.toggle('light', S.theme === 'light'); }
 
+// ------------------------------------------------------------------ volume (0-100 %, saved; 80 % = previous fixed level)
+S.volume = Math.max(0, Math.min(100, +LS.get('volume', 80) || 0)); S.volMuted = false;
+function volGain() { return S.volMuted ? 0 : 1.4 * Math.pow(S.volume / 100, 2); }
+function applyVolume() {
+  if (S.gain) S.gain.gain.setTargetAtTime(volGain(), S.audio.currentTime, 0.02);
+  const v = $('#volume'); if (v) v.value = S.volume;
+  const t2 = $('#volVal'); if (t2) t2.textContent = S.volMuted ? '—' : `${S.volume} %`;
+  const ic = $('#volIcon'); if (ic) ic.textContent = (S.volMuted || S.volume === 0) ? '🔇' : S.volume < 40 ? '🔈' : S.volume < 75 ? '🔉' : '🔊';
+}
+
 // ------------------------------------------------------------------ audio
 async function ensureAudio() {
   if (S.audio) { if (S.audio.state === 'suspended') await S.audio.resume(); return; }
   S.audio = new AudioContext({ sampleRate: 44100, latencyHint: 'playback' });
   await S.audio.audioWorklet.addModule('sid-worklet.js');
   S.node = new AudioWorkletNode(S.audio, 'sid-player', { outputChannelCount: [2] });
-  S.gain = S.audio.createGain(); S.gain.gain.value = 0.9;
+  S.gain = S.audio.createGain(); applyVolume();
   S.node.connect(S.gain).connect(S.audio.destination);
   S.node.port.onmessage = (e) => {
     const m = e.data;
@@ -419,6 +429,9 @@ async function init() {
   $('#modal').onclick = (e) => { if (e.target.id === 'modal') $('#modal').classList.add('hidden'); };
   $('#btnPlay').onclick = () => (S.playing ? pause() : play());
   $('#btnStop').onclick = stopAll;
+  $('#volume').oninput = (e) => { S.volume = +e.target.value; S.volMuted = false; LS.set('volume', S.volume); applyVolume(); };
+  $('#volIcon').onclick = () => { S.volMuted = !S.volMuted; applyVolume(); };
+  applyVolume();
   $('#srcSid').onclick = () => switchSrc('sid');
   $('#srcMod').onclick = () => switchSrc('mod');
   $('#seek').oninput = () => { S.seeking = true; };

@@ -96,3 +96,8 @@ table.smp select { width: 100%; max-width: 260px; }
 .modalBox h2 { margin-top: 0; } .modalBox li { margin: 6px 0; }
 .modalBox a { color: var(--accent2); }
 .infoLogo { width: 96px; float: right; margin: 0 0 10px 16px; border-radius: 18px; }
+
+.vol { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.vol input { width: 110px; }
+.vol #volIcon { cursor: pointer; user-select: none; }
+.vol #volVal { min-width: 38px; }

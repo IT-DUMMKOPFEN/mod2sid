@@ -35,7 +35,7 @@ App für **macOS (Apple Silicon + Intel), Windows und Linux (AppImage/deb)**, Ob
   - Drum-Transient über einen gehaltenen Ton, ohne ihn neu anzuschlagen
   - zwei Melodiestimmen als Arpeggio
   - Lücken füllen und Melodie nach einem Drum-Schlag fortsetzen
-- **Vorhören** mit eingebautem 6502- und SID-Emulator (6581/8580), A/B-Vergleich mit dem Original-Modul, Stimmen stumm/solo, Oszilloskop.
+- **Vorhören** mit eingebautem 6502- und SID-Emulator (6581/8580), A/B-Vergleich mit dem Original-Modul, Stimmen stumm/solo, Lautstärkeregler, Oszilloskop.
 - **Instrumente tauschen**: Die Änderung wird sofort neu berechnet. Die App **lernt** deine Wahl und schlägt sie bei ähnlichen Samples künftig vor.
 - **Neu konvertieren**: Jedes Mal entsteht eine andere Variante (Instrumentwahl und Stimmenverteilung); der Kreativitätsregler steuert, wie stark sie sich unterscheidet.
 - **Speichern**: `.sid` (eigener GoatTracker-kompatibler Player ab $1000; läuft in VICE, SIDPlay und auf echten C64) **und** `.sng` (GoatTracker) bzw. `.ggt` (C64 GrooveGoat) zum Weiterbearbeiten.
@@ -133,7 +133,7 @@ GPL-3.0 – siehe [LICENSE](LICENSE). Das SNG-Format stammt von GoatTracker 2 (L
 - **Synth instruments** of OctaMED and Art Of Noise keep their waveform (pulse with its width, saw or triangle).
 - **Instrument library** with 166 SID instruments. Envelopes are fitted to the original samples, and chord samples become arpeggios.
 - An **arranger for 4 → 3 voices** uses classic C64 tricks: combined bass and drum notes, drum transients overlaid on held notes, arpeggio merging and gap filling.
-- **Preview** with a built-in 6502 + SID emulator (6581/8580), A/B comparison with the original module, mute/solo for each voice.
+- **Preview** with a built-in 6502 + SID emulator (6581/8580), A/B comparison with the original module, mute/solo for each voice, volume slider.
 - **Swap instruments** to re-convert instantly; the app learns your choices. **Convert again** produces a different variant.
 - **Save** writes a `.sid` (own GoatTracker-compatible player at $1000) and a `.sng` (GoatTracker) or `.ggt` (C64 GrooveGoat).
 
