@@ -37,7 +37,7 @@ jobs:
             DIR="${pair%%:*}"; ARCH="${pair##*:}"; APP="dist/$DIR/mod2sid.app"
             codesign --force --deep --sign - "$APP"
             rm -rf dmgroot && mkdir dmgroot && cp -R "$APP" dmgroot/ && ln -s /Applications dmgroot/Applications
-            hdiutil create -volname "mod2sid $VER" -srcfolder dmgroot -ov -format ULMO "dist/mod2sid-$VER-mac-$ARCH.dmg"
+            for try in 1 2 3; do hdiutil create -volname "mod2sid $VER" -srcfolder dmgroot -ov -format ULMO "dist/mod2sid-$VER-mac-$ARCH.dmg" && break; echo "hdiutil busy, retry $try"; sleep 15; [ $try = 3 ] && exit 1; done
           done
           ls -la dist
       - uses: actions/upload-artifact@v4
