@@ -1,3 +1,9 @@
+## mod2sid 2.1.2
+
+**DE:** Songs mit sehr schnellem Tempo (Zeilen mit nur 2 Frames, z. B. Funktempo 3/2) liefen in GoatTracker und C64 GrooveGoat nicht los. Der Gate-Timer der Instrumente (2) war länger als die schnellste Zeile, und dann stoppen beide Programme den Song. Die App wählt jetzt den Gate-Timer 1, wenn das Stück so schnelle Zeilen hat. Ein Tempo von 2 Frames wird außerdem als Funktempo 2/2 geschrieben, weil F02 dort wie F03 wirkt.
+
+**EN:** Songs with a very fast tempo (rows of only 2 frames, e.g. funktempo 3/2) did not start in GoatTracker and C64 GrooveGoat. The instruments' gate timer (2) was longer than the fastest row, and both programs stop the song in that case. The app now uses gate timer 1 when a piece has such fast rows. A tempo of 2 frames is also written as funktempo 2/2, because F02 acts like F03 there.
+
 ## mod2sid 2.1.1
 
 **DE:** Fehler im SID-Player behoben: Das Vibrato wurde in jeder Zeile neu gestartet, deshalb liefen gehaltene Noten langsam nach oben weg. Das passierte auch mit ausgeschalteten Slides. Jetzt schwingt das Vibrato sauber um den Ton. Mit „Slides: Aus“ und „Vibrato: Aus“ gibt es keinerlei Tonhöhenbewegung mehr, auch kein Instrument-Vibrato aus der Bibliothek. Vorher wanderten in den Testsongs 22 % der gehaltenen Noten mehr als einen halben Halbton, jetzt sind es 1,4 % mit den Standard-Einstellungen und 0 % mit beiden Optionen auf „Aus“.

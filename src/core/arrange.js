@@ -279,7 +279,16 @@ export function convertSong(mod, replay, analysis, opts = {}) {
   song.copyright = (o.copyright || (new Date().getFullYear() + ' IT-Dummkopfen mod2sid')).slice(0, 32);
   // tempo / gate
   const fprOf = (r) => r.ticks.length / (1 + (r.delay || 0)) * 125 / r.bpm;
-  const minT = Math.min(...rows.map(r => Math.max(2, Math.round(fprOf(r)))));
+  // tempo per row in frames: a plain tempo (F) or two alternating ones (E, funktempo) for x.5 frames
+  const tempoCmd = (r) => {
+    const f = fprOf(r), fl = Math.floor(f), frac = f - fl;
+    if (frac > 0.3 && frac < 0.7 && fl >= 2) return { min: fl, cmd: [0x0E, [fl + 1, fl]] };
+    const t = Math.max(2, Math.round(f));
+    // GoatTracker / GrooveGoat treat F02 like F03: 2-frame rows need funktempo 2/2
+    return t === 2 ? { min: 2, cmd: [0x0E, [2, 2]] } : { min: t, cmd: [0x0F, t] };
+  };
+  const minT = Math.min(...rows.map(r => tempoCmd(r).min));
+  // the gate timer must be shorter than the fastest row, else GoatTracker/GrooveGoat stop the song
   const GATE = minT <= 2 ? 1 : 2;
   // filter voice: voice with most filter-instrument rows
   const filterUse = new Array(NV).fill(0);
@@ -483,11 +492,8 @@ export function convertSong(mod, replay, analysis, opts = {}) {
   // ------------------------------------------------------------ tempo commands
   let lastT = null;
   for (let i = 0; i < N; i++) {
-    const f = fprOf(rows[i]);
-    const fl = Math.floor(f), frac = f - fl;
-    let cmd;
-    if (frac > 0.3 && frac < 0.7 && fl >= 2) cmd = [0x0E, song.addSpeed(fl + 1, Math.max(2, fl))];
-    else cmd = [0x0F, Math.max(2, Math.round(f))];
+    const tc = tempoCmd(rows[i]).cmd;
+    const cmd = tc[0] === 0x0E ? [0x0E, song.addSpeed(tc[1][0], tc[1][1])] : tc;
     const key = cmd.join(',');
     if (key === lastT) continue;
     lastT = key;
