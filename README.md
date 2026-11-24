@@ -85,9 +85,9 @@ Die Werkzeuge liegen in `tools/train/`:
 3. `extract_wav.mjs` liest eine Sample-Bibliothek (WAV). Beschriftet wird nach dem Dateinamen (`wavlabel.mjs`), aber nur, wenn der Klang dazu passt. Die meisten Amiga-WAVs tragen einen falschen 44,1-kHz-Header; sie werden mit typischen MOD-Abspielraten (8–17 kHz) als 8-Bit-Samples ausgewertet.
 4. `train.py` trainiert das Extra-Trees-Modell, prüft es per *Leave-one-MOD-out* (das geprüfte MOD ist nie im Training) und exportiert `src/core/model.json`.
 
-Stand v2.1: 6 000 synthetische Samples, 5 304 Samples aus der WAV-Bibliothek und 61 632 echte Samples aus 16 191 Modulen. Dazu gehören 11 524 MODs von sechs CD-Images, 1 467 Module in den neuen Formaten (OctaMED, XM, IT, DigiBooster, Art Of Noise) und 586 Module aus ModsUpdate2020. Die Beschriftung stammt aus `autolabel.mjs`: Namen wie „st-01:bass“ zählen nur, wenn Klang und Spielweise dazu passen, dazu kommen eindeutige Klangregeln. Die KI selbst sieht keine Namen. Sie lernt nur aus Klang- und Spielmerkmalen und ordnet damit auch Samples ohne sinnvollen Namen ein; beim Einordnen zählt ein Name nur noch, wenn der Klang schon in dieselbe Richtung zeigt. Ergebnisse (reine Klang-Einordnung, ohne Namen):
-- Module, die nie im Training waren: **85 % exakte Klasse, 92 % richtige Familie** (Drum / Bass / Melodie / Akkord / FX / Stimme / Beat), gemessen mit 10-fach gruppierter Kreuzvalidierung.
-- Zurückgehaltene WAV-Samples: **67 % Klasse / 89 % Familie**.
+Stand v2.1.3: 6 000 synthetische Samples, 5 304 Samples aus der WAV-Bibliothek und 129 799 echte Samples aus 33 617 Modulen. Darin stecken unter anderem 11 524 MODs von sechs CD-Images, 1 467 Module in den neuen Formaten (OctaMED, XM, IT, DigiBooster, Art Of Noise), 586 Module aus ModsUpdate2020 und 17 426 Module aus einer weiteren großen MOD-Sammlung. Die Beschriftung stammt aus `autolabel.mjs`: Namen wie „st-01:bass“ zählen nur, wenn Klang und Spielweise dazu passen, dazu kommen eindeutige Klangregeln. Die KI selbst sieht keine Namen. Sie lernt nur aus Klang- und Spielmerkmalen und ordnet damit auch Samples ohne sinnvollen Namen ein. Ergebnisse (reine Klang-Einordnung, ohne Namen):
+- Module, die nie im Training waren: **86 % exakte Klasse, 93 % richtige Familie** (Drum / Bass / Melodie / Akkord / FX / Stimme / Beat), gemessen mit 10-fach gruppierter Kreuzvalidierung.
+- Zurückgehaltene WAV-Samples: **65 % Klasse / 87 % Familie**.
 
 Für große Sammlungen gibt es `labelfeat.mjs`. Es beschriftet die Samples und berechnet die Merkmale in einem Durchgang. Der Lauf kann in Zeitscheiben und parallel auf mehreren Kernen erfolgen und lässt sich jederzeit fortsetzen.
 
@@ -98,7 +98,7 @@ python3 tools/train/synth_dataset.py /tmp/synth 300
 node tools/train/autolabel.mjs <neue-mods> tools/train/labels_auto.json
 node tools/train/extract.mjs /tmp/synth <mod-ordner1>,<mod-ordner2> /tmp/features.json
 node tools/train/extract_wav.mjs <wav-ordner> /tmp/wav.json
-AUG=5 WAVREP=4 NTREES=50 LEAF=4 python3 tools/train/train.py /tmp/features.json src/core/model.json /tmp/wav.json
+AUG=3 WAVREP=4 NTREES=50 LEAF=4 python3 tools/train/train.py /tmp/features.json src/core/model.json /tmp/wav.json
 ```
 
 ## Technik

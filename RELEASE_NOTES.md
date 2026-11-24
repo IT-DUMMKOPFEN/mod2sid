@@ -1,3 +1,9 @@
+## mod2sid 2.1.3
+
+**DE:** KI weiter trainiert mit einer neuen MOD-Sammlung: 24 368 Dateien, davon 17 426 neue Module mit 68 167 neuen Samples. Insgesamt lernt die KI jetzt aus 129 799 echten Samples aus 33 617 Modulen. Bei unbekannten Modulen sind 86 % der Klassen und 93 % der Familien richtig.
+
+**EN:** AI trained further with a new MOD collection: 24,368 files, of which 17,426 new modules with 68,167 new samples. In total the AI now learns from 129,799 real samples from 33,617 modules. On unseen modules it gets 86 % of classes and 93 % of families right.
+
 ## mod2sid 2.1.2
 
 **DE:** Songs mit sehr schnellem Tempo (Zeilen mit nur 2 Frames, z. B. Funktempo 3/2) liefen in GoatTracker und C64 GrooveGoat nicht los. Der Gate-Timer der Instrumente (2) war länger als die schnellste Zeile, und dann stoppen beide Programme den Song. Die App wählt jetzt den Gate-Timer 1, wenn das Stück so schnelle Zeilen hat. Ein Tempo von 2 Frames wird außerdem als Funktempo 2/2 geschrieben, weil F02 dort wie F03 wirkt.
