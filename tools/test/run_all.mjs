@@ -7,7 +7,7 @@ setModel(JSON.parse(fs.readFileSync(new URL('../../src/core/model.json', import.
 const dir = process.argv[2], outDir = process.argv[3];
 if (outDir) fs.mkdirSync(outDir, { recursive: true });
 let ok = 0;
-for (const f of fs.readdirSync(dir).filter(f => /\.mod$/i.test(f))) {
+for (const f of fs.readdirSync(dir).filter(f => !/\.(txt|info|guide|jpg|diz|nfo|torrent|xml|conf)$/i.test(f))) {
   const t0 = Date.now();
   try {
     const ctx = loadMod(fs.readFileSync(dir + '/' + f));
@@ -24,7 +24,7 @@ for (const f of fs.readdirSync(dir).filter(f => /\.mod$/i.test(f))) {
     const cls = an.samples.filter(s => s.used).map(s => s.cls);
     const summary = Object.entries(cls.reduce((m, c) => (m[c] = (m[c] || 0) + 1, m), {})).map(([k, v]) => k + v).join(' ');
     console.log(`OK ${f.padEnd(32)} ${res.seconds.toFixed(0)}s pat${res.song.patterns.length} ins${res.song.instr.length} wt${res.song.wt.length} sid${res.sidInfo.size}B rms${rms.toFixed(3)} maxInstr${maxI} conv${t1 - t0}ms filterV${res.filterVoice}${res.truncated ? ' TRUNC' : ''}${res.overflow ? ' OVF' : ''} | ${summary}`);
-    if (outDir) { const b = f.replace(/\.mod$/i, ''); fs.writeFileSync(`${outDir}/${b}.sid`, res.sid); fs.writeFileSync(`${outDir}/${b}.sng`, res.sng); }
+    if (outDir) { const b = f.replace(/\.mod$/i, ''); fs.writeFileSync(`${outDir}/${b}.sid`, res.sid); fs.writeFileSync(`${outDir}/${b}.${res.songExt}`, res.sng); }
     ok++;
   } catch (e) { console.log('FAIL', f, e.stack.split('\n').slice(0, 3).join(' | ')); }
 }

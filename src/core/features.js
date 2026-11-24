@@ -91,22 +91,23 @@ function yin(x, start, W, minLag, maxLag) {
 export function sampleUsage(replay) {
   const use = {};
   const rows = replay.rows;
-  const lastTrig = [null, null, null, null];
+  const NC = rows.length ? rows[0].ticks[0].length : 4;
+  const lastTrig = new Array(NC).fill(null);
   for (let i = 0; i < rows.length; i++) {
     const r = rows[i];
-    for (let c = 0; c < 4; c++) {
+    for (let c = 0; c < NC; c++) {
       const t0 = r.ticks[0][c];
       const trig = r.ticks.some(t => t[c].trig);
-      if (trig && t0.smp) {
-        const tt = r.ticks.find(t => t[c].trig);
-        const u = (use[t0.smp] ||= { hits: 0, periods: [], durs: [], chans: new Set(), vols: [], beat: 0 });
+      const tt = trig ? r.ticks.find(t => t[c].trig) : null;
+      if (trig && tt[c].smp) {
+        const u = (use[tt[c].smp] ||= { hits: 0, periods: [], durs: [], chans: new Set(), vols: [], beat: 0 });
         u.hits++; if (r.row % 4 === 0) u.beat++; u.periods.push(tt[c].base); u.chans.add(c); u.vols.push(tt[c].vol);
         if (lastTrig[c]) { const L = lastTrig[c]; use[L.smp].durs.push(i - L.row); }
-        lastTrig[c] = { smp: t0.smp, row: i };
+        lastTrig[c] = { smp: tt[c].smp, row: i };
       }
     }
   }
-  for (const c of [0, 1, 2, 3]) if (lastTrig[c]) use[lastTrig[c].smp].durs.push(8);
+  for (let c = 0; c < NC; c++) if (lastTrig[c]) use[lastTrig[c].smp].durs.push(8);
   const total = rows.length;
   for (const k in use) {
     const u = use[k];

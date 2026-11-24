@@ -3,7 +3,8 @@
 // Appends one JSON line per labelled sample ({y, x, src, cls}) and records finished files
 // in <out.jsonl>.done, so it can be called again and again until it prints "complete".
 import fs from 'fs';
-import { parseMod, replayMod } from '../../src/core/mod.js';
+import { loadSong as parseMod } from '../../src/core/formats/index.js';
+import { replaySong as replayMod } from '../../src/core/song.js';
 import { analyzeSample, sampleUsage, CLASSES } from '../../src/core/features.js';
 import { autoLabel } from './autolabel.mjs';
 

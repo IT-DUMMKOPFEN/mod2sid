@@ -1,6 +1,7 @@
 // Conservative rule-based labelling of real MOD samples (only confident cases)
 import fs from 'fs';
-import { parseMod, replayMod } from '../../src/core/mod.js';
+import { loadSong as parseMod } from '../../src/core/formats/index.js';
+import { replaySong as replayMod } from '../../src/core/song.js';
 import { analyzeSample, sampleUsage, realNote } from '../../src/core/features.js';
 import { nameHint } from '../../src/core/classifier.js';
 export function autoLabel(s, uu, info) {

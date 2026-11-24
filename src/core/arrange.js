@@ -13,7 +13,10 @@ const clampNote = (n) => { n = Math.round(n); while (n > 92) n -= 12; while (n <
 
 export function convertSong(mod, replay, analysis, opts = {}) {
   const o = Object.assign({ seed: 1, creativity: 0, assignments: {}, fitEnvelope: true, useFilter: true, lang: 'de', title: mod.title, sids: 1 }, opts);
-  const NV = o.sids === 2 ? 6 : 3;
+  const SIDS = [1, 2, 4, 6, 8].includes(+o.sids) ? +o.sids : 1;
+  const NV = SIDS * 3;
+  const NCH = mod.channels || 4;
+  const ALL = Array.from({ length: NCH }, (_, c) => c);
   const R = rng(o.seed * 104729 + 7);
   const rows = replay.rows, N = rows.length;
   // ------------------------------------------------------------ samples
@@ -37,6 +40,12 @@ export function convertSong(mod, replay, analysis, opts = {}) {
       beat = a.beat;
       if (!beat) preset = PRESET_BY_ID.kick;
     }
+    if (a.synthWave && !preset.drum && preset.cat !== 'drums' && preset.cat !== 'auto' && preset.id !== 'mute' && preset.cat !== 'fx') {
+      // synth instrument of the module: use its own waveform (pulse width from the waveform's duty cycle)
+      const W = a.synthWave.wave;
+      preset = { ...preset, wave: preset.wave.map(st => (typeof st[0] === 'number' && [0x11, 0x21, 0x41].includes(st[0] & 0xF1)) ? [W | (st[0] & 0x0E), st[1]] : st),
+        pulse: W === 0x41 ? [[0x80 | ((a.synthWave.pw >> 8) & 15), a.synthWave.pw & 255], ['S']] : preset.pulse };
+    }
     const env = o.fitEnvelope ? fitADSR(preset, a.info, smp, a.cls) : { ad: preset.ad, sr: preset.sr };
     const drumAbs = !!preset.drum;
     const isDrum = drumAbs || preset.cat === 'drums';
@@ -59,13 +68,13 @@ export function convertSong(mod, replay, analysis, opts = {}) {
   }
   // ------------------------------------------------------------ per channel row info + note events
   const rowSec = rows.map(r => r.ticks.length * 2.5 / r.bpm);
-  const CH = [0, 1, 2, 3].map(() => new Array(N));
-  const notes = [[], [], [], []];
-  const lastTarget = [0, 0, 0, 0], vibMem = [[0, 0], [0, 0], [0, 0], [0, 0]];
+  const CH = ALL.map(() => new Array(N));
+  const notes = ALL.map(() => []);
+  const lastTarget = ALL.map(() => 0), vibMem = ALL.map(() => [0, 0]);
   for (let i = 0; i < N; i++) {
     const r = rows[i];
-    for (let c = 0; c < 4; c++) {
-      const cell = r.cells[c];
+    for (let c = 0; c < NCH; c++) {
+      const cell = r.cells[c] || { s: 0, p: 0, e: 0, x: 0 };
       const tt = r.ticks.findIndex(t => t[c].trig);
       const t0 = r.ticks[0][c], tl = r.ticks[r.ticks.length - 1][c];
       const info = { trig: tt >= 0 && (tt < r.speed), smp: t0.smp, vol0: (tt >= 0 ? r.ticks[tt][c].vol : t0.vol), volEnd: tl.vol, e: cell.e, x: cell.x, per: tt >= 0 ? r.ticks[tt][c].base : t0.base };
@@ -74,7 +83,7 @@ export function convertSong(mod, replay, analysis, opts = {}) {
       if (cell.e === 2 && cell.x) info.porta = { dir: -1, x: cell.x };
       if (cell.e === 0xE && ((cell.x >> 4) === 1 || (cell.x >> 4) === 2)) { /* fine slides: ignored */ }
       if (cell.e === 3 || cell.e === 5) {
-        if (cell.p) lastTarget[c] = cell.p * Math.pow(2, -((mod.samples[(t0.smp || 1) - 1] || { finetune: 0 }).finetune) / 96);
+        if (cell.p) lastTarget[c] = cell.p;
         info.tporta = { x: cell.e === 3 && cell.x ? cell.x : (info.tpx || 0), target: lastTarget[c], hasNote: !!cell.p };
       }
       if (cell.e === 4 || cell.e === 6) {
@@ -85,7 +94,7 @@ export function convertSong(mod, replay, analysis, opts = {}) {
     }
   }
   // tone portamento speed memory
-  for (let c = 0; c < 4; c++) { let mem = 0; for (let i = 0; i < N; i++) { const t = CH[c][i].tporta; if (t) { if (t.x) mem = t.x; t.x = mem; } } }
+  for (let c = 0; c < NCH; c++) { let mem = 0; for (let i = 0; i < N; i++) { const t = CH[c][i].tporta; if (t) { if (t.x) mem = t.x; t.x = mem; } } }
 
   const noteOf = (smpIdx, per) => {
     const s = S[smpIdx]; if (!s) return 48;
@@ -102,7 +111,7 @@ export function convertSong(mod, replay, analysis, opts = {}) {
     }
     return clampNote(real + s.shift);
   };
-  for (let c = 0; c < 4; c++) {
+  for (let c = 0; c < NCH; c++) {
     for (let i = 0; i < N; i++) {
       const inf = CH[c][i];
       if (!inf.trig || !inf.smp || !S[inf.smp] || S[inf.smp].muted) continue;
@@ -146,7 +155,7 @@ export function convertSong(mod, replay, analysis, opts = {}) {
       ev.w = s.weight; ev.short = s.short; ev.drum = s.isDrum; ev.sus = s.sustained;
     }
   }
-  const trigAt = [0, 1, 2, 3].map(c => { const m = new Map(); notes[c].forEach(n => m.set(n.start, n)); return m; });
+  const trigAt = ALL.map(c => { const m = new Map(); notes[c].forEach(n => m.set(n.start, n)); return m; });
   const soundingAt = (c, i) => { // note sounding on channel c at row i (started earlier)
     const ns = notes[c]; let lo = 0, hi = ns.length - 1, best = null;
     while (lo <= hi) { const m = (lo + hi) >> 1; if (ns[m].start <= i) { best = ns[m]; lo = m + 1; } else hi = m - 1; }
@@ -185,40 +194,73 @@ export function convertSong(mod, replay, analysis, opts = {}) {
     return w;
   };
   const plans = [];
-  let prevVoiceOf = [0, 1, 2, 2]; // channel -> voice
-  const perms = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]];
+  // voices that have no channel of their own (more SID voices than MOD channels) play chords and split drums
+  const spareVoices = NCH < NV ? Array.from({ length: NV - NCH }, (_, k) => NCH + k) : [];
+  let prevVoiceOf = ALL.map(c => Math.min(c, NV - 1)); // channel -> voice
+  const perms3 = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]];
   for (const seg of segs) {
-    if (NV === 6) { plans.push({ voices: [[0], [1], [2], [3], [], []], dropped: [], cost: 0 }); continue; }
-    const act = [0, 1, 2, 3].map(c => activity(c, seg));
-    const live = [0, 1, 2, 3].filter(c => act[c] > 0);
-    const options = [];
-    if (live.length <= 3) {
-      const groups = live.map(c => [c]);
-      while (groups.length < 3) groups.push([]);
-      options.push({ groups, cost: 0, dropped: [] });
-    } else {
-      for (let a = 0; a < 4; a++) for (let b = a + 1; b < 4; b++) {
-        const pr = act[a] >= act[b] ? [a, b] : [b, a];
-        const rest = [0, 1, 2, 3].filter(c => c !== a && c !== b).map(c => [c]);
-        options.push({ groups: [pr, ...rest], cost: mergeCost(a, b, seg), dropped: [] });
-      }
-      for (let d = 0; d < 4; d++) options.push({ groups: [0, 1, 2, 3].filter(c => c !== d).map(c => [c]), cost: act[d] * 1.0, dropped: [d] });
+    if (NCH <= NV) {
+      const voices = Array.from({ length: NV }, (_, v) => (v < NCH ? [v] : []));
+      plans.push({ voices, dropped: [], cost: 0 }); continue;
     }
-    // voice assignment minimising channel moves
-    let best = null;
-    for (const opt of options) {
-      for (const pm of perms) {
-        const g = [null, null, null];
-        opt.groups.forEach((grp, k) => { g[pm[k]] = grp; });
+    const act = ALL.map(c => activity(c, seg));
+    const live = ALL.filter(c => act[c] > 0);
+    const scale = Math.max(1, (seg.end - seg.start) / 16);
+    const noise = () => (o.creativity ? R() * o.creativity * 2 * scale : 0);
+    // reduce the live channels to NV groups: merge pairs (bass + drums, two melodies) or drop quiet channels
+    let groups = live.map(c => [c]);
+    let dropped = [], cost = 0;
+    if (groups.length > NV) {
+      const pairCost = new Map();
+      const pc = (a, b) => { const k = a * 256 + b; if (!pairCost.has(k)) pairCost.set(k, mergeCost(a, b, seg) + noise()); return pairCost.get(k); };
+      while (groups.length > NV) {
+        let best = null;
+        const singles = groups.filter(g => g.length === 1).map(g => g[0]);
+        for (let i = 0; i < singles.length; i++) for (let j = i + 1; j < singles.length; j++) {
+          const a = singles[i], b = singles[j], c0 = pc(Math.min(a, b), Math.max(a, b));
+          if (!best || c0 < best.cost) best = { cost: c0, merge: act[a] >= act[b] ? [a, b] : [b, a] };
+        }
+        for (const g of groups) for (const d of g) {
+          const c0 = act[d] * 1.0 + noise() * 0.5;
+          if (!best || c0 < best.cost) best = { cost: c0, drop: d };
+        }
+        if (!best) break;
+        cost += best.cost;
+        if (best.merge) {
+          const [a, b] = best.merge;
+          groups = groups.filter(g => !(g.length === 1 && (g[0] === a || g[0] === b)));
+          groups.push([a, b]);
+        } else {
+          groups = groups.map(g => g.filter(c => c !== best.drop)).filter(g => g.length);
+          dropped.push(best.drop);
+        }
+      }
+    }
+    // voice assignment: keep channels on their voices to avoid jumps
+    let voices;
+    if (NV === 3) {
+      let bestV = null;
+      const gs = groups.slice(); while (gs.length < 3) gs.push([]);
+      for (const pm of perms3) {
+        const g = [null, null, null]; gs.forEach((grp, k) => { g[pm[k]] = grp; });
         let moves = 0;
         g.forEach((grp, v) => grp.forEach(c => { if (prevVoiceOf[c] !== v) moves += (grp[0] === c ? 1 : 0.5); }));
-        const scale = Math.max(1, (seg.end - seg.start) / 16);
-        const total = opt.cost + moves * 3 * scale + (o.creativity ? R() * o.creativity * (opt.cost * 0.6 + 2 * scale) : 0);
-        if (!best || total < best.total) best = { total, voices: g, dropped: opt.dropped, cost: opt.cost };
+        const total = moves * 3 * scale + noise() * 0.3;
+        if (!bestV || total < bestV.total) bestV = { total, g };
       }
+      voices = bestV.g;
+    } else {
+      voices = Array.from({ length: NV }, () => null);
+      const rest = [];
+      for (const g of groups.sort((x, y) => act[y[0]] - act[x[0]])) {
+        const v = prevVoiceOf[g[0]];
+        if (voices[v] === null) voices[v] = g; else rest.push(g);
+      }
+      for (const g of rest) { const v = voices.indexOf(null); voices[v] = g; }
+      voices = voices.map(g => g || []);
     }
-    best.voices.forEach((grp, v) => grp.forEach(c => { prevVoiceOf[c] = v; }));
-    plans.push(best);
+    voices.forEach((grp, v) => grp.forEach(c => { prevVoiceOf[c] = v; }));
+    plans.push({ voices, dropped, cost });
   }
   // ------------------------------------------------------------ instruments & tables
   const song = new GTSong(NV);
@@ -284,13 +326,13 @@ export function convertSong(mod, replay, analysis, opts = {}) {
   const V = Array.from({ length: NV }, () => Array.from({ length: N }, () => ({ n: null, i: 0, cmds: [] })));
   const vstate = Array.from({ length: NV }, () => ({ owner: null, arp: false, fxArp: null, susS: 0, keyed: false }));
   // 2SID: spare voices 4+5 for real chords and split-off drums
-  const spareBusy = NV === 6 ? [new Uint8Array(N + 1), new Uint8Array(N + 1)] : [];
+  const spareBusy = spareVoices.map(() => new Uint8Array(N + 1));
   const spareFree = (k, a, b) => { for (let i = a; i < Math.min(b, N); i++) if (spareBusy[k][i]) return false; return true; };
   const spareNote = (i, ev, note, plain, end) => {
     for (let k = 0; k < spareBusy.length; k++) {
       if (!spareFree(k, i, end)) continue;
       for (let j = i; j < Math.min(end, N); j++) spareBusy[k][j] = 1;
-      const v = 4 + k, c = V[v][i];
+      const v = spareVoices[k], c = V[v][i];
       c.n = 0x60 + clampNote(note); c.i = instrFor(ev.smp, v, plain);
       if (end < N && S[ev.smp].sustained && V[v][end].n === null) V[v][end].n = KEYOFF;
       return true;
@@ -303,10 +345,10 @@ export function convertSong(mod, replay, analysis, opts = {}) {
     const cell = V[v][i];
     cell.n = 0x60 + ev.note; cell.i = instrFor(ev.smp, voice);
     const sc = S[ev.smp];
-    if (NV === 6 && sc.chord && v < 4) {
+    if (spareVoices.length && sc.chord && !spareVoices.includes(v)) {
       // play the chord with real voices where possible, arpeggio only as fallback
       const ivs = sc.chord.iv.slice(1, 3);
-      const free = [0, 1].filter(k => spareFree(k, i, ev.end)).length;
+      const free = spareVoices.map((_, k) => k).filter(k => spareFree(k, i, ev.end)).length;
       if (free >= ivs.length) { ivs.forEach(iv => spareNote(i, ev, ev.note + iv, true, ev.end)); cell.i = instrFor(ev.smp, voice, true); }
     }
     const st = vstate[v]; st.owner = ev; st.arp = false; st.fxArp = null; st.keyed = false;
@@ -374,7 +416,7 @@ export function convertSong(mod, replay, analysis, opts = {}) {
       for (let i = seg.start; i < seg.end; i++) {
         if (b === undefined) {
           const ea = trigAt[a].get(i);
-          if (ea && NV === 6 && ea.drum && st.owner && !st.keyed && !st.owner.drum && st.owner.sus && st.owner.end > i + 1 &&
+          if (ea && spareVoices.length && ea.drum && st.owner && !st.keyed && !st.owner.drum && st.owner.sus && st.owner.end > i + 1 &&
               spareNote(i, ea, ea.note, false, Math.min(ea.end, i + 4))) { effects(v, i, a); continue; }
           if (ea) emitNote(v, i, ea, v);
           effects(v, i, a);
@@ -458,10 +500,60 @@ export function convertSong(mod, replay, analysis, opts = {}) {
     song.restart = Math.max(0, chunks.findIndex(c => c.first === loopSeg));
     return chunks;
   };
-  let chunks = build(1);
-  while (song.patterns.length > MAX_PATTERNS && k < 8) { k++; chunks = build(k); }
-  const truncated = song.patterns.length > MAX_PATTERNS || song.orders[0].length > 254;
-  if (truncated) {
+  // per-voice pattern cutting (each voice has its own order list): repeated bars of drums or bass
+  // become shared patterns, which keeps songs with many voices below the 208 pattern limit
+  const buildPerVoice = (limit = N) => {
+    song.patterns = []; song.patKey = new Map(); song.orders = Array.from({ length: NV }, () => []); song.restarts = [];
+    const loopStart = limit < N ? 0 : (segs[loopSeg] ? segs[loopSeg].start : 0);
+    const pieces = (L) => {
+      const out = [];
+      for (const sg of segs) {
+        if (sg.start >= limit) break;
+        const end = Math.min(sg.end, limit);
+        if (!L) { out.push([sg.start, end]); continue; }
+        if (L < 0) { // merge whole segments up to -L rows (never across the loop point)
+          const last = out[out.length - 1];
+          if (last && end - last[0] <= -L && sg.start !== loopStart) last[1] = end; else out.push([sg.start, end]);
+          continue;
+        }
+        for (let a = sg.start; a < end; a += L) out.push([a, Math.min(end, a + L)]);
+      }
+      return out;
+    };
+    const cands = [0, 32, 16, 8, -128].map(pieces);
+    for (let v = 0; v < NV; v++) {
+      let best = null;
+      for (const pc of cands) {
+        if (pc.length > 254) continue;
+        const keys = pc.map(([a, b]) => { const rows = []; for (let i = a; i < b; i++) rows.push(resolve(V[v][i])); return rows; });
+        const fresh = new Set(); for (const rows of keys) { const kk = rows.map(r => r.join(',')).join(';'); if (!song.patKey.has(kk)) fresh.add(kk); }
+        if (!best || fresh.size < best.fresh) best = { fresh: fresh.size, pc, keys };
+      }
+      if (!best) return false;
+      best.keys.forEach(rows => song.orders[v].push(song.addPattern(rows)));
+      song.restarts[v] = Math.max(0, best.pc.findIndex(([a]) => a === loopStart));
+    }
+    song.restart = song.restarts[0] || 0;
+    return song.patterns.length <= MAX_PATTERNS;
+  };
+  let chunks, cut = 0;
+  let L0 = N;
+  if (o.limitRows && o.limitRows < N) { const sg = segs.filter(x => x.start <= o.limitRows && x.start > 0).pop(); if (sg) { L0 = sg.start; cut = L0; } }
+  if (!buildPerVoice(L0)) {
+    // too many different patterns: keep as much of the song as fits (binary search on the end row)
+    let lo = 0, hi = segs.length - 1;
+    while (hi > 0 && segs[hi].start > L0) hi--;
+    while (lo < hi) { const mid = (lo + hi + 1) >> 1; if (buildPerVoice(segs[mid].start)) lo = mid; else hi = mid - 1; }
+    cut = lo > 0 ? segs[lo].start : 0;
+    if (cut > 0) buildPerVoice(cut);
+    else {
+      song.restarts = null;
+      chunks = build(1);
+      while (song.patterns.length > MAX_PATTERNS && k < 8) { k++; chunks = build(k); }
+    }
+  }
+  const truncated = cut > 0 || song.patterns.length > MAX_PATTERNS || song.orders[0].length > 254;
+  if (truncated && !cut) {
     // keep as many chunks as fit
     while (song.patterns.length > MAX_PATTERNS || song.orders[0].length > 254) {
       for (let v = 0; v < NV; v++) song.orders[v].pop();
@@ -476,11 +568,11 @@ export function convertSong(mod, replay, analysis, opts = {}) {
     }
   }
   const segInfo = segs.map((s, k) => {
-    const spare = [4, 5].filter(v => v < NV).map(v => { let n = 0; for (let i = s.start; i < s.end; i++) if (V[v][i].n !== null && V[v][i].n < 0xBD) n++; return n; });
+    const spare = spareVoices.map(v => { let n = 0; for (let i = s.start; i < s.end; i++) if (V[v][i].n !== null && V[v][i].n < 0xBD) n++; return n; });
     return { start: s.start, end: s.end, pos: rows[s.start].pos, pat: rows[s.start].pat, voices: plans[k].voices, dropped: plans[k].dropped, cost: plans[k].cost, spare };
   });
   return {
-    song, voices: NV, initTempo, gate: GATE, filterVoice, segments: segInfo, loopSeg, truncated, overflow: song.overflow, degraded,
+    song, voices: NV, sids: SIDS, channels: NCH, initTempo, gate: GATE, filterVoice, segments: segInfo, loopSeg, truncated, overflow: song.overflow, degraded,
     rowsTotal: N, seconds: rowSec.reduce((a, b) => a + b, 0),
     instrumentMap: Object.fromEntries(Object.entries(insOf)),
   };

@@ -8,11 +8,7 @@ ZP2 = $FD
         jmp play
 
 ; ---------------------------------------------------------------- init
-init:   ldx #$18
-        lda #0
-clsid:  sta $D400,x
-        dex
-        bpl clsid
+init:   CLEARSID
         ldx #VARSIZE
         lda #0
 clvar:  sta VARS-1,x
@@ -697,11 +693,19 @@ VARSEND:
 VARSIZE = VARSEND - VARS
 `;
 
-// nv = 3 (one SID) or 6 (two SIDs, second at $D420)
+// nv = 3 * number of SIDs (1, 2, 4, 6 or 8); SID k sits at $D400 + k * $20
 export function playerAsm(nv = 3) {
+  const nsid = Math.ceil(nv / 3);
   const zeros = new Array(nv).fill(0).join(',');
-  const offs = [0, 7, 14, 32, 39, 46].slice(0, nv).join(',');
-  const sid2 = nv > 3 ? '        lda #0\n        sta $D437\n        lda mvol\n        sta $D438' : '';
-  return PLAYER_SRC.replace(/VBYTES/g, zeros).replace('SIDOFFS', offs).replace('SID2OUT', sid2).replace(/NVM1/g, String(nv - 1));
+  const offs = Array.from({ length: nv }, (_, v) => Math.floor(v / 3) * 32 + (v % 3) * 7).join(',');
+  let extra = '';
+  for (let k = 1; k < nsid; k++) {
+    const b = 0xD400 + k * 32;
+    extra += `        lda #0\n        sta $${(b + 0x17).toString(16).toUpperCase()}\n        lda mvol\n        sta $${(b + 0x18).toString(16).toUpperCase()}\n`;
+  }
+  const clear = nsid > 1
+    ? `ldx #0\n        lda #0\nclsid:  sta $D400,x\n        inx\n        bne clsid`
+    : `ldx #$18\n        lda #0\nclsid:  sta $D400,x\n        dex\n        bpl clsid`;
+  return PLAYER_SRC.replace('CLEARSID', clear).replace(/VBYTES/g, zeros).replace('SIDOFFS', offs).replace('SID2OUT', extra.replace(/\n$/, '')).replace(/NVM1/g, String(nv - 1));
 }
 export const PLAYER_ASM = playerAsm(3);

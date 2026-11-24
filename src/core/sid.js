@@ -168,55 +168,83 @@ export function parsePSID(bytes) {
   const s = (o) => { let r = ''; for (let i = 0; i < 32 && b[o + i]; i++) r += String.fromCharCode(b[o + i]); return r; };
   const version = w(4);
   let sid2 = 0;
-  if (version >= 3 && b[0x7A] >= 0x42 && b[0x7A] <= 0xFE) sid2 = 0xD000 | (b[0x7A] << 4);
-  return { load, init, play, songs, start, data, sid2, name: s(0x16), author: s(0x36), released: s(0x56) };
+  const sids = [0xD400];
+  if (version === 3 || version === 4) {
+    if (b[0x7A] >= 0x42 && b[0x7A] <= 0xFE) { sid2 = 0xD000 | (b[0x7A] << 4); sids.push(sid2); }
+  } else if (version >= 5) {
+    // GrooveGoat PSID v5: low nibble = number of SIDs, high nibble = layout, 0x7B = start of SID 2
+    const n = b[0x7A] & 15, cfg = b[0x7A] >> 4;
+    const std = [0xD420, 0xD440, 0xD480, 0xD500, 0xD420, 0xD420, 0xD500][cfg] || 0xD420;
+    const s1 = [0x20, 0x40, 0x80, 0x100, 0x20, 0x20, 0x100][cfg] || 0x20, s2 = [0x20, 0x40, 0x80, 0x100, 0x60, 0xE0, 0x300][cfg] || 0x20;
+    let a2 = b[0x7B] ? 0xD000 | (b[0x7B] << 4) : std;
+    for (let k = 1; k < n; k++) {
+      if (k > 1) { a2 += ((k - 1) & 1) ? s2 : s1; if (a2 > 0xD7E0 && a2 < 0xDE00) a2 = 0xDE00; }
+      sids.push(a2);
+    }
+    sid2 = sids[1] || 0;
+  }
+  return { load, init, play, songs, start, data, sid2, sids, name: s(0x16), author: s(0x36), released: s(0x56) };
 }
 
 export class SIDPlayer {
   constructor(sampleRate = 44100, model = '6581') {
-    this.sid = new SID(sampleRate, model);
-    this.sid2 = new SID(sampleRate, model);
-    this.sid2Base = 0;
+    this.model = model;
+    this.chips = [new SID(sampleRate, model)];
+    this.addr = [0xD400];
     this.sampleRate = sampleRate;
     this.buf2 = new Float32Array(4096);
     this.spf = sampleRate / 50.1245;
     this.mem = new Uint8Array(65536);
+    this.muteMask = [];
     this.cpu = new CPU6502(this.mem, (a, v) => {
-      if (this.sid2Base && a >= this.sid2Base && a < this.sid2Base + 0x20) this.sid2.write(a - this.sid2Base, v);
-      else if (a < 0xD420 || !this.sid2Base) this.sid.write(a & 0x1F, v);
+      for (let k = this.addr.length - 1; k >= 0; k--) {
+        const b = this.addr[k];
+        if (a >= b && a < b + 0x20) { this.chips[k].write(a - b, v); return; }
+      }
     });
     this.frame = 0; this.acc = 0; this.tune = null;
   }
+  get sid() { return this.chips[0]; }
+  get sid2() { return this.chips[1] || this.chips[0]; }
   load(psidBytes, song = 0) {
     this.tune = parsePSID(psidBytes);
     this.song = song;
     this.restart();
   }
   restart() {
-    const t = this.tune; this.mem.fill(0); this.sid.reset(); this.sid2.reset(); this.sid2Base = t.sid2 || 0;
+    const t = this.tune;
+    this.addr = t.sids || [0xD400];
+    while (this.chips.length < this.addr.length) this.chips.push(new SID(this.sampleRate, this.model));
+    this.chips.length = this.addr.length;
+    this.mem.fill(0); this.chips.forEach(c => c.reset());
+    this.setMute(this.muteMask);
     this.mem.set(t.data, t.load);
     this.cpu.call(t.init, this.song);
     this.frame = 0; this.acc = 0;
   }
   seek(frame) {
     this.restart();
-    for (let i = 0; i < frame; i++) { this.cpu.call(this.tune.play); this.sid.v.forEach(v => v.clockEnv(19656)); this.sid2.v.forEach(v => v.clockEnv(19656)); }
+    for (let i = 0; i < frame; i++) { this.cpu.call(this.tune.play); this.chips.forEach(c => c.v.forEach(v => v.clockEnv(19656))); }
     this.frame = frame;
   }
-  setMute(m) { this.sid.mute = m.slice(0, 3); this.sid2.mute = (m.length > 3 ? m.slice(3, 6) : [false, false, false]); }
-  setModel(m) { this.sid.setModel(m); this.sid2.setModel(m); }
-  get voices() { return this.sid2Base ? 6 : 3; }
+  setMute(m) { this.muteMask = m || []; this.chips.forEach((c, k) => { c.mute = [0, 1, 2].map(j => !!this.muteMask[k * 3 + j]); }); }
+  setModel(m) { this.model = m; this.chips.forEach(c => c.setModel(m)); }
+  get voices() { return this.chips.length * 3; }
   // fill out (Float32Array) with mono samples
   generate(out) {
     let i = 0;
+    const n0 = this.chips.length, g = n0 === 1 ? 1 : n0 === 2 ? 0.75 : 1.5 / Math.sqrt(n0) / 1.4;
     while (i < out.length) {
       if (this.acc <= 0) { this.cpu.call(this.tune.play); this.frame++; this.acc += this.spf; }
       const n = Math.min(out.length - i, Math.ceil(this.acc));
-      this.sid.render(out, i, n);
-      if (this.sid2Base) {
+      this.chips[0].render(out, i, n);
+      if (n0 > 1) {
         if (this.buf2.length < n) this.buf2 = new Float32Array(n);
-        this.sid2.render(this.buf2, 0, n);
-        for (let k = 0; k < n; k++) out[i + k] = (out[i + k] + this.buf2[k]) * 0.75;
+        for (let k = 1; k < n0; k++) {
+          this.chips[k].render(this.buf2, 0, n);
+          for (let j = 0; j < n; j++) out[i + j] += this.buf2[j];
+        }
+        for (let j = 0; j < n; j++) out[i + j] *= g;
       }
       i += n; this.acc -= n;
     }

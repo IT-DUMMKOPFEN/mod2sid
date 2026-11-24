@@ -3,7 +3,9 @@
 import { loadMod, analyze, convert } from '../core/convert.js';
 import { setModel, modelInfo } from '../core/classifier.js';
 import { PRESETS, PRESET_BY_ID, CATEGORIES, CLASS_PRESETS, presetName } from '../core/library.js';
-import { renderMod, PAULA_PAL } from '../core/mod.js';
+import { PAULA_PAL } from '../core/mod.js';
+import { renderSong } from '../core/song.js';
+import { FORMAT_NAMES } from '../core/formats/index.js';
 import { fitADSR } from '../core/analyze.js';
 import { auditionSID } from '../core/audition.js';
 import { decomposeBeat, voiceWavetable } from '../core/beat.js';
@@ -21,7 +23,7 @@ const S = {
   theme: LS.get('theme', 'dark'),
   ctx: null, analysis: null, result: null, file: null, seed: 1, variant: 1,
   assign: {}, manual: new Set(),
-  mode: 'sid', playing: false, frame: 0, mute: [false, false, false, false, false, false], solo: -1,
+  mode: 'sid', playing: false, frame: 0, mute: new Array(24).fill(false), solo: -1,
   audio: null, node: null, gain: null, modBuf: null, modSrc: null, modStart: 0, modOffset: 0,
   loaded: 'none', rowStart: [], savedDir: LS.get('savedDir', ''),
 };
@@ -59,8 +61,15 @@ async function ensureAudio() {
   };
 }
 function sidMsg(m) { if (S.node) S.node.port.postMessage(m); }
-const nVoices = () => (S.result ? S.result.voices : (+$('#optSids').value === 2 ? 6 : 3));
-function muteMask() { return Array.from({ length: 6 }, (_, v) => S.solo >= 0 ? v !== S.solo : S.mute[v]); }
+// SID count: 0 = automatic (enough SIDs for every channel of the module)
+function sidCount() {
+  const v = +$('#optSids').value;
+  if (v) return v;
+  const ch = S.ctx ? S.ctx.mod.channels || 4 : 4;
+  return [1, 2, 4, 6, 8].find(n => n * 3 >= ch) || 8;
+}
+const nVoices = () => (S.result ? S.result.voices : sidCount() * 3);
+function muteMask() { return Array.from({ length: 24 }, (_, v) => S.solo >= 0 ? v !== S.solo : S.mute[v]); }
 async function loadSongIntoPlayer(autoplay, frame = 0) {
   await ensureAudio();
   sidMsg({ type: 'load', psid: S.result.sid, model: $('#optModel').value, mute: muteMask(), autoplay, frame });
@@ -89,7 +98,7 @@ function stopAll() {
   S.playing = false; $('#btnPlay').textContent = '▶'; updatePos();
 }
 function buildModBuffer() {
-  const r = renderMod(S.ctx.mod, S.ctx.replay, 22050);
+  const r = renderSong(S.ctx.mod, S.ctx.replay, 22050);
   const b = S.audio.createBuffer(2, Math.max(1, r.left.length), 22050);
   b.copyToChannel(r.left, 0); b.copyToChannel(r.right, 1);
   S.modBuf = b;
@@ -142,7 +151,7 @@ async function auditionSample(a, btn) {
   const was = btn.classList.contains('on'); if (S.playing) pause(); stopAudition(); if (was) return;
   const s = S.ctx.mod.samples[a.index - 1];
   const per = (S.analysis.usage[a.index] || {}).medianPeriod || 214;
-  const rate = PAULA_PAL / (2 * per);
+  const rate = Math.max(3000, Math.min(96000, PAULA_PAL / per));
   const len = s.looped ? Math.max(s.data.length, Math.round(rate * 2)) : s.data.length;
   const buf = S.audio.createBuffer(1, Math.max(1, len), rate);
   const ch = buf.getChannelData(0);
@@ -200,8 +209,8 @@ function runConvert(keepPos = false) {
   for (const a of S.analysis.samples) if (a.used) assignments[a.index] = S.assign[a.index] || a.presetId;
   S.result = convert(S.ctx, S.analysis, {
     seed: S.seed, creativity: S.variant > 1 ? +$('#optCreativity').value / 100 : 0, assignments, lang: S.lang,
-    fitEnvelope: $('#optFitEnv').checked, useFilter: $('#optFilter').checked, model: $('#optModel').value, sids: +$('#optSids').value,
-    title: S.ctx.mod.title || (S.file && S.file.name.replace(/\.mod$/i, '')),
+    fitEnvelope: $('#optFitEnv').checked, useFilter: $('#optFilter').checked, model: $('#optModel').value, sids: sidCount(),
+    title: S.ctx.mod.title || (S.file && S.file.name.replace(/\.[^.]*$/, '')),
   });
   // row start times for the arrangement view
   let acc = 0; S.rowStart = S.ctx.replay.rows.map(r => { const s = acc; acc += r.ticks.length * 2.5 / r.bpm; return s; });
@@ -234,9 +243,9 @@ function setInstrument(a, presetId) {
 }
 async function save() {
   if (!S.result) return;
-  const base = (S.ctx.mod.title || (S.file && S.file.name) || 'tune').replace(/\.mod$/i, '').replace(/[^\w\- .()]+/g, '_').trim() || 'tune';
+  const base = ((S.file && S.file.name) || S.ctx.mod.title || 'tune').replace(/^(mod|med|aon[48]?|dbm)\./i, '').replace(/\.[^.]{1,5}$/, '').replace(/[^\w\- .()]+/g, '_').trim() || 'tune';
   const dir = S.file && S.file.path ? S.file.path.replace(/[\\/][^\\/]*$/, '') : S.savedDir;
-  const r = await api.saveOutput({ baseName: base, sid: S.result.sid, sng: S.result.sng, defaultDir: dir });
+  const r = await api.saveOutput({ baseName: base, sid: S.result.sid, sng: S.result.sng, songExt: S.result.songExt || 'sng', defaultDir: dir });
   if (r) {
     setStatus(t('saved'));
     $('#warnings').innerHTML = `${t('savedTo')}<br>${esc(r.sid)}<br>${esc(r.sng)}<br><a href="#" id="revealLink">${t('reveal')}</a>`;
@@ -251,8 +260,8 @@ function renderSongInfo() {
   const secs = r.rows.reduce((a, x) => a + x.ticks.length * 2.5 / x.bpm, 0);
   const used = S.analysis.samples.filter(s => s.used).length;
   $('#songInfo').innerHTML = [
-    [t('title'), esc(m.title || (S.file ? S.file.name : '-'))], [t('format'), esc(m.tag) + (m.numSamples === 15 ? ' (15)' : '')],
-    [t('length'), fmtTime(secs)], [t('positions'), m.songLength], [t('tempo'), `${r.rows[0].speed} / ${r.rows[0].bpm} BPM`], [t('samples'), used],
+    [t('title'), esc(m.title || (S.file ? S.file.name : '-'))], [t('format'), esc(FORMAT_NAMES[m.format] || m.format) + (m.tag ? ' ' + esc(m.tag) : '') + (m.numSamples === 15 ? ' (15)' : '')], [t('channels'), m.channels || 4],
+    [t('length'), fmtTime(secs)], [t('positions'), m.orders.length], [t('tempo'), `${r.rows[0].speed} / ${r.rows[0].bpm} BPM`], [t('samples'), used],
   ].map(([k, v]) => `<div><span>${k}</span><span>${v}</span></div>`).join('');
 }
 function renderKiInfo() {
@@ -264,9 +273,10 @@ function renderKiInfo() {
 function renderStats() {
   if (!S.result) return;
   const r = S.result;
-  $('#outStats').textContent = t('stats', { sids: r.voices > 3 ? '2 SIDs ($D400+$D420)' : '1 SID', patterns: r.song.patterns.length, instr: r.song.instr.length, size: r.sidInfo.size, end: r.sidInfo.end.toString(16).toUpperCase() });
+  $('#outStats').textContent = t('stats', { sids: r.sids > 1 ? `${r.sids} SIDs ($D400${r.sids === 2 ? '+$D420' : '…$' + (0xD400 + (r.sids - 1) * 32).toString(16).toUpperCase()})` : '1 SID', patterns: r.song.patterns.length, instr: r.song.instr.length, size: r.sidInfo.size, end: r.sidInfo.end.toString(16).toUpperCase() });
   const w = [];
   if (r.truncated) w.push(t('trunc'));
+  if (r.sids > 2) w.push(t('ggtNote', r.sids));
   if (r.overflow) w.push(t('ovf'));
   $('#warnings').textContent = w.join(' ');
 }
@@ -275,7 +285,7 @@ function renderVoiceBtns() {
   const nv = nVoices();
   for (let v = 0; v < nv; v++) {
     const b = document.createElement('button'); b.className = 'vbtn';
-    b.innerHTML = `<i style="background:var(--c${v})"></i>${nv > 3 ? (v < 3 ? 'A' : 'B') + ((v % 3) + 1) : t('voice') + ' ' + (v + 1)}`;
+    b.innerHTML = `<i style="background:var(--c${v % 6})"></i>${nv > 3 ? 'ABCDEFGH'[Math.floor(v / 3)] + ((v % 3) + 1) : t('voice') + ' ' + (v + 1)}`;
     b.title = `${t('mute')} (Klick) · ${t('solo')} (Doppelklick / double click)`;
     if (S.solo >= 0 ? S.solo !== v : S.mute[v]) b.classList.add('off');
     if (S.solo === v) b.classList.add('solo');
@@ -324,15 +334,15 @@ function renderArrangement() {
   const box = $('#arrView'); if (!S.result) { box.innerHTML = ''; return; }
   const segs = S.result.segments; const rows = S.ctx.replay.rows;
   const px = 3;
-  const chCol = (c) => `var(--c${c})`;
+  const chCol = (c) => `hsl(${(c * 47) % 360} 65% 55%)`;
   let h = '';
   const nv = S.result.voices || 3;
   for (let v = 0; v < nv; v++) {
-    const lab = nv > 3 ? `SID${v < 3 ? 1 : 2}·${(v % 3) + 1}` : `SID ${v + 1}`;
-    h += `<div class="arrRow"><div class="arrLabel"><i style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--c${v});margin-right:6px"></i>${lab}</div>`;
+    const lab = nv > 3 ? `SID${Math.floor(v / 3) + 1}·${(v % 3) + 1}` : `SID ${v + 1}`;
+    h += `<div class="arrRow"><div class="arrLabel"><i style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--c${v % 6});margin-right:6px"></i>${lab}</div>`;
     segs.forEach((s, k) => {
       const grp = s.voices[v]; const w = Math.max(6, (s.end - s.start) * px);
-      const inner = grp.length ? grp.map(c => `<div style="background:${chCol(c)}">K${c + 1}</div>`).join('') : (v >= 4 && s.spare && s.spare[v - 4] ? `<div style="background:var(--c${v})">${S.lang === 'de' ? 'Akkord/Drum' : 'chord/drum'}</div>` : '<div class="empty"></div>');
+      const inner = grp.length ? grp.map(c => `<div style="background:${chCol(c)}">K${c + 1}</div>`).join('') : (s.spare && s.spare[v - (S.ctx.mod.channels || 4)] ? `<div style="background:var(--c${v % 6})">${S.lang === 'de' ? 'Akkord/Drum' : 'chord/drum'}</div>` : '<div class="empty"></div>');
       h += `<div class="arrSeg" data-k="${k}" style="width:${w}px" title="Pos ${s.pos} · Pattern ${s.pat} · ${grp.map(c => 'K' + (c + 1)).join('+') || '-'}${grp.length > 1 ? ' (' + t('merged') + ')' : ''}">${inner}</div>`;
     });
     h += '</div>';
@@ -340,7 +350,7 @@ function renderArrangement() {
   h += `<div class="arrRow" style="height:18px"><div class="arrLabel">${t('dropped')}</div>`;
   segs.forEach((s, k) => { const w = Math.max(6, (s.end - s.start) * px); h += `<div class="arrSeg" data-k="${k}" style="width:${w}px">${s.dropped.map(c => `<div style="background:${chCol(c)};opacity:.6">K${c + 1}</div>`).join('')}</div>`; });
   h += '</div>';
-  h += `<div class="legend">${[0, 1, 2, 3].map(c => `<span><i style="background:var(--c${c})"></i>${S.lang === 'de' ? 'Kanal' : 'Channel'} ${c + 1} (K${c + 1})</span>`).join('')}</div>`;
+  h += `<div class="legend">${Array.from({ length: Math.min(32, S.ctx.mod.channels || 4) }, (_, c) => c).map(c => `<span><i style="background:${chCol(c)}"></i>K${c + 1}</span>`).join('')}</div>`;
   box.innerHTML = h;
   const head = box.parentElement.querySelector('h3'); if (head) head.textContent = t('arrangement').replace('3', String(nv));
   box.querySelectorAll('.arrSeg').forEach(el => { el.onclick = () => { const s = segs[+el.dataset.k]; seekTo(S.rowStart[s.start] || 0); }; });
@@ -369,7 +379,7 @@ async function showInfo() {
   const i = api.appInfo ? await api.appInfo() : { version: '?' };
   const mi = modelInfo() || {};
   modal(`<img class="infoLogo" src="icon.png"><h2>mod2sid ${esc(i.version)}</h2>
-  <p>${S.lang === 'de' ? 'Wandelt 4-Kanal-Amiga-MODs in C64-SID-Musik (PSID) und GoatTracker-2-Songs (SNG) um.' : 'Converts 4-channel Amiga MODs into C64 SID music (PSID) and GoatTracker 2 songs (SNG).'}</p>
+  <p>${S.lang === 'de' ? 'Wandelt Tracker-Module (MOD, OctaMED, XM, IT, DigiBooster, Art Of Noise) in C64-SID-Musik (PSID) und GoatTracker- bzw. C64-GrooveGoat-Songs (SNG/GGT) um – mit 1 bis 8 SIDs.' : 'Converts tracker modules (MOD, OctaMED, XM, IT, DigiBooster, Art Of Noise) into C64 SID music (PSID) and GoatTracker or C64 GrooveGoat songs (SNG/GGT) – with 1 to 8 SIDs.'}</p>
   <p><b>Done by IT-DUMMKOPFEN</b><br><a href="#" data-url="https://github.com/IT-DUMMKOPFEN/mod2sid">github.com/IT-DUMMKOPFEN/mod2sid</a></p>
   <h3>${S.lang === 'de' ? 'Lizenz' : 'License'}</h3>
   <p>GNU General Public License v3.0 (GPL-3.0).</p>
@@ -396,7 +406,7 @@ async function init() {
   applyLang();
   if (api.appInfo) api.appInfo().then(i => { $('#ver').textContent = 'v' + i.version; document.body.classList.add('os-' + i.platform); });
   if (api.onOpenPath) api.onOpenPath(async (p) => { const r = await api.readFile(p); if (r) openFile(r); });
-  if (saved.sids) $('#optSids').value = saved.sids;
+  if (saved.sids !== undefined && [0, 1, 2, 4, 6, 8].includes(+saved.sids)) $('#optSids').value = saved.sids;
   const saveOpts = () => LS.set('opts', { sids: +$('#optSids').value, model: $('#optModel').value, creativity: +$('#optCreativity').value, fitEnv: $('#optFitEnv').checked, filter: $('#optFilter').checked });
   $('#btnOpen').onclick = async () => { const f = await api.openMod(); if (f) openFile(f); };
   $('#btnReconvert').onclick = reconvert;

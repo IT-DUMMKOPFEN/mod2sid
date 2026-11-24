@@ -89,7 +89,7 @@ export class GTSong {
     out.push(1);
     for (let v = 0; v < this.orders.length; v++) {
       const ol = this.orders[v];
-      out.push(ol.length + 1, ...ol, 0xFF, this.restart);
+      out.push(ol.length + 1, ...ol, 0xFF, this.restarts && this.restarts[v] !== undefined ? this.restarts[v] : this.restart);
     }
     out.push(this.instr.length);
     for (const i of this.instr) {
@@ -109,11 +109,43 @@ export class GTSong {
   }
 }
 
+// C64 GrooveGoat song (.ggt): "GGT1" header + GoatTracker 2 song body with 3 channels per SID.
+// GrooveGoat knows 1, 2, 4 or 8 SIDs: a 6-SID song is stored as 8 SIDs, SID 7 and 8 stay silent.
+GTSong.prototype.toGGT = function (sids, { model = '6581' } = {}) {
+  const ns = sids <= 1 ? 1 : sids <= 2 ? 2 : sids <= 4 ? 4 : 8;
+  const nch = ns * 3;
+  const save = { orders: this.orders, patterns: this.patterns, restarts: this.restarts };
+  this.restarts = Array.from({ length: nch }, (_, v) => (v < this.orders.length ? (this.restarts ? this.restarts[v] ?? this.restart : this.restart) : 0));
+  if (this.orders.length < nch) {
+    // silent channels: one empty pattern
+    let empty = this.patterns.findIndex(p => p.every(r => r[0] === REST && !r[1] && !r[2] && !r[3]));
+    const pats = this.patterns.slice();
+    if (empty < 0) { pats.push(Array.from({ length: 64 }, () => [REST, 0, 0, 0])); empty = pats.length - 1; }
+    this.patterns = pats;
+    this.orders = this.orders.concat(Array.from({ length: nch - this.orders.length }, () => [empty]));
+  }
+  const body = this.toSNG().subarray(4);
+  this.orders = save.orders; this.patterns = save.patterns; this.restarts = save.restarts;
+  const lens = new Map(); for (const p of this.patterns) lens.set(p.length, (lens.get(p.length) || 0) + 1);
+  const plen = [...lens.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] || 64;
+  const head = [0x47, 0x47, 0x54, 0x31, ns, model === '8580' ? 2 : 0, 1, 0x00, 0x0F];
+  for (let k = 0; k < ns; k++) { const a = 0xD400 + k * 0x20; head.push(a & 255, a >> 8); }
+  head.push(0);
+  const trailer = [0x50, Math.min(128, plen), 2, 0, 0x47, 0x47, 0x58, 0x31]; // 'P' <pattern length>, size, "GGX1"
+  const out = new Uint8Array(head.length + body.length + trailer.length);
+  out.set(head, 0); out.set(body, head.length); out.set(trailer, head.length + body.length);
+  return out;
+};
+
 // read back a GTS5 file (used for self-checks)
 export function parseSNG(b, nch = 3) {
   let p = 0; const rd = () => b[p++];
   const id = String.fromCharCode(b[0], b[1], b[2], b[3]); p = 4;
-  if (id !== 'GTS5') throw new Error('not GTS5');
+  if (id === 'GGT1') {
+    const ns = b[4]; nch = ns * 3; p = 4 + 1 + 1 + 1 + 2 + 2 * ns + 1;
+    const tl = b[b.length - 6] | (b[b.length - 5] << 8);
+    b = b.subarray(0, b.length - 6 - tl);
+  } else if (id !== 'GTS5') throw new Error('not GTS5');
   p += 96;
   const subs = rd(); const orders = [];
   for (let s = 0; s < subs; s++) for (let c = 0; c < nch; c++) { const n = rd() + 1; orders.push(Array.from(b.slice(p, p + n))); p += n; }

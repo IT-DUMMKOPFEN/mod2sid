@@ -57,7 +57,7 @@ export function buildSID(song, { initTempo = 6, gate = 2, load = 0x1000, model =
   const put = (n, arr) => { sym[n] = base + bytes.length; bytes.push(...arr.map(v => v & 0xFF)); };
   for (const [n, arr] of Object.entries(data)) put(n, arr);
   const olAddr = [];
-  for (let v = 0; v < nv; v++) { olAddr.push(base + bytes.length); bytes.push(...song.orders[v], 0xFF, song.restart); }
+  for (let v = 0; v < nv; v++) { olAddr.push(base + bytes.length); bytes.push(...song.orders[v], 0xFF, song.restarts && song.restarts[v] !== undefined ? song.restarts[v] : song.restart); }
   put('ORDLO', olAddr.map(a => a & 0xFF)); put('ORDHI', olAddr.map(a => a >> 8));
   const pats = song.patterns.map(compilePattern);
   const pl = base + bytes.length; bytes.push(...new Array(pats.length * 2).fill(0));
@@ -68,15 +68,18 @@ export function buildSID(song, { initTempo = 6, gate = 2, load = 0x1000, model =
   const binary = new Uint8Array(codeLen + bytes.length);
   binary.set(fin.code, 0); binary.set(bytes, codeLen);
   if (load + binary.length > 0xD000) throw new Error('SID zu groß / too large');
-  // PSID v2 header
+  // PSID header: v2 (1 SID), v3 (2 SIDs, second at $D420), v5 (4-8 SIDs, +$20 steps, as C64 GrooveGoat writes it)
+  const nsid = Math.ceil(nv / 3);
+  const ver = nsid === 1 ? 2 : nsid === 2 ? 3 : 5;
   const h = new Uint8Array(0x7C);
   const w16 = (o, v) => { h[o] = (v >> 8) & 255; h[o + 1] = v & 255; };
-  h.set([0x50, 0x53, 0x49, 0x44]); w16(4, nv > 3 ? 3 : 2); w16(6, 0x7C); w16(8, 0); w16(10, load); w16(12, load + 3); w16(14, 1); w16(16, 1);
+  h.set([0x50, 0x53, 0x49, 0x44]); w16(4, ver); w16(6, 0x7C); w16(8, 0); w16(10, load); w16(12, load + 3); w16(14, 1); w16(16, 1);
   const str = (o, s) => { const t = String(s || ''); for (let i = 0; i < Math.min(31, t.length); i++) { const c = t.charCodeAt(i); h[o + i] = c < 256 ? c : 63; } };
   str(0x16, name || song.name); str(0x36, author || song.author); str(0x56, released || song.copyright);
   const m = model === '8580' ? 2 : 1;
-  w16(0x76, (m << 4) | 0x04 | (nv > 3 ? (m << 6) : 0));
-  if (nv > 3) h[0x7A] = 0x42; // second SID at $D420
+  w16(0x76, (m << 4) | 0x04 | (ver === 3 ? (m << 6) : 0));
+  if (ver === 3) h[0x7A] = 0x42; // second SID at $D420
+  if (ver === 5) { h[0x7A] = nsid & 0x0F; h[0x7B] = 0; } // layout 0: $D400, $D420, $D440 ...
   const psid = new Uint8Array(0x7C + 2 + binary.length);
   psid.set(h, 0); psid[0x7C] = load & 255; psid[0x7D] = load >> 8; psid.set(binary, 0x7E);
   return { psid, size: binary.length, codeLen, end: load + binary.length - 1, symbols: fin.syms };

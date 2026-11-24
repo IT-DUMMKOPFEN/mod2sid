@@ -55,6 +55,25 @@ export function fitADSR(preset, info, s, cls) {
   return { ad: (A << 4) | D, sr: (S << 4) | pr };
 }
 
+// single-cycle synth waveforms (OctaMED / Art Of Noise synth instruments): closest SID waveform
+export function detectSynthWave(data) {
+  const n = data.length;
+  if (n < 8 || n > 512) return null;
+  let mx = 1e-9, mean = 0; for (const v of data) { mx = Math.max(mx, Math.abs(v)); mean += v; } mean /= n;
+  const x = Array.from(data, v => (v - mean) / mx);
+  const norm = (a) => Math.sqrt(a.reduce((s, v) => s + v * v, 0)) || 1;
+  const nx = norm(x);
+  const corr = (f) => { let best = -1; for (let sh = 0; sh < n; sh += Math.max(1, n >> 6)) { const r = Array.from({ length: n }, (_, i) => f(((i + sh) % n) / n)); const c = Math.abs(r.reduce((s, v, i) => s + v * x[i], 0)) / (nx * norm(r)); best = Math.max(best, c); } return best; };
+  const saw = corr(t => 2 * t - 1), tri = corr(t => (t < 0.5 ? 4 * t - 1 : 3 - 4 * t));
+  const pos = x.filter(v => v > 0).length / n;
+  const flat = x.filter(v => Math.abs(v) > 0.7).length / n;
+  const sq = corr(t => (t < pos ? 1 : -1));
+  const best = Math.max(saw, tri, sq);
+  if (best < 0.6) return null;
+  if (sq === best || flat > 0.85) return { wave: 0x41, pw: Math.max(0x100, Math.min(0xF00, Math.round(Math.min(pos, 1 - pos) * 4095))), score: best };
+  return saw === best ? { wave: 0x21, pw: 0x800, score: best } : { wave: 0x11, pw: 0x800, score: best };
+}
+
 export function analyzeMod(mod, replay, { seed = 1, creativity = 0, memory = [] } = {}) {
   const usage = sampleUsage(replay);
   const R = rng(seed * 7919 + 13);
@@ -110,6 +129,7 @@ export function analyzeMod(mod, replay, { seed = 1, creativity = 0, memory = [] 
       noteShift: shift, medianNote: med, hits: u.hits, weight: WEIGHT[cls] ?? 5,
       sustained: s.looped || info.sustain > 0.35, lengthSec: s.looped ? 1e9 : s.data.length / info.rate,
       chord: (cls === 'chord' && info.chord) ? info.chord : null, learned: !!learned, beat, voice,
+      synthWave: s.synth ? detectSynthWave(s.loopLength > 2 ? s.data.subarray(s.loopStart, s.loopStart + s.loopLength) : s.data) : null,
     });
   }
   return { samples: out, usage };

@@ -1,3 +1,23 @@
+## mod2sid 2.0
+
+**DE:**
+- **Neue Formate:** OctaMED (MMD0–MMD3, mit Synth- und Hybrid-Instrumenten), FastTracker 2 XM, Impulse Tracker IT, DigiBooster Pro (DBM) und Art Of Noise (AON4/AON8). Dazu kommen MODs mit 6 bis 32 Kanälen und mit PowerPacker gepackte Dateien.
+- **1, 2, 4, 6 oder 8 SIDs:** 4 bis 8 SIDs werden im C64-GrooveGoat-Format (.ggt) und als PSID v5 gespeichert, 6 SIDs als 8-SID-Song.
+- **Patterns:** Sie werden für jede Stimme einzeln geschnitten, damit mehr in die 208 Patterns passt.
+- **Synth-Instrumente** behalten ihre Wellenform.
+- **Neues Icon** im Stil von C64 GrooveGoat.
+- **KI:** weiter trainiert mit 1 467 neuen Modulen. Bei unbekannten Modulen sind 85 % der Klassen und 92 % der Familien richtig.
+- **Vorschau:** Die Vorschau des Originals spielt jetzt in der richtigen Oktave.
+
+**EN:**
+- **New formats:** OctaMED (MMD0–MMD3, incl. synth and hybrid instruments), FastTracker 2 XM, Impulse Tracker IT, DigiBooster Pro (DBM) and Art Of Noise (AON4/AON8). Also MODs with 6 to 32 channels and PowerPacker-packed files.
+- **1, 2, 4, 6 or 8 SIDs:** 4 to 8 SIDs are saved in the C64 GrooveGoat format (.ggt) and as PSID v5, 6 SIDs as an 8-SID song.
+- **Patterns:** they are cut per voice so more fits into the 208 patterns.
+- **Synth instruments** keep their waveform.
+- **New icon** in the style of C64 GrooveGoat.
+- **AI:** trained further with 1,467 new modules. On unseen modules it gets 85 % of classes and 92 % of families right.
+- **Preview:** the original preview now plays in the correct octave.
+
 ## mod2sid 1.3.2
 
 **DE:** KI weiter trainiert mit 11 524 MODs von sechs CD-Images (Amiga Mods Anthology 1–4, SoundMOD I/II). Jetzt sind es 54 126 echte Samples aus 14 306 MODs. Bei unbekannten MODs sind 85 % der Klassen und 92 % der Familien richtig. Die WAV-Bibliothek wird stärker gewichtet, damit lose Samples weiter gut erkannt werden.

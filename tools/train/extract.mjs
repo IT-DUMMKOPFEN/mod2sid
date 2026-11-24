@@ -1,6 +1,7 @@
 // Computes classifier features (same code as the app) for synthetic + labelled real samples
 import fs from 'fs';
-import { parseMod, replayMod } from '../../src/core/mod.js';
+import { loadSong as parseMod } from '../../src/core/formats/index.js';
+import { replaySong as replayMod } from '../../src/core/song.js';
 import { analyzeSample, sampleUsage, CLASSES } from '../../src/core/features.js';
 const [synthBase, modDirArg, out, shardArg = '0/1'] = process.argv.slice(2);
 const [shard, of] = shardArg.split('/').map(Number);
