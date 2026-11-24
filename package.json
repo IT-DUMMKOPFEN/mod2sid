@@ -1,7 +1,7 @@
 {
   "name": "mod2sid",
   "productName": "mod2sid",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "Amiga MOD → C64 SID + GoatTracker SNG converter with AI sample recognition",
   "author": {
     "name": "IT-DUMMKOPFEN",

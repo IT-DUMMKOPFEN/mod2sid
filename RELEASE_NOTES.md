@@ -1,3 +1,9 @@
+## mod2sid 1.3.2
+
+**DE:** KI weiter trainiert mit 11 524 MODs von sechs CD-Images (Amiga Mods Anthology 1–4, SoundMOD I/II). Jetzt sind es 54 126 echte Samples aus 14 306 MODs. Bei unbekannten MODs sind 85 % der Klassen und 92 % der Familien richtig. Die WAV-Bibliothek wird stärker gewichtet, damit lose Samples weiter gut erkannt werden.
+
+**EN:** AI trained further with 11,524 MODs from six CD images (Amiga Mods Anthology 1–4, SoundMOD I/II). It now uses 54,126 real samples from 14,306 MODs. On unseen MODs it gets 85 % of classes and 92 % of families right. The WAV library is weighted higher so that loose samples are still recognised well.
+
 ## mod2sid 1.3.1
 
 **DE:** KI weiter trainiert mit über 3 000 zusätzlichen MODs: jetzt 10 896 echte Samples aus 2 782 MODs. Bei unbekannten MODs sind 83 % der Klassen und 91 % der Familien richtig (v1.3: 80 % / 88 %). Grußtexte in Sample-Namen („shouts go out to…“) werden nicht mehr als Stimme oder Beat gewertet.

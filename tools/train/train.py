@@ -22,15 +22,18 @@ wav = np.array([s.startswith('wav:') for s in src]); syn = (src == 'synth') | wa
 rng = np.random.default_rng(0)
 import os
 AUG = int(os.environ.get("AUG", 200))
+WAVREP = max(1, int(os.environ.get('WAVREP', 1)))
 NTREES, DEPTH, LEAF = int(os.environ.get("NTREES", 60)), int(os.environ.get("DEPTH", 15)), int(os.environ.get("LEAF", 3))
 
 def make(): return ExtraTreesClassifier(NTREES, max_depth=DEPTH, min_samples_leaf=LEAF, random_state=0, n_jobs=-1)
 def trainset(mask):
     Xa = np.repeat(X[mask], AUG, 0); ya = np.repeat(y[mask], AUG)
     Xa = Xa + rng.normal(0, 1, Xa.shape) * X[syn].std(0) * 0.08
-    return np.vstack([X[syn], Xa]), np.concatenate([y[syn], ya])
+    Xw, yw = np.repeat(X[wav], WAVREP - 1, 0), np.repeat(y[wav], WAVREP - 1)  # extra weight for the WAV library
+    return np.vstack([X[syn], Xa, Xw]), np.concatenate([y[syn], ya, yw])
 
 h = fh = n = 0
+PRED = np.full(len(y), -1)
 conf = {}
 umods = sorted(set(mods[real])); rng2 = np.random.default_rng(3); rng2.shuffle(umods)
 folds = [set(umods[i::10]) for i in range(10)] if len(umods) > 20 else [{m} for m in umods]
@@ -40,15 +43,20 @@ for fold in folds:
     if not te.any(): continue
     clf = make().fit(*trainset(real & ~inf))
     p = clf.predict(X[te])
+    PRED[te] = p
     h += (p == y[te]).sum(); fh += sum(fam(a) == fam(b) for a, b in zip(p, y[te])); n += te.sum()
     for a, b in zip(p, y[te]): conf[(CLASSES[b], CLASSES[a])] = conf.get((CLASSES[b], CLASSES[a]), 0) + 1
 print(f'grouped CV (test MODs never in training) on {n} real samples from {len(umods)} MODs: class accuracy {h/n:.2f}, family accuracy {fh/n:.2f}')
 # WAV library: hold out 20 % of the files, train on the rest (+ all MOD data)
 if wav.any():
     hold = wav & (rng.random(len(y)) < 0.2)
-    clf = make().fit(np.vstack([X[syn & ~hold], np.repeat(X[real], 1, 0)]), np.concatenate([y[syn & ~hold], y[real]]))
+    tr = syn & ~hold; wtr = wav & ~hold
+    clf = make().fit(np.vstack([X[tr], np.repeat(X[wtr], WAVREP - 1, 0), X[real]]), np.concatenate([y[tr], np.repeat(y[wtr], WAVREP - 1), y[real]]))
     p = clf.predict(X[hold])
     print(f'WAV-library holdout ({hold.sum()} samples): class accuracy {(p == y[hold]).mean():.2f}, family {np.mean([fam(a) == fam(b) for a, b in zip(p, y[hold])]):.2f}')
+for tag in sorted({s.split(':')[0] for s in src[real] if ':' in s.split('#')[0]}):
+    m = real & np.array([s.startswith(tag + ':') for s in src]) & (PRED >= 0)
+    if m.any(): print(f'  CV on {tag} rows ({m.sum()}): class {(PRED[m] == y[m]).mean():.3f}, family {np.mean([fam(a) == fam(b) for a, b in zip(PRED[m], y[m])]):.3f}')
 print('most common confusions:', sorted(((v, k) for k, v in conf.items() if k[0] != k[1]), reverse=True)[:8])
 
 clf = make().fit(*trainset(real))
