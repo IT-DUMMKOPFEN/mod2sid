@@ -6,7 +6,7 @@ import { CLASS_PRESETS, PRESET_BY_ID } from './library.js';
 import { decomposeBeat, voiceWavetable } from './beat.js';
 
 export const WEIGHT = { lead: 10, wood: 9, brass: 8, bass: 9, kick: 8, snare: 8, guitar: 8, keys: 7, strings: 6, chord: 6,
-  bell: 6, pad: 5, choir: 5, tom: 5, perc: 4, hihat: 3.5, cymbal: 3, fx: 2, speech: 6, beat: 8 };
+  bell: 6, pad: 5, choir: 5, tom: 5, perc: 4, hihat: 3.5, cymbal: 3, fx: 2, speech: 0, beat: 8 };
 
 const ATT_T = [0.002, 0.008, 0.016, 0.024, 0.038, 0.056, 0.068, 0.08, 0.1, 0.25, 0.5, 0.8, 1, 3, 5, 8];
 const DEC_T = [0.006, 0.024, 0.048, 0.072, 0.114, 0.168, 0.204, 0.24, 0.3, 0.75, 1.5, 2.4, 3, 9, 15, 24];
@@ -74,6 +74,40 @@ export function detectSynthWave(data) {
   return saw === best ? { wave: 0x21, pw: 0x800, score: best } : { wave: 0x11, pw: 0x800, score: best };
 }
 
+// SID waveform from the sound: harmonic spectrum of a steady part of the sample compared with
+// triangle, saw and pulse waves of different widths
+export function soundWave(s, info) {
+  if (!info || !(info.f0norm > 0) || info.pitchConf < 0.6 || s.synth) return null;
+  const d = s.data; const n = d.length;
+  const f0 = info.f0norm; // cycles per sample
+  const per = 1 / f0; if (per < 4 || per > 2048) return null;
+  // analysis window: loop, or the part after the attack
+  let a = s.looped && s.loopLength > per * 2 ? s.loopStart : Math.min(n - 1, Math.floor(n * 0.15));
+  const W = Math.min(n - a, Math.max(Math.round(per * 8), 512), 8192);
+  if (W < per * 3) return null;
+  const H = 10, amp = new Float64Array(H + 1);
+  for (let h = 1; h <= H; h++) {
+    const w = 2 * Math.PI * f0 * h; if (f0 * h >= 0.5) break;
+    let re = 0, im = 0;
+    for (let i = 0; i < W; i++) { const win = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / (W - 1)); const v = d[a + i] * win; re += v * Math.cos(w * i); im -= v * Math.sin(w * i); }
+    amp[h] = Math.hypot(re, im);
+  }
+  if (!amp[1] && !amp[2]) return null;
+  const ref = Math.max(...amp.slice(1)); if (!ref) return null;
+  const prof = Array.from(amp.slice(1), v => Math.log10(Math.max(1e-3, v / ref)));
+  const cands = [{ wave: 0x11, pw: 0x800, f: k => (k % 2 ? 1 / (k * k) : 0) }, { wave: 0x21, pw: 0x800, f: k => 1 / k }];
+  for (const w of [0.5, 0.375, 0.25, 0.125]) cands.push({ wave: 0x41, pw: Math.round(w * 4095), f: k => Math.abs(Math.sin(Math.PI * k * w)) / k });
+  let best = null;
+  for (const c of cands) {
+    const t = Array.from({ length: H }, (_, i) => c.f(i + 1)), tr = Math.max(...t);
+    let dist = 0, nn = 0;
+    for (let i = 0; i < H; i++) { if (f0 * (i + 1) >= 0.5) break; dist += Math.abs(prof[i] - Math.log10(Math.max(1e-3, t[i] / tr))); nn++; }
+    dist /= Math.max(1, nn);
+    if (!best || dist < best.dist) best = { wave: c.wave, pw: c.pw, dist };
+  }
+  return best.dist < 0.9 ? best : null;
+}
+
 export function analyzeMod(mod, replay, { seed = 1, creativity = 0, memory = [] } = {}) {
   const usage = sampleUsage(replay);
   const R = rng(seed * 7919 + 13);
@@ -112,7 +146,7 @@ export function analyzeMod(mod, replay, { seed = 1, creativity = 0, memory = [] 
     let pick = 0;
     if (creativity > 0) { const r = R(); if (r < 0.45 * creativity) pick = 1; else if (r < 0.6 * creativity) pick = 2; }
     pick = Math.min(pick, presets.length - 1);
-    if (cls === 'speech' && voice) { const k = presets.indexOf('voice_auto'); if (k > 0) presets.splice(k, 1); if (k !== 0) presets.unshift('voice_auto'); if (!creativity) pick = 0; }
+    if (cls === 'speech') pick = 0; // human voices are left out (muted)
     if (learned && PRESET_BY_ID[learned.preset]) { presets.unshift(learned.preset); pick = 0; }
     // note mapping: median real note -> sensible octave for the SID
     const ninfo = voice ? { ...info, f0norm: voice.ref } : info;
@@ -129,6 +163,7 @@ export function analyzeMod(mod, replay, { seed = 1, creativity = 0, memory = [] 
       noteShift: shift, medianNote: med, hits: u.hits, weight: WEIGHT[cls] ?? 5,
       sustained: s.looped || info.sustain > 0.35, lengthSec: s.looped ? 1e9 : s.data.length / info.rate,
       chord: (cls === 'chord' && info.chord) ? info.chord : null, learned: !!learned, beat, voice,
+      soundWave: !s.synth && !DRUM_CLASSES.has(cls) && !['fx', 'speech', 'beat', 'chord'].includes(cls) ? soundWave(s, info) : null,
       synthWave: s.synth ? detectSynthWave(s.loopLength > 2 ? s.data.subarray(s.loopStart, s.loopStart + s.loopLength) : s.data) : null,
     });
   }

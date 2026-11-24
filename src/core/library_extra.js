@@ -114,7 +114,7 @@ export const EXTRA_PRESETS = [
 // extended class → preset suggestions (first = default)
 export const CLASS_PRESETS_EXT = {
   beat: ['beat_auto', 'mute'],
-  speech: ['voice_auto', 'mute', 'fx_noise', 'choir'],
+  speech: ['mute', 'voice_auto', 'fx_noise', 'choir'],
   kick: ['kick', 'kick_hard', 'kick808', 'kick_click', 'kick_deep'],
   snare: ['snare', 'snare_fat', 'snare_tight', 'snare_noise', 'snare_808', 'snare_rim', 'clap'],
   hihat: ['hihat', 'hihat_open', 'hihat_pedal', 'hihat_metal', 'shaker', 'tambourine'],

@@ -101,3 +101,5 @@ table.smp select { width: 100%; max-width: 260px; }
 .vol input { width: 110px; }
 .vol #volIcon { cursor: pointer; user-select: none; }
 .vol #volVal { min-width: 38px; }
+
+h3.sub { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 14px 0 4px; font-weight: 600; }

@@ -1,3 +1,21 @@
+## mod2sid 2.1
+
+**DE:**
+- **Slides:** Porta-Slides rechnen jetzt mit der Tonhöhe, die die Note gerade hat. Bisher wurde die Geschwindigkeit an der Startnote bemessen, deshalb liefen lange Slides am Ziel vorbei.
+- **Neue Klang-Optionen:** Slides (Original, Sanft, Aus; Standard Sanft), Vibrato (Original, Dezent, Aus), „Wellenform am Klang anpassen“, „Keine Drums“ und „2 Stimmen“ (1 SID ohne Drums, Stimme 3 bleibt frei).
+- **Am Klang nachgebaut:** Die SID-Wellenform (Dreieck, Sägezahn oder Rechteck mit Pulsbreite) wird aus dem Obertonspektrum jedes Samples bestimmt.
+- **Einordnung am Klang:** Die KI ordnet Instrumente am Klang ein. Der Sample-Name hilft nur noch, wenn der Klang schon in dieselbe Richtung zeigt.
+- **Stimmen:** Menschliche Stimmen werden weggelassen.
+- **Training:** weiter trainiert mit ModsUpdate2020 (2 103 neue Samples aus 586 Modulen).
+
+**EN:**
+- **Slides:** porta slides now follow the pitch the note currently has. Before, their speed was based on the start note, so long slides overshot their target.
+- **New sound options:** slides (original, soft, off; default soft), vibrato (original, subtle, off), “match waveform to the sound”, “no drums” and “2 voices” (1 SID without drums, voice 3 stays free).
+- **Rebuilt from the sound:** the SID waveform (triangle, saw or pulse with its width) comes from the overtone spectrum of each sample.
+- **Classification by sound:** the AI classifies instruments by their sound. A sample name only helps when the sound already points the same way.
+- **Voices:** human voices are left out.
+- **Training:** trained further with ModsUpdate2020 (2,103 new samples from 586 modules).
+
 ## mod2sid 2.0.1
 
 **DE:** Neuer Lautstärkeregler im Player (gilt für SID, Original und Vorhören). Ein Klick auf den Lautsprecher schaltet stumm. Die Einstellung bleibt gespeichert.

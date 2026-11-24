@@ -11,9 +11,15 @@ const PAL = 985248;
 export const FREQ = Array.from({ length: 96 }, (_, n) => Math.min(0xFFFF, Math.round(440 * 2 ** ((n - 57) / 12) * 16777216 / PAL)));
 const clampNote = (n) => { n = Math.round(n); while (n > 92) n -= 12; while (n < 0) n += 12; return n; };
 
+const DRUM_SET = new Set(['kick', 'snare', 'hihat', 'cymbal', 'tom', 'perc']);
+
 export function convertSong(mod, replay, analysis, opts = {}) {
-  const o = Object.assign({ seed: 1, creativity: 0, assignments: {}, fitEnvelope: true, useFilter: true, lang: 'de', title: mod.title, sids: 1 }, opts);
+  const o = Object.assign({ seed: 1, creativity: 0, assignments: {}, fitEnvelope: true, useFilter: true, lang: 'de', title: mod.title, sids: 1,
+    slides: 'soft', vibrato: 'orig', soundMatch: true, noDrums: false, twoVoices: false }, opts);
+  // "2 voices": one SID, two voices, no drums (voice 3 stays free)
+  if (o.twoVoices) { o.sids = 1; o.noDrums = true; }
   const SIDS = [1, 2, 4, 6, 8].includes(+o.sids) ? +o.sids : 1;
+  const NVP = o.twoVoices ? 2 : SIDS * 3; // voices the arranger may use
   const NV = SIDS * 3;
   const NCH = mod.channels || 4;
   const ALL = Array.from({ length: NCH }, (_, c) => c);
@@ -40,11 +46,14 @@ export function convertSong(mod, replay, analysis, opts = {}) {
       beat = a.beat;
       if (!beat) preset = PRESET_BY_ID.kick;
     }
-    if (a.synthWave && !preset.drum && preset.cat !== 'drums' && preset.cat !== 'auto' && preset.id !== 'mute' && preset.cat !== 'fx') {
-      // synth instrument of the module: use its own waveform (pulse width from the waveform's duty cycle)
-      const W = a.synthWave.wave;
+    const sw = a.synthWave || (o.soundMatch && !o.assignments[a.index] ? a.soundWave : null);
+    if (sw && !preset.drum && preset.cat !== 'drums' && preset.cat !== 'auto' && preset.id !== 'mute' && preset.cat !== 'fx') {
+      // synth instrument of the module, or waveform matched to the sound of the sample:
+      // use that waveform (pulse width from the duty cycle / harmonic spectrum)
+      const W = sw.wave;
+      const hasPulse = preset.wave.some(st => typeof st[0] === 'number' && (st[0] & 0xF1) === 0x41);
       preset = { ...preset, wave: preset.wave.map(st => (typeof st[0] === 'number' && [0x11, 0x21, 0x41].includes(st[0] & 0xF1)) ? [W | (st[0] & 0x0E), st[1]] : st),
-        pulse: W === 0x41 ? [[0x80 | ((a.synthWave.pw >> 8) & 15), a.synthWave.pw & 255], ['S']] : preset.pulse };
+        pulse: W === 0x41 && !(hasPulse && !a.synthWave) ? [[0x80 | ((sw.pw >> 8) & 15), sw.pw & 255], ['S']] : preset.pulse };
     }
     const env = o.fitEnvelope ? fitADSR(preset, a.info, smp, a.cls) : { ad: preset.ad, sr: preset.sr };
     const drumAbs = !!preset.drum;
@@ -52,11 +61,11 @@ export function convertSong(mod, replay, analysis, opts = {}) {
     const cls = a.cls;
     const chord = (a.chord && !isDrum && preset.cat !== 'fx' && preset.cat !== 'mute' && preset.cat !== 'auto') ? a.chord : null;
     S[a.index] = {
-      a, preset, env, drumAbs, isDrum, muted: preset.id === 'mute', chord, weight: a.weight || 5,
+      a, preset, env, drumAbs, isDrum, muted: preset.id === 'mute' || (o.noDrums && (isDrum || !!beat || DRUM_SET.has(a.cls) || a.cls === 'beat')), chord, weight: a.weight || 5,
       sustained: (env.sr >> 4) > 0, short: isDrum || ((env.sr >> 4) === 0 && (env.ad & 15) <= 8),
       shift: a.noteShift || 0, smp, voiceRef: preset.voiceRef || 0,
     };
-    if (beat) {
+    if (beat && !o.noDrums) {
       // one SID drum per cluster of similar hits: repeated hits share one instrument
       S[a.index].beat = { ...beat, keys: beat.clusters.map((cl, k) => {
         const key = a.index + ':b' + k, pr = PRESET_BY_ID[cl.presetId] || PRESET_BY_ID.kick;
@@ -195,11 +204,11 @@ export function convertSong(mod, replay, analysis, opts = {}) {
   };
   const plans = [];
   // voices that have no channel of their own (more SID voices than MOD channels) play chords and split drums
-  const spareVoices = NCH < NV ? Array.from({ length: NV - NCH }, (_, k) => NCH + k) : [];
+  const spareVoices = (NCH < NV && !o.twoVoices) ? Array.from({ length: NV - NCH }, (_, k) => NCH + k) : [];
   let prevVoiceOf = ALL.map(c => Math.min(c, NV - 1)); // channel -> voice
   const perms3 = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]];
   for (const seg of segs) {
-    if (NCH <= NV) {
+    if (NCH <= NVP) {
       const voices = Array.from({ length: NV }, (_, v) => (v < NCH ? [v] : []));
       plans.push({ voices, dropped: [], cost: 0 }); continue;
     }
@@ -210,10 +219,10 @@ export function convertSong(mod, replay, analysis, opts = {}) {
     // reduce the live channels to NV groups: merge pairs (bass + drums, two melodies) or drop quiet channels
     let groups = live.map(c => [c]);
     let dropped = [], cost = 0;
-    if (groups.length > NV) {
+    if (groups.length > NVP) {
       const pairCost = new Map();
       const pc = (a, b) => { const k = a * 256 + b; if (!pairCost.has(k)) pairCost.set(k, mergeCost(a, b, seg) + noise()); return pairCost.get(k); };
-      while (groups.length > NV) {
+      while (groups.length > NVP) {
         let best = null;
         const singles = groups.filter(g => g.length === 1).map(g => g[0]);
         for (let i = 0; i < singles.length; i++) for (let j = i + 1; j < singles.length; j++) {
@@ -244,6 +253,7 @@ export function convertSong(mod, replay, analysis, opts = {}) {
       for (const pm of perms3) {
         const g = [null, null, null]; gs.forEach((grp, k) => { g[pm[k]] = grp; });
         let moves = 0;
+        if (o.twoVoices && g[2].length) continue;
         g.forEach((grp, v) => grp.forEach(c => { if (prevVoiceOf[c] !== v) moves += (grp[0] === c ? 1 : 0.5); }));
         const total = moves * 3 * scale + noise() * 0.3;
         if (!bestV || total < bestV.total) bestV = { total, g };
@@ -373,20 +383,31 @@ export function convertSong(mod, replay, analysis, opts = {}) {
       const key = inf.arp.join(',');
       if (st.fxArp !== key) { pushCmd(v, i, 5, 8, arpTable(ev.smp, [0, inf.arp[0], inf.arp[1]])); st.fxArp = key; }
     } else if (st.fxArp) { pushCmd(v, i, 5, 8, plainTable(ev.smp)); st.fxArp = null; }
-    if (inf.porta && inf.per) {
-      const df = curFreq(ev) * inf.porta.x / inf.per * tpf;
+    // slides: speeds from the pitch the note has right now (the module slides in periods, the SID in
+    // frequency steps); ProTracker slides on speed-1 of speed ticks; no pitch slides on SID drums
+    const drumEv = S[ev.smp].isDrum;
+    const nowFreq = () => curFreq(ev) * (ev.per && inf.per ? ev.per / inf.per : 1);
+    const tickShare = r.speed > 1 ? (r.speed - 1) / r.speed : 1;
+    const slideOk = o.slides === 'orig' || (!drumEv && o.slides !== 'off');
+    if (inf.porta && inf.per && slideOk && (o.slides === 'orig' || inf.porta.x >= 1) && o.slides !== 'soft') {
+      const df = nowFreq() * inf.porta.x / inf.per * tpf * tickShare;
       pushCmd(v, i, 3, inf.porta.dir > 0 ? 1 : 2, song.addSpeed16(df));
     }
-    if (inf.tporta && inf.tporta.target) {
+    if (inf.tporta && inf.tporta.target && !drumEv) {
       const tn = noteOf(ev.smp, inf.tporta.target);
-      const df = curFreq(ev) * Math.max(1, inf.tporta.x) / Math.max(57, inf.per) * tpf;
-      if (inf.tporta.hasNote) { V[v][i].n = 0x60 + tn; }
-      pushCmd(v, i, 4, 3, song.addSpeed16(df));
-      ev.note = tn;
+      if (o.slides === 'off') {
+        // no glide: the target note starts straight away
+        if (inf.tporta.hasNote && tn !== ev.note) { V[v][i].n = 0x60 + tn; ev.note = tn; ev.per = inf.tporta.target; }
+      } else {
+        const df = nowFreq() * Math.max(1, inf.tporta.x) / Math.max(57, inf.per) * tpf * tickShare;
+        if (inf.tporta.hasNote) { V[v][i].n = 0x60 + tn; }
+        pushCmd(v, i, 4, 3, song.addSpeed16(o.slides === 'soft' ? df * 1.5 : df));
+        ev.note = tn; ev.per = inf.tporta.target;
+      }
     }
-    if (inf.vib && inf.vib[0] && inf.vib[1]) {
+    if (inf.vib && inf.vib[0] && inf.vib[1] && o.vibrato !== 'off' && !drumEv) {
       const sp = Math.max(1, Math.min(127, Math.round(32 / inf.vib[0] * 125 / r.bpm)));
-      const df = curFreq(ev) * 2 * inf.vib[1] / Math.max(57, inf.per || 428);
+      const df = nowFreq() * 2 * inf.vib[1] * (o.vibrato === 'soft' ? 0.5 : 1) / Math.max(57, inf.per || 428);
       const depth = Math.max(1, Math.min(255, Math.round(2 * df / sp)));
       pushCmd(v, i, 3, 4, song.addSpeed(sp, depth));
     }
@@ -572,7 +593,7 @@ export function convertSong(mod, replay, analysis, opts = {}) {
     return { start: s.start, end: s.end, pos: rows[s.start].pos, pat: rows[s.start].pat, voices: plans[k].voices, dropped: plans[k].dropped, cost: plans[k].cost, spare };
   });
   return {
-    song, voices: NV, sids: SIDS, channels: NCH, initTempo, gate: GATE, filterVoice, segments: segInfo, loopSeg, truncated, overflow: song.overflow, degraded,
+    song, voices: NV, sids: SIDS, channels: NCH, twoVoices: !!o.twoVoices, initTempo, gate: GATE, filterVoice, segments: segInfo, loopSeg, truncated, overflow: song.overflow, degraded,
     rowsTotal: N, seconds: rowSec.reduce((a, b) => a + b, 0),
     instrumentMap: Object.fromEntries(Object.entries(insOf)),
   };

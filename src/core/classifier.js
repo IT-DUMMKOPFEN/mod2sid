@@ -66,8 +66,9 @@ export function classify(features, info, name, memory = []) {
   let s = probs.reduce((a, b) => a + b, 0) || 1;
   for (let i = 0; i < K; i++) probs[i] /= s;
   // name hint (sample names are often greetings, so only a moderate boost)
+  // the sound decides: a name only helps when the sound already points that way
   const h = nameHint(name);
-  if (h) { probs[CLASSES.indexOf(h)] += 0.6; }
+  if (h) { const hi = CLASSES.indexOf(h); if (probs[hi] >= 0.08) probs[hi] += 0.2; }
   // chord detection from chroma strengthens 'chord' for melodic sounds
   if (info && info.chord && info.chord.score > 0.5) probs[CLASSES.indexOf('chord')] += 0.25;
   // learned corrections (user swapped instruments before): nearest neighbour in feature space

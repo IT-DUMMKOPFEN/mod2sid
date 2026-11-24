@@ -219,7 +219,8 @@ function runConvert(keepPos = false) {
   for (const a of S.analysis.samples) if (a.used) assignments[a.index] = S.assign[a.index] || a.presetId;
   S.result = convert(S.ctx, S.analysis, {
     seed: S.seed, creativity: S.variant > 1 ? +$('#optCreativity').value / 100 : 0, assignments, lang: S.lang,
-    fitEnvelope: $('#optFitEnv').checked, useFilter: $('#optFilter').checked, model: $('#optModel').value, sids: sidCount(),
+    fitEnvelope: $('#optFitEnv').checked, useFilter: $('#optFilter').checked, model: $('#optModel').value, sids: $('#optTwoVoices').checked ? 1 : sidCount(),
+    slides: $('#optSlides').value, vibrato: $('#optVibrato').value, soundMatch: $('#optSoundMatch').checked, noDrums: $('#optNoDrums').checked, twoVoices: $('#optTwoVoices').checked,
     title: S.ctx.mod.title || (S.file && S.file.name.replace(/\.[^.]*$/, '')),
   });
   // row start times for the arrangement view
@@ -287,6 +288,7 @@ function renderStats() {
   const w = [];
   if (r.truncated) w.push(t('trunc'));
   if (r.sids > 2) w.push(t('ggtNote', r.sids));
+  if (r.twoVoices) w.push(t('twoVoicesNote'));
   if (r.overflow) w.push(t('ovf'));
   $('#warnings').textContent = w.join(' ');
 }
@@ -413,11 +415,19 @@ async function init() {
   if (saved.creativity !== undefined) $('#optCreativity').value = saved.creativity;
   if (saved.fitEnv !== undefined) $('#optFitEnv').checked = saved.fitEnv;
   if (saved.filter !== undefined) $('#optFilter').checked = saved.filter;
+  $('#optSlides').value = ['orig', 'soft', 'off'].includes(saved.slides) ? saved.slides : 'soft';
+  $('#optVibrato').value = ['orig', 'soft', 'off'].includes(saved.vibrato) ? saved.vibrato : 'orig';
+  if (saved.soundMatch !== undefined) $('#optSoundMatch').checked = saved.soundMatch;
+  if (saved.noDrums !== undefined) $('#optNoDrums').checked = saved.noDrums;
+  if (saved.twoVoices !== undefined) $('#optTwoVoices').checked = saved.twoVoices;
+  const syncTwo = () => { const tv = $('#optTwoVoices').checked; $('#optSids').disabled = tv; $('#optNoDrums').disabled = tv; };
+  syncTwo();
   applyLang();
   if (api.appInfo) api.appInfo().then(i => { $('#ver').textContent = 'v' + i.version; document.body.classList.add('os-' + i.platform); });
   if (api.onOpenPath) api.onOpenPath(async (p) => { const r = await api.readFile(p); if (r) openFile(r); });
   if (saved.sids !== undefined && [0, 1, 2, 4, 6, 8].includes(+saved.sids)) $('#optSids').value = saved.sids;
-  const saveOpts = () => LS.set('opts', { sids: +$('#optSids').value, model: $('#optModel').value, creativity: +$('#optCreativity').value, fitEnv: $('#optFitEnv').checked, filter: $('#optFilter').checked });
+  const saveOpts = () => LS.set('opts', { sids: +$('#optSids').value, model: $('#optModel').value, creativity: +$('#optCreativity').value, fitEnv: $('#optFitEnv').checked, filter: $('#optFilter').checked,
+    slides: $('#optSlides').value, vibrato: $('#optVibrato').value, soundMatch: $('#optSoundMatch').checked, noDrums: $('#optNoDrums').checked, twoVoices: $('#optTwoVoices').checked });
   $('#btnOpen').onclick = async () => { const f = await api.openMod(); if (f) openFile(f); };
   $('#btnReconvert').onclick = reconvert;
   $('#btnSave').onclick = save;
@@ -441,6 +451,7 @@ async function init() {
   $('#optSids').onchange = () => { saveOpts(); S.solo = -1; if (S.ctx) runConvert(true); else renderVoiceBtns(); };
   $('#optFitEnv').onchange = () => { saveOpts(); if (S.ctx) runConvert(true); };
   $('#optFilter').onchange = () => { saveOpts(); if (S.ctx) runConvert(true); };
+  for (const id of ['#optSlides', '#optVibrato', '#optSoundMatch', '#optNoDrums', '#optTwoVoices']) $(id).onchange = () => { syncTwo(); saveOpts(); S.solo = -1; if (S.ctx) runConvert(true); };
   document.querySelectorAll('.tab').forEach(b => { b.onclick = () => {
     document.querySelectorAll('.tab').forEach(x => x.classList.toggle('active', x === b));
     $('#pane-arr').classList.toggle('hidden', b.dataset.tab !== 'arr'); $('#pane-lib').classList.toggle('hidden', b.dataset.tab !== 'lib');

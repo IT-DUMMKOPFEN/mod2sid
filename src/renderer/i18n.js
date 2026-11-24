@@ -3,7 +3,7 @@ export const T = {
   de: {
     open: 'Modul öffnen', reconvert: 'Neu konvertieren', save: 'Speichern', help: 'Hilfe', info: 'Info',
     dropTitle: 'Modul hier ablegen', dropSub: 'oder „Modul öffnen“ klicken – MOD, OctaMED (MMD0–3), XM, IT, DigiBooster Pro (DBM) und Art Of Noise (AON4/AON8)',
-    song: 'Song', title: 'Titel', format: 'Format', length: 'Länge', positions: 'Positionen', tempo: 'Tempo', samples: 'Samples', channels: 'Kanäle', sidAuto: 'Auto (nach Kanälen)', volume: 'Lautstärke (Klick auf den Lautsprecher: stumm)',
+    song: 'Song', title: 'Titel', format: 'Format', length: 'Länge', positions: 'Positionen', tempo: 'Tempo', samples: 'Samples', channels: 'Kanäle', sidAuto: 'Auto (nach Kanälen)', soundHead: 'Klang', slides: 'Slides', vibrato: 'Vibrato', optOrig: 'Original', optSoft: 'Sanft', slidesTip: 'Original: alle Tonhöhen-Rutscher. Sanft: nur Gleiten zwischen Noten, keine Rutscher auf Drums. Aus: Zielnote direkt.', optSoftVib: 'Dezent', optOff: 'Aus', soundMatch: 'Wellenform am Klang anpassen', soundMatchTip: 'Die KI vergleicht das Obertonspektrum jedes Samples mit Dreieck, Sägezahn und Rechteck verschiedener Pulsbreiten und nimmt die passendste SID-Wellenform.', noDrums: 'Keine Drums', twoVoices: '2 Stimmen (1 SID, ohne Drums)', twoVoicesTip: 'Das Modul wird ohne Drums auf zwei Stimmen eines SIDs umgesetzt; die dritte Stimme bleibt frei (z. B. für Soundeffekte in einem Spiel).', twoVoicesNote: 'Modus „2 Stimmen“: 1 SID, Stimme 3 bleibt frei, keine Drums.', volume: 'Lautstärke (Klick auf den Lautsprecher: stumm)',
     options: 'Einstellungen', model: 'SID-Modell', creativity: 'Kreativität bei „Neu konvertieren“', fitEnv: 'Hüllkurven an Samples anpassen',
     useFilter: 'SID-Filter verwenden', loadAddr: 'Ladeadresse', kiInfo: 'KI-Klassifizierer', kiAcc: 'Trefferquote (echte Samples, nie gesehen)',
     family: 'Familie', classAcc: 'Klasse', player: 'Vorhören', srcSid: 'SID', srcMod: 'Original', voice: 'Stimme', solo: 'Solo', mute: 'Stumm',
@@ -21,7 +21,7 @@ export const T = {
   en: {
     open: 'Open module', reconvert: 'Convert again', save: 'Save', help: 'Help', info: 'About',
     dropTitle: 'Drop a module here', dropSub: 'or click “Open module” – MOD, OctaMED (MMD0–3), XM, IT, DigiBooster Pro (DBM) and Art Of Noise (AON4/AON8)',
-    song: 'Song', title: 'Title', format: 'Format', length: 'Length', positions: 'Positions', tempo: 'Tempo', samples: 'Samples', channels: 'Channels', sidAuto: 'Auto (by channels)', volume: 'Volume (click the speaker to mute)',
+    song: 'Song', title: 'Title', format: 'Format', length: 'Length', positions: 'Positions', tempo: 'Tempo', samples: 'Samples', channels: 'Channels', sidAuto: 'Auto (by channels)', soundHead: 'Sound', slides: 'Slides', vibrato: 'Vibrato', optOrig: 'Original', optSoft: 'Soft', slidesTip: 'Original: all pitch slides. Soft: only glides between notes, no slides on drums. Off: target note straight away.', optSoftVib: 'Subtle', optOff: 'Off', soundMatch: 'Match waveform to the sound', soundMatchTip: 'The AI compares the overtone spectrum of every sample with triangle, saw and pulse waves of different widths and takes the closest SID waveform.', noDrums: 'No drums', twoVoices: '2 voices (1 SID, no drums)', twoVoicesTip: 'The module is converted to two voices of one SID without drums; the third voice stays free (e.g. for sound effects in a game).', twoVoicesNote: '“2 voices” mode: 1 SID, voice 3 stays free, no drums.', volume: 'Volume (click the speaker to mute)',
     options: 'Settings', model: 'SID model', creativity: 'Creativity for “Convert again”', fitEnv: 'Fit envelopes to samples',
     useFilter: 'Use SID filter', loadAddr: 'Load address', kiInfo: 'AI classifier', kiAcc: 'Accuracy (real, unseen samples)',
     family: 'family', classAcc: 'class', player: 'Preview', srcSid: 'SID', srcMod: 'Original', voice: 'Voice', solo: 'Solo', mute: 'Mute',
@@ -62,7 +62,8 @@ export const HELP = {
 </ol>
 <h3>Gut zu wissen</h3>
 <ul>
-<li><b>Stimmen</b> (z. B. „Yeah“) baut die KI als Tonhöhenverlauf nach: Sie misst die Tonhöhe alle 20 ms und schreibt sie in die Wavetable – ein „Yeah“, das tief beginnt und nach oben gleitet, macht das auch im SID. Wer lieber Stille möchte, wählt „Stumm“.</li>
+<li><b>Menschliche Stimmen</b> (Sprache, Gesang, „Yeah“) erkennt die KI am Klang und lässt sie weg – sie werden nicht umgesetzt. Wer sie trotzdem hören will, wählt beim Sample „Stimme mit Tonverlauf (KI)“.</li>
+<li><b>Klang</b>: „Slides“ steuert Tonhöhen-Rutscher – <i>Sanft</i> (Standard) behält nur das Gleiten zwischen Noten, <i>Aus</i> spielt die Zielnote direkt. „Vibrato“ lässt sich abschwächen oder abschalten. „Wellenform am Klang anpassen“ vergleicht das Obertonspektrum jedes Samples mit Dreieck, Sägezahn und Rechteck und baut das Instrument mit der passendsten SID-Wellenform. „Keine Drums“ lässt alle Schlagzeug-Samples weg. „2 Stimmen“ setzt das Modul ohne Drums auf zwei Stimmen eines SIDs um, die dritte bleibt frei.</li>
 <li><b>Drum-Loops</b> (ein Sample mit einem ganzen Beat) zerlegt die KI in einzelne Schläge. Gleich klingende Schläge werden erkannt und teilen sich ein SID-Instrument; Bassdrum, Snare und HiHat im Loop werden zu verschiedenen Instrumenten.</li>
 <li><b>Lange Streicher</b> und Flächen behalten ihr langsames Anschwellen und klingen so lange wie das Original-Sample.</li>
 <li>Der SID hat keine Lautstärke pro Stimme. Lautstärke-Effekte der MOD werden über die Hüllkurve (Sustain) nachgebildet.</li>
@@ -82,7 +83,8 @@ export const HELP = {
 </ol>
 <h3>Good to know</h3>
 <ul>
-<li><b>Voices</b> (e.g. “yeah”) are rebuilt as a pitch contour: the AI measures the pitch every 20 ms and writes it into the wavetable – a “yeah” that starts low and slides up does the same on the SID. Pick “Muted” if you prefer silence.</li>
+<li><b>Human voices</b> (speech, singing, “yeah”) are recognised by their sound and left out – they are not converted. To hear them anyway, pick “Voice with pitch contour (AI)” for the sample.</li>
+<li><b>Sound</b>: “Slides” controls pitch slides – <i>Soft</i> (default) keeps only glides between notes, <i>Off</i> plays the target note straight away. “Vibrato” can be reduced or switched off. “Match waveform to the sound” compares the overtone spectrum of every sample with triangle, saw and pulse waves and builds the instrument with the closest SID waveform. “No drums” leaves out all drum samples. “2 voices” converts the module without drums to two voices of one SID, the third stays free.</li>
 <li><b>Drum loops</b> (a sample containing a whole beat) are split into single hits. Hits that sound alike are recognised and share one SID instrument; kick, snare and hi-hat in the loop become different instruments.</li>
 <li><b>Long strings</b> and pads keep their slow swell and ring as long as the original sample.</li>
 <li>The SID has no per-voice volume. Volume effects of the MOD are emulated via the envelope (sustain).</li>

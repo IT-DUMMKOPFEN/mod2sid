@@ -1,7 +1,7 @@
 {
   "name": "mod2sid",
   "productName": "mod2sid",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "Converts tracker modules (MOD, OctaMED, XM, IT, DigiBooster, Art Of Noise) into C64 SID music, GoatTracker and C64 GrooveGoat songs (1-8 SIDs)",
   "author": {
     "name": "IT-DUMMKOPFEN",

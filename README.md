@@ -22,7 +22,13 @@ App für **macOS (Apple Silicon + Intel), Windows und Linux (AppImage/deb)**, Ob
   Alle Formate laufen über einen gemeinsamen, tickgenauen Replayer: Arpeggio, Portamento, Tone-Portamento, Vibrato, Tremolo, Lautstärke, Hüllkurven, Key-off, Pattern-Break/-Jump, Loops, Delays und Retrigger.
 - **KI-Erkennung der Samples**: Ein trainierter Klassifizierer (Extra-Trees-Ensemble) erkennt 20 Klassen: Bassdrum, Snare, HiHat, Becken, Tom, Perkussion, **Drum-Loop**, Bass, Lead, Fläche, Streicher, Blech, Holzbläser, Gitarre, Tasten, Glocke, Chor, Akkord, Effekt und **Stimme**. Grundlage sind 34 Klang- und Nutzungsmerkmale: Spektrum, Hüllkurve, Tonhöhe (YIN), Akkord-Chroma, Anschläge (Onsets) und wie das Sample im Song gespielt wird.
 - **Drum-Loops zerlegen**: Ein Sample mit einem ganzen Beat wird in einzelne Schläge zerlegt. Jeder Schlag wird als Bassdrum, Snare, HiHat, Becken, Tom oder Perkussion eingeordnet; gleich klingende Schläge werden zusammengefasst und teilen sich ein SID-Instrument. Der Beat läuft dann zeilengenau mit verschiedenen SID-Drums.
-- **Stimmen mit Tonhöhenverlauf**: Bei Stimmen-Samples misst die KI die Tonhöhe alle 20 ms und baut daraus eine Wavetable – ein „Yeah“, das tief beginnt und nach oben gleitet, klingt auch im SID so. Stimmlose Laute werden zu Rauschen, Pausen zu Gate-aus.
+- **Menschliche Stimmen** (Sprache, Gesang) erkennt die KI am Klang und lässt sie weg. Wer sie trotzdem hören will, wählt beim Sample „Stimme mit Tonverlauf (KI)“. Dann wird die Tonhöhe alle 20 ms gemessen und als Wavetable nachgebaut.
+- **Klang-Optionen**:
+  - Slides: Original, Sanft (nur Gleiten zwischen Noten, keine Rutscher auf Drums) oder Aus
+  - Vibrato: Original, Dezent oder Aus
+  - „Wellenform am Klang anpassen“: Das Obertonspektrum jedes Samples wird mit Dreieck, Sägezahn und Rechteck verschiedener Pulsbreiten verglichen.
+  - „Keine Drums“
+  - „2 Stimmen“: 1 SID ohne Drums, Stimme 3 bleibt frei, z. B. für Soundeffekte in einem Spiel
 - **Lange Streicher und Flächen** behalten ihr langsames Anschwellen und klingen so lange wie das Original-Sample, mit einem Release wie der Ausklang des Samples.
 - **Instrumente nachbauen**: Bibliothek mit 166 SID-Instrumenten in 17 Kategorien (Bass, Lead, Streicher, Blech, Holz, Gitarre, Tasten, Glocken, Flächen, Chor, Synth, Drums, KI-Automatik, Welt/Ethno, Chiptune, Effekte). Die Hüllkurve (ADSR) wird an das Original-Sample angepasst, Akkord-Samples werden zu Arpeggios.
 - **1, 2, 4, 6 oder 8 SIDs** (3 bis 24 Stimmen), „Auto“ wählt passend zur Kanalzahl. Freie Stimmen spielen Akkord-Samples als echte Akkorde und übernehmen Drum-Schläge, damit Bass oder Melodie weiterklingen. Hat ein Modul mehr Kanäle als Stimmen, legt der Arranger Kanäle zusammen oder lässt die leisesten weg.
@@ -79,10 +85,9 @@ Die Werkzeuge liegen in `tools/train/`:
 3. `extract_wav.mjs` liest eine Sample-Bibliothek (WAV). Beschriftet wird nach dem Dateinamen (`wavlabel.mjs`), aber nur, wenn der Klang dazu passt. Die meisten Amiga-WAVs tragen einen falschen 44,1-kHz-Header; sie werden mit typischen MOD-Abspielraten (8–17 kHz) als 8-Bit-Samples ausgewertet.
 4. `train.py` trainiert das Extra-Trees-Modell, prüft es per *Leave-one-MOD-out* (das geprüfte MOD ist nie im Training) und exportiert `src/core/model.json`.
 
-Stand v2.0: 6 000 synthetische Samples, 5 304 Samples aus der WAV-Bibliothek und 59 529 echte Samples aus 15 605 Modulen. Darin stecken 11 524 MODs von sechs CD-Images (Amiga Mods Anthology 1–4, SoundMOD I/II) und 1 467 Module in den neuen Formaten: OctaMED, XM, IT, DigiBooster und Art Of Noise. Die neuen Formate liefern 5 403 Samples. Die Archive (ZIP mit XZ, LHA, 7-Zip, PowerPacker, Power Player) entpackt `depack.py` ohne externe Programme. Die meisten Samples sind per `autolabel.mjs` beschriftet: über Namen wie „st-01:bass“, aber nur, wenn Klang und Spielweise dazu passen, plus eindeutige Klangregeln. Hinweise auf Stimme oder Beat zählen nur bei kurzen, label-artigen Namen, nicht bei Grußtexten. Ergebnisse:
+Stand v2.1: 6 000 synthetische Samples, 5 304 Samples aus der WAV-Bibliothek und 61 632 echte Samples aus 16 191 Modulen. Dazu gehören 11 524 MODs von sechs CD-Images, 1 467 Module in den neuen Formaten (OctaMED, XM, IT, DigiBooster, Art Of Noise) und 586 Module aus ModsUpdate2020. Die Beschriftung stammt aus `autolabel.mjs`: Namen wie „st-01:bass“ zählen nur, wenn Klang und Spielweise dazu passen, dazu kommen eindeutige Klangregeln. Die KI selbst sieht keine Namen. Sie lernt nur aus Klang- und Spielmerkmalen und ordnet damit auch Samples ohne sinnvollen Namen ein; beim Einordnen zählt ein Name nur noch, wenn der Klang schon in dieselbe Richtung zeigt. Ergebnisse (reine Klang-Einordnung, ohne Namen):
 - Module, die nie im Training waren: **85 % exakte Klasse, 92 % richtige Familie** (Drum / Bass / Melodie / Akkord / FX / Stimme / Beat), gemessen mit 10-fach gruppierter Kreuzvalidierung.
-- Samples der neuen Formate: 87,7 % Klasse und 93,0 % Familie. Die KI von v1.3.2 kam auf denselben Samples auf 86,6 % und 92,5 %.
-- Zurückgehaltene WAV-Samples: **71 % Klasse / 92 % Familie**.
+- Zurückgehaltene WAV-Samples: **67 % Klasse / 89 % Familie**.
 
 Für große Sammlungen gibt es `labelfeat.mjs`. Es beschriftet die Samples und berechnet die Merkmale in einem Durchgang. Der Lauf kann in Zeitscheiben und parallel auf mehreren Kernen erfolgen und lässt sich jederzeit fortsetzen.
 
@@ -127,7 +132,8 @@ GPL-3.0 – siehe [LICENSE](LICENSE). Das SNG-Format stammt von GoatTracker 2 (L
 
 - An **AI classifier** (extra-trees, trained on synthetic and hand-labelled real Amiga samples) recognises 20 instrument classes, including drum loops and voices. It was trained on synthetic samples, a library of more than 5 000 Amiga WAV samples and about 54 000 labelled samples from 14 306 MODs. On MODs it never saw it gets 85 % of classes and 92 % of families right.
 - **Drum loops** are split into single hits. Similar hits are clustered and share one SID drum, so kick, snare and hi-hat in a loop become different instruments.
-- **Voices** follow their pitch contour, measured every 20 ms: a “yeah” that starts low and slides up does the same on the SID.
+- **Human voices** are recognised by their sound and left out (they can still be switched to “voice with pitch contour”).
+- **Sound options**: slides (original / soft / off), vibrato (original / subtle / off), “match waveform to the sound” (overtone spectrum → triangle, saw or pulse width), “no drums”, and “2 voices” (1 SID without drums, voice 3 free).
 - **Long strings/pads** keep their swell and ring for the full sample length.
 - **1 to 8 SIDs** (3 to 24 voices), “Auto” picks enough for the channels. 1 SID: PSID v2 + GoatTracker 2 .sng; 2 SIDs: PSID v3 + GoatTracker Stereo .sng; 4, 6 or 8 SIDs: PSID v5 + C64 GrooveGoat .ggt (SIDs from $D400 in steps of $20; 6 SIDs are stored as an 8-SID song). Patterns are cut per voice so repeated bars are shared; songs that do not fit into the 208 patterns are shortened.
 - **Synth instruments** of OctaMED and Art Of Noise keep their waveform (pulse with its width, saw or triangle).
