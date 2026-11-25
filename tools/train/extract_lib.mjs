@@ -3,6 +3,7 @@
 // folder structure (folderlabel.mjs). Unlike extract_wav.mjs the audio is real
 // 44.1/48 kHz material: it is resampled to Amiga rates and 8-bit quantised so the
 // features match what the app sees inside modules.
+// ALLWAV=1: take every WAV in the archives, not only those in WAV folders
 // usage: node extract_lib.mjs <dir[,dir…]> <out.jsonl> <shard/of> [secs] [perDirMelodic] [perDirDrum]
 import fs from 'fs';
 import zlib from 'zlib';
@@ -118,9 +119,9 @@ export function collect(root, perMel = 10, perDrum = 30) {
   for (const p of zipsFound.sort()) {
     const { fd, list } = zipEntries(p); fs.closeSync(fd);
     list.forEach((e, i) => {
-      const base = e.name.split('/').pop();
-      if (!/\.wav$/i.test(e.name) || /__macosx/i.test(e.name) || base.startsWith('._') || !/(^|\/)wav\//i.test(e.name)) return;
-      items.push({ src: 'zip', zip: p, idx: i, path: e.name });
+      const base = e.name.replace(/\\/g, '/').split('/').pop();
+      if (!/\.wav$/i.test(e.name) || /__macosx/i.test(e.name) || base.startsWith('._') || (!process.env.ALLWAV && !/(^|\/)wav\//i.test(e.name.replace(/\\/g, '/')))) return;
+      items.push({ src: 'zip', zip: p, idx: i, path: e.name.replace(/\\/g, '/') });
     });
   }
   const groups = new Map();

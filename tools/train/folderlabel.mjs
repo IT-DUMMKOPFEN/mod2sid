@@ -17,25 +17,81 @@ const DRUM_RULES = [
 ];
 const MEL_RULES = [
   [/stack|textures?|morphbot|\bmisc\b|voices?$|\bhello\b|return home|vocal|\bloops?\b/i, null],
-  [/steel ?drum|tubular|bell|glock|vibes|vibra|marimb|xylo|celest|chime|kalimba|mallet/i, 'bell'],
+  [/steel ?(drum|pan)|tubular|bell|glock|vibes|vibra|marimb|xylo|celest|chime|kalimba|mbira|thumb piano|metallophone|tongue drum|mallet/i, 'bell'],
   [/\bfx\b|sfx|_fx|fx\d|siren|alarm|helicopter|birds|zap|laser|noise fx/i, 'fx'],
   [/timpani|\btimps?\b|\bsyn ?toms?\b/i, 'tom'],
   [/orchestra ?hit|stab|(?<!harpsi)chord|fifths/i, 'chord'],
   [/female|ensemblemale|\bmale\b|choir|\bvox\b/i, 'choir'],
-  [/string|violin|viola|cello|arp omni/i, 'strings'],
-  [/flute|clarinet|oboe|bassoon|piccolo|english horn|recorder|whistler/i, 'wood'],
+  [/string|violin|viola|(?<!guitar )cello|arp omni/i, 'strings'],
+  [/flute|clarinet|oboe|bassoon|piccolo|english horn|recorder|whistler|tin whistle|bansuri|\bdizi\b|quena|ocarina|hulusi|uilleann|woodwind|pan ?pipe/i, 'wood'],
   [/brass|horn|trumpet|trombone|tuba|sax/i, 'brass'],
   [/bass|sub(?![a-z])|sub\d|\bsub/i, 'bass'],
-  [/piano|pianet|organ|rhodes|wurli|harpsi|clav|harmonium|accordion|\bkeys\b|e ?piano/i, 'keys'],
-  [/guitar|\bgtr|banjo|sitar|\bharp(?!si)|mandolin|koto|strat\b/i, 'guitar'],
+  [/(?<!thumb |toy )piano|pianet|organ|rhodes|wurli|harpsi|clav|harmonium|accordion|concertina|\bkeys\b|e ?piano/i, 'keys'],
+  [/guitar|\bgtr|banjo|sitar|\bharp(?!si)|mandolin|koto|strat\b|zither|santur|tumbi|ukulele|\blute\b|shamisen|yuehchin|les paul|fender/i, 'guitar'],
   [/\bpads?\b|pad(?![a-z])|atmo|ambient/i, 'pad'],
   [/lead|saw|square|sine|pulse|pwm|triangle|_tri\b|\btri\b|sync/i, 'lead'],
 ];
 
 const clean = s => s.replace(/\.wav$/i, '').replace(/[_-]?[A-G](#|b)?-?\d\b/g, ' ').replace(/^\d+[._\s]*/, '').replace(/_/g, ' ').trim();
 
+// Cymatics-style packs: flat folders, the type is the first word of the file name
+// ("Cymatics - BELL Genesis (C).wav", "Cymatics - INSTR Ukulele - C.wav", "… - 120 BPM A Min.wav")
+const CY_TYPE = { BASS: 'bass', '808': 'bass', REESE: 'bass', DONK: 'bass', BELL: 'bell', KEYS: 'keys', PAD: 'pad', LEAD: 'lead', SYNTH: 'lead' };
+function cymaticsLabel(parts, pack) {
+  const file = parts[parts.length - 1].replace(/\.wav$/i, ''), dirs = parts.slice(0, -1).join('/');
+  const m = file.match(/^cymatics[^-]*-\s*(.*)$/i); const rest = m ? m[1] : file;
+  const typ = (rest.match(/(?:^|\s)(BASS|808|REESE|DONK|BELL|KEYS|PAD|LEAD|SYNTH|INSTR|PLUCK|VOX|FX)\b/) || [])[1];
+  // song stems: "<title> - 120 BPM A Min Bass.wav"
+  const stem = (file.match(/\b(?:min|maj|minor|major)\b\s+([a-z][\w ]*?)\s*\d*$/i) || [])[1];
+  if (stem) {
+    if (/vocal|vox|voice|acapella/i.test(stem)) return { cls: 'speech', pack };
+    if (/drum|kick|snare|hat|perc|clap|top/i.test(stem)) return { cls: 'beat', pack };
+    if (/bass|808/i.test(stem)) return { cls: 'bass', pack };
+    if (/guitar/i.test(stem) && !/revers/i.test(stem)) return { cls: 'guitar', pack };
+    if (/piano|keys|rhodes|organ/i.test(stem)) return { cls: 'keys', pack };
+    if (/string|violin|cello/i.test(stem)) return { cls: 'strings', pack };
+    if (/brass|trumpet|horn|sax/i.test(stem)) return { cls: 'brass', pack };
+    if (/flute|woodwind/i.test(stem)) return { cls: 'wood', pack };
+    if (/bell|glock|kalimba|marimba/i.test(stem)) return { cls: 'bell', pack };
+    if (/chord/i.test(stem)) return { cls: 'chord', pack };
+    return null;
+  }
+  const loop = /\bbpm\b|loop|\bfill\b|break|composition|melod/i.test(file + '/' + dirs);
+  if (/vocal|vox/i.test(dirs + ' ' + (typ || ''))) return { cls: 'speech', pack };
+  if (loop) {
+    if (/drum|hihat|hi-hat|perc|top|break/i.test(dirs + ' ' + file) && !/melod|guitar/i.test(dirs)) return { cls: 'beat', pack };
+    if (/guitar/i.test(dirs) && !/drum/i.test(dirs)) return { cls: 'guitar', pack };
+    if (/piano/i.test(dirs)) return { cls: 'keys', pack };
+    return null;
+  }
+  if (typ === 'PLUCK' || typ === 'FX') return typ === 'FX' ? { cls: 'fx', pack } : null;
+  if (typ === 'INSTR' || /instruments\//i.test(dirs + '/')) {
+    const t = typ === 'INSTR' ? rest.slice(rest.indexOf('INSTR') + 5) : dirs.split('/').slice(-2).join(' ') + ' ' + rest;
+    for (const [re, cls] of MEL_RULES.slice(1)) if (re.test(t)) return { cls, pack };
+    return null;
+  }
+  if (typ && CY_TYPE[typ]) return { cls: CY_TYPE[typ], pack };
+  if (/foley|accent|texture|ambien|pedal|phrase|impact/i.test(dirs + ' ' + rest)) return null;
+  if (/drum|kit|kick|snare|hat|perc|cymbal|ride|rim|clap|one shots\b/i.test(dirs) || /kick|snare|hat|clap|rim|perc|cymbal|ride|crash|shaker|\btom\b|snap/i.test(rest)) {
+    const r = rest.replace(/\(.*?\)/g, '');
+    if (/\bsnap\b/i.test(r)) return { cls: 'perc', pack };
+    if (/kick|\bbd\b/i.test(r)) return { cls: 'kick', pack };
+    for (const [re, cls] of DRUM_RULES.slice(2, 7)) if (re.test(r)) return { cls, pack };
+    if (/\bopen\b|\bhat\b/i.test(r)) return { cls: 'hihat', pack };
+    if (/bass/i.test(r)) return { cls: 'bass', pack };
+    return null;
+  }
+  for (const [re, cls] of MEL_RULES.slice(1)) if (re.test(rest)) return { cls, pack };
+  return null;
+}
+
 // returns { cls, pack, note } or null
 export function folderLabel(path) {
+  path = path.replace(/\\/g, '/');
+  if (/cymatics|beta pack|gemini iii/i.test(path)) {
+    const ps = path.split('/').filter(Boolean);
+    return cymaticsLabel(ps, ps[0] || '');
+  }
   const parts = path.split('/').filter(Boolean);
   const wi = parts.findIndex(p => /^wav$/i.test(p));
   const pack = (parts[0] === 'samples' ? parts[1] : parts[0]) || '';

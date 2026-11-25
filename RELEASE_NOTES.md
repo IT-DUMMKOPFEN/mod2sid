@@ -1,3 +1,9 @@
+## mod2sid 2.1.7
+
+**DE:** KI weiter trainiert mit 66 Cymatics-Paketen: 5 866 neue Samples, darunter echte Instrumente (Gitarren, Flöten, Trompete, Zither, Sitar, Kalimba …), Gesangs-Loops und Einzelspuren (Stems) von Songs. Die Klasse kommt hier aus dem Dateinamen, weil diese Pakete keine WAV-Ordner haben. Bei Paketen, die die KI nie gesehen hat, stimmen jetzt 70 % der Klassen (vorher 59 %). Am meisten verbessert: **Gesang 52 % → 86 %** (wichtig, weil Stimmen weggelassen werden), Gitarre 1 % → 55 %, Flächen 22 % → 45 %, Streicher 56 % → 70 %, Drum-Loops 92 % → 97 %. Bei Samples aus Modulen bleibt die Trefferquote praktisch gleich (85,5 % Klasse, 92 % Familie).
+
+**EN:** AI trained further with 66 Cymatics packs: 5,866 new samples, including real instruments (guitars, flutes, trumpet, zither, sitar, kalimba …), vocal loops and song stems. Here the class comes from the file name, because these packs have no WAV folders. On packs the AI never saw, 70 % of classes are now right (before: 59 %). Biggest gains: **vocals 52 % → 86 %** (important, because voices are left out), guitar 1 % → 55 %, pads 22 % → 45 %, strings 56 % → 70 %, drum loops 92 % → 97 %. On samples from modules the hit rate stays practically the same (85.5 % class, 92 % family).
+
 ## mod2sid 2.1.6
 
 **DE:** KI weiter trainiert. Die 8 RAR-Pakete mit Samples bringen 2 468 neue, beschriftete Drum- und Perkussions-Samples. Die „Protracker Modules Gpack“-Sammlung (24 320 Module) ist zum größten Teil dieselbe Sammlung wie beim letzten Training. Neu waren nur 368 Module mit 791 Samples. Insgesamt lernt die KI jetzt aus 130 590 Samples aus 33 985 Modulen und 62 555 Studio-Samples aus 80 Paketen. Die neuen Drum-Pakete erkannte schon das alte Modell zu 65 % (Familie 96 %). Mit Training sind es 66 %. Bei Drums ist die KI damit weitgehend ausgelernt. Treffer bei unbekannten Modulen: 86 % Klasse, 92 % Familie.
