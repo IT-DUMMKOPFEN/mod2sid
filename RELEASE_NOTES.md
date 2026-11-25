@@ -1,32 +1,32 @@
 ## mod2sid 2.1.7
 
-**DE:** KI weiter trainiert mit 66 Cymatics-Paketen: 5 866 neue Samples, darunter echte Instrumente (Gitarren, Flöten, Trompete, Zither, Sitar, Kalimba …), Gesangs-Loops und Einzelspuren (Stems) von Songs. Die Klasse kommt hier aus dem Dateinamen, weil diese Pakete keine WAV-Ordner haben. Bei Paketen, die die KI nie gesehen hat, stimmen jetzt 70 % der Klassen (vorher 59 %). Am meisten verbessert: **Gesang 52 % → 86 %** (wichtig, weil Stimmen weggelassen werden), Gitarre 1 % → 55 %, Flächen 22 % → 45 %, Streicher 56 % → 70 %, Drum-Loops 92 % → 97 %. Bei Samples aus Modulen bleibt die Trefferquote praktisch gleich (85,5 % Klasse, 92 % Familie).
+**DE:** KI weiter trainiert. Sie erkennt Gesang, Gitarren, Flächen und Streicher jetzt deutlich besser am Klang.
 
-**EN:** AI trained further with 66 Cymatics packs: 5,866 new samples, including real instruments (guitars, flutes, trumpet, zither, sitar, kalimba …), vocal loops and song stems. Here the class comes from the file name, because these packs have no WAV folders. On packs the AI never saw, 70 % of classes are now right (before: 59 %). Biggest gains: **vocals 52 % → 86 %** (important, because voices are left out), guitar 1 % → 55 %, pads 22 % → 45 %, strings 56 % → 70 %, drum loops 92 % → 97 %. On samples from modules the hit rate stays practically the same (85.5 % class, 92 % family).
+**EN:** AI trained further. It now recognises vocals, guitars, pads and strings by their sound much better.
 
 ## mod2sid 2.1.6
 
-**DE:** KI weiter trainiert. Die 8 RAR-Pakete mit Samples bringen 2 468 neue, beschriftete Drum- und Perkussions-Samples. Die „Protracker Modules Gpack“-Sammlung (24 320 Module) ist zum größten Teil dieselbe Sammlung wie beim letzten Training. Neu waren nur 368 Module mit 791 Samples. Insgesamt lernt die KI jetzt aus 130 590 Samples aus 33 985 Modulen und 62 555 Studio-Samples aus 80 Paketen. Die neuen Drum-Pakete erkannte schon das alte Modell zu 65 % (Familie 96 %). Mit Training sind es 66 %. Bei Drums ist die KI damit weitgehend ausgelernt. Treffer bei unbekannten Modulen: 86 % Klasse, 92 % Familie.
+**DE:** KI weiter trainiert, vor allem mit Drums und Perkussion. RAR-Archive können jetzt für das Training gelesen werden.
 
-**EN:** AI trained further. The 8 RAR sample packs add 2,468 new, labelled drum and percussion samples. The “Protracker Modules Gpack” collection (24,320 modules) is mostly the same collection as in the last training. Only 368 modules with 791 samples were new. In total the AI now learns from 130,590 samples from 33,985 modules and 62,555 studio samples from 80 packs. The old model already recognised the new drum packs at 65 % (family 96 %). With training it is 66 %. So for drums the AI has largely learned what it can. Hit rate on unseen modules: 86 % class, 92 % family.
+**EN:** AI trained further, mainly with drums and percussion. RAR archives can now be read for training.
 
 ## mod2sid 2.1.5
 
-**DE:** KI weiter trainiert mit 38 weiteren Sample-Paketen (nur die WAV-Ordner in den ZIPs): 30 388 neue, sauber beschriftete Studio-Samples, darunter echte SID-Klänge, Orchester-, Gitarren- und Chor-Samples. Insgesamt lernt die KI jetzt aus 60 087 Studio-Samples aus 72 Paketen. Bei Paketen, die sie nie gesehen hat, stimmen 58 % der Klassen (vorher 51 %). Deutlich besser: Lead (31 % → 59 %), Effekte (16 % → 30 %), Perkussion (41 % → 53 %), Flächen (0 % → 13 %). Bei Samples aus Modulen bleibt die Trefferquote gleich (86 % Klasse, 92 % Familie).
+**DE:** KI weiter trainiert mit beschrifteten Instrument-Samples. Leads, Effekte, Perkussion und Flächen werden besser erkannt.
 
-**EN:** AI trained further with 38 more sample packs (only the WAV folders inside the ZIPs): 30,388 new, correctly labelled studio samples, including real SID sounds, orchestral, guitar and choir samples. In total the AI now learns from 60,087 studio samples from 72 packs. On packs it never saw, 58 % of classes are right (before: 51 %). Clearly better: lead (31 % → 59 %), effects (16 % → 30 %), percussion (41 % → 53 %), pads (0 % → 13 %). On samples from modules the hit rate stays the same (86 % class, 92 % family).
+**EN:** AI trained further with labelled instrument samples. Leads, effects, percussion and pads are recognised better.
 
 ## mod2sid 2.1.4
 
-**DE:** KI mit sauber beschrifteten Instrumenten trainiert: 29 699 Studio-Samples aus 34 Sample-Paketen (WAV-Ordner und ZIP-Archive, dort nur die WAV-Ordner). Die Klasse kommt aus der Ordnerstruktur, nicht aus geratenen Namen. Die Aufnahmen werden vor dem Lernen auf Amiga-Raten und 8 Bit umgerechnet. Ergebnis: Bei Instrumenten aus Paketen, die die KI nie gesehen hat, stimmen jetzt 58 % der Klassen (vorher 46 %). Am stärksten verbessert: Tom (5 % → 53 %), Becken (26 % → 48 %), HiHat (74 % → 90 %), Lead (5 % → 22 %) und Drum-Loops (46 % → 66 %). Bei Samples aus Modulen bleibt die Trefferquote gleich (86 % Klasse, 92,5 % Familie).
+**DE:** KI mit beschrifteten Instrument-Samples trainiert. Toms, Becken, HiHats, Leads und Drum-Loops werden deutlich besser erkannt.
 
-**EN:** AI trained with correctly labelled instruments: 29,699 studio samples from 34 sample packs (WAV folders and ZIP archives, only the WAV folders inside). The class comes from the folder structure, not from guessed names. The recordings are converted to Amiga rates and 8 bits before training. Result: for instruments from packs the AI never saw, 58 % of classes are now right (before: 46 %). Biggest gains: tom (5 % → 53 %), cymbal (26 % → 48 %), hi-hat (74 % → 90 %), lead (5 % → 22 %) and drum loops (46 % → 66 %). On samples from modules the hit rate stays the same (86 % class, 92.5 % family).
+**EN:** AI trained with labelled instrument samples. Toms, cymbals, hi-hats, leads and drum loops are recognised much better.
 
 ## mod2sid 2.1.3
 
-**DE:** KI weiter trainiert mit einer neuen MOD-Sammlung: 24 368 Dateien, davon 17 426 neue Module mit 68 167 neuen Samples. Insgesamt lernt die KI jetzt aus 129 799 echten Samples aus 33 617 Modulen. Bei unbekannten Modulen sind 86 % der Klassen und 93 % der Familien richtig.
+**DE:** KI weiter trainiert. Bei unbekannten Modulen sind 86 % der Klassen und 93 % der Familien richtig.
 
-**EN:** AI trained further with a new MOD collection: 24,368 files, of which 17,426 new modules with 68,167 new samples. In total the AI now learns from 129,799 real samples from 33,617 modules. On unseen modules it gets 86 % of classes and 93 % of families right.
+**EN:** AI trained further. On unseen modules it gets 86 % of classes and 93 % of families right.
 
 ## mod2sid 2.1.2
 
@@ -48,7 +48,7 @@
 - **Am Klang nachgebaut:** Die SID-Wellenform (Dreieck, Sägezahn oder Rechteck mit Pulsbreite) wird aus dem Obertonspektrum jedes Samples bestimmt.
 - **Einordnung am Klang:** Die KI ordnet Instrumente am Klang ein. Der Sample-Name hilft nur noch, wenn der Klang schon in dieselbe Richtung zeigt.
 - **Stimmen:** Menschliche Stimmen werden weggelassen.
-- **Training:** weiter trainiert mit ModsUpdate2020 (2 103 neue Samples aus 586 Modulen).
+- **Training:** KI weiter trainiert.
 
 **EN:**
 - **Slides:** porta slides now follow the pitch the note currently has. Before, their speed was based on the start note, so long slides overshot their target.
@@ -56,7 +56,7 @@
 - **Rebuilt from the sound:** the SID waveform (triangle, saw or pulse with its width) comes from the overtone spectrum of each sample.
 - **Classification by sound:** the AI classifies instruments by their sound. A sample name only helps when the sound already points the same way.
 - **Voices:** human voices are left out.
-- **Training:** trained further with ModsUpdate2020 (2,103 new samples from 586 modules).
+- **Training:** AI trained further.
 
 ## mod2sid 2.0.1
 
@@ -72,7 +72,7 @@
 - **Patterns:** Sie werden für jede Stimme einzeln geschnitten, damit mehr in die 208 Patterns passt.
 - **Synth-Instrumente** behalten ihre Wellenform.
 - **Neues Icon** im Stil von C64 GrooveGoat.
-- **KI:** weiter trainiert mit 1 467 neuen Modulen. Bei unbekannten Modulen sind 85 % der Klassen und 92 % der Familien richtig.
+- **KI:** weiter trainiert. Bei unbekannten Modulen sind 85 % der Klassen und 92 % der Familien richtig.
 - **Vorschau:** Die Vorschau des Originals spielt jetzt in der richtigen Oktave.
 
 **EN:**
@@ -81,38 +81,38 @@
 - **Patterns:** they are cut per voice so more fits into the 208 patterns.
 - **Synth instruments** keep their waveform.
 - **New icon** in the style of C64 GrooveGoat.
-- **AI:** trained further with 1,467 new modules. On unseen modules it gets 85 % of classes and 92 % of families right.
+- **AI:** trained further. On unseen modules it gets 85 % of classes and 92 % of families right.
 - **Preview:** the original preview now plays in the correct octave.
 
 ## mod2sid 1.3.2
 
-**DE:** KI weiter trainiert mit 11 524 MODs von sechs CD-Images (Amiga Mods Anthology 1–4, SoundMOD I/II). Jetzt sind es 54 126 echte Samples aus 14 306 MODs. Bei unbekannten MODs sind 85 % der Klassen und 92 % der Familien richtig. Die WAV-Bibliothek wird stärker gewichtet, damit lose Samples weiter gut erkannt werden.
+**DE:** KI weiter trainiert. Bei unbekannten MODs sind 85 % der Klassen und 92 % der Familien richtig. Die WAV-Bibliothek wird stärker gewichtet, damit lose Samples weiter gut erkannt werden.
 
-**EN:** AI trained further with 11,524 MODs from six CD images (Amiga Mods Anthology 1–4, SoundMOD I/II). It now uses 54,126 real samples from 14,306 MODs. On unseen MODs it gets 85 % of classes and 92 % of families right. The WAV library is weighted higher so that loose samples are still recognised well.
+**EN:** AI trained further. On unseen MODs it gets 85 % of classes and 92 % of families right. The WAV library is weighted higher so that loose samples are still recognised well.
 
 ## mod2sid 1.3.1
 
-**DE:** KI weiter trainiert mit über 3 000 zusätzlichen MODs: jetzt 10 896 echte Samples aus 2 782 MODs. Bei unbekannten MODs sind 83 % der Klassen und 91 % der Familien richtig (v1.3: 80 % / 88 %). Grußtexte in Sample-Namen („shouts go out to…“) werden nicht mehr als Stimme oder Beat gewertet.
+**DE:** KI weiter trainiert. Bei unbekannten MODs sind 83 % der Klassen und 91 % der Familien richtig (v1.3: 80 % / 88 %). Grußtexte in Sample-Namen („shouts go out to…“) werden nicht mehr als Stimme oder Beat gewertet.
 
-**EN:** AI trained further with more than 3,000 additional MODs: now 10,896 real samples from 2,782 MODs. On unseen MODs it gets 83 % of classes and 91 % of families right (v1.3: 80 % / 88 %). Greeting texts in sample names (“shouts go out to…”) no longer count as voice or beat hints.
+**EN:** AI trained further. On unseen MODs it gets 83 % of classes and 91 % of families right (v1.3: 80 % / 88 %). Greeting texts in sample names (“shouts go out to…”) no longer count as voice or beat hints.
 
 ## mod2sid 1.3
 
-**DE:** KI neu trainiert mit der Amiga-Sample-Bibliothek (5 304 WAV-Samples) und 492 MODs: 80 % Klasse / 88 % Familie bei unbekannten MODs. Neu: Drum-Loops werden in Einzelschläge zerlegt, gleich klingende Schläge teilen sich ein SID-Instrument. Stimmen werden mit ihrem Tonhöhenverlauf nachgebaut statt stummgeschaltet. Lange Streicher und Flächen halten so lange wie das Original. Neue Instrumente „Beat zerlegen (KI)“ und „Stimme mit Tonverlauf (KI)“.
+**DE:** KI neu trainiert: 80 % Klasse / 88 % Familie bei unbekannten MODs. Neu: Drum-Loops werden in Einzelschläge zerlegt, gleich klingende Schläge teilen sich ein SID-Instrument. Stimmen werden mit ihrem Tonhöhenverlauf nachgebaut statt stummgeschaltet. Lange Streicher und Flächen halten so lange wie das Original. Neue Instrumente „Beat zerlegen (KI)“ und „Stimme mit Tonverlauf (KI)“.
 
-**EN:** AI retrained with the Amiga sample library (5,304 WAV samples) and 492 MODs: 80 % class / 88 % family on unseen MODs. New: drum loops are split into single hits, and similar hits share one SID instrument. Voices are rebuilt with their pitch contour instead of being muted. Long strings and pads ring as long as the original. New instruments “Split beat (AI)” and “Voice with pitch contour (AI)”.
+**EN:** AI retrained: 80 % class / 88 % family on unseen MODs. New: drum loops are split into single hits, and similar hits share one SID instrument. Voices are rebuilt with their pitch contour instead of being muted. Long strings and pads ring as long as the original. New instruments “Split beat (AI)” and “Voice with pitch contour (AI)”.
 
 ## mod2sid 1.2
 
-**DE:** Neu: Versionen für macOS Apple Silicon + Intel, Windows (Installer + Portable) und Linux (AppImage + deb); kleinere Pakete (nur DE/EN-Sprachdateien, maximale Kompression); KI mit 203 MODs neu trainiert (79 % Klasse / 89 % Familie); MOD-Dateien per Doppelklick öffnen.
+**DE:** Neu: Versionen für macOS Apple Silicon + Intel, Windows (Installer + Portable) und Linux (AppImage + deb); kleinere Pakete (nur DE/EN-Sprachdateien, maximale Kompression); KI neu trainiert (79 % Klasse / 89 % Familie); MOD-Dateien per Doppelklick öffnen.
 
-**EN:** New: builds for macOS Apple Silicon + Intel, Windows (installer + portable) and Linux (AppImage + deb); smaller packages; AI retrained on 203 MODs (79 % class / 89 % family); open MOD files by double click.
+**EN:** New: builds for macOS Apple Silicon + Intel, Windows (installer + portable) and Linux (AppImage + deb); smaller packages; AI retrained (79 % class / 89 % family); open MOD files by double click.
 
 ## mod2sid 1.1
 
-**DE:** Neu: Option 1 oder 2 SIDs (6 Stimmen, echte Akkorde, PSID v3 + GoatTracker-Stereo-SNG), 164 SID-Instrumente (+78), KI neu trainiert mit 35 MODs (73 % Klasse / 86 % Familie).
+**DE:** Neu: Option 1 oder 2 SIDs (6 Stimmen, echte Akkorde, PSID v3 + GoatTracker-Stereo-SNG), 164 SID-Instrumente (+78), KI neu trainiert (73 % Klasse / 86 % Familie).
 
-**EN:** New: 1 or 2 SIDs (6 voices, real chords, PSID v3 + GoatTracker Stereo SNG), 164 SID instruments (+78), AI retrained on 35 MODs (73 % class / 86 % family).
+**EN:** New: 1 or 2 SIDs (6 voices, real chords, PSID v3 + GoatTracker Stereo SNG), 164 SID instruments (+78), AI retrained (73 % class / 86 % family).
 
 ## mod2sid – Release
 

@@ -85,16 +85,11 @@ Die Werkzeuge liegen in `tools/train/`:
 3. `extract_wav.mjs` liest eine Sample-Bibliothek (WAV). Beschriftet wird nach dem Dateinamen (`wavlabel.mjs`), aber nur, wenn der Klang dazu passt. Die meisten Amiga-WAVs tragen einen falschen 44,1-kHz-Header; sie werden mit typischen MOD-Abspielraten (8–17 kHz) als 8-Bit-Samples ausgewertet.
 4. `train.py` trainiert das Extra-Trees-Modell, prüft es per *Leave-one-MOD-out* (das geprüfte MOD ist nie im Training) und exportiert `src/core/model.json`.
 
-Stand v2.1.7: 6 000 synthetische Samples, 5 304 Samples aus der WAV-Bibliothek, 68 421 sauber beschriftete Studio-Samples (146 Sample-Pakete aus Ordnern, ZIP- und RAR-Archiven) und 130 590 echte Samples aus 33 985 Modulen. Darin stecken unter anderem 11 524 MODs von sechs CD-Images, 1 467 Module in den neuen Formaten (OctaMED, XM, IT, DigiBooster, Art Of Noise), 586 Module aus ModsUpdate2020 und 17 426 Module aus einer weiteren großen MOD-Sammlung. Die Beschriftung stammt aus `autolabel.mjs`: Namen wie „st-01:bass“ zählen nur, wenn Klang und Spielweise dazu passen, dazu kommen eindeutige Klangregeln. Die KI selbst sieht keine Namen. Sie lernt nur aus Klang- und Spielmerkmalen und ordnet damit auch Samples ohne sinnvollen Namen ein. Ergebnisse (reine Klang-Einordnung, ohne Namen):
-- Module, die nie im Training waren: **85,5 % exakte Klasse, 92 % richtige Familie** (Drum / Bass / Melodie / Akkord / FX / Stimme / Beat), gemessen mit 10-fach gruppierter Kreuzvalidierung.
-- Zurückgehaltene WAV-Samples: **65 % Klasse / 87 % Familie**.
-- Studio-Samples aus Paketen, die nie im Training waren: **58 % Klasse / 88–91 % Familie** (ohne Studio-Daten: 46 %).
+Die Beschriftung stammt aus `autolabel.mjs`: Namen wie „st-01:bass“ zählen nur, wenn Klang und Spielweise dazu passen, dazu kommen eindeutige Klangregeln. Die KI selbst sieht keine Namen. Sie lernt nur aus Klang- und Spielmerkmalen und ordnet damit auch Samples ohne sinnvollen Namen ein. Bei Modulen, die nie im Training waren, stimmen **85 % der Klassen und 92 % der Familien** (Drum / Bass / Melodie / Akkord / FX / Stimme / Beat), gemessen mit 10-fach gruppierter Kreuzvalidierung.
 
-Das Modell: 50 Entscheidungsbäume mit zusammen 712 450 Knoten (356 250 Blätter), 18 MB als JSON, gepackt 6 MB. Es läuft ohne Zusatzbibliotheken direkt in der App.
+Beschriftete Sample-Bibliotheken liest `extract_lib.mjs` aus Ordnern und ZIP-Archiven. Die Klasse kommt aus der Ordnerstruktur oder dem Dateinamen (`folderlabel.mjs`); die Aufnahmen werden auf Amiga-Raten und 8 Bit umgerechnet. `eval_lib.py` vergleicht das Modell mit und ohne diese Daten, `rarx.py` entpackt RAR-Archive über die libarchive des Systems. Für große MOD-Sammlungen gibt es `labelfeat.mjs`: Es beschriftet die Samples und berechnet die Merkmale in einem Durchgang, in Zeitscheiben, parallel und fortsetzbar.
 
-Die Studio-Bibliotheken liest `extract_lib.mjs`. Es nimmt WAV-Ordner und ZIP-Archive (darin nur die WAV-Ordner), holt die Klasse aus der Ordnerstruktur (`folderlabel.mjs`, z. B. „Drums/01. Individual Hits/02. Snare Drum“ oder „Junos/02. Bass/…“), dünnt Multisamples auf höchstens 40 Töne pro Preset aus und rechnet die Aufnahmen auf Amiga-Raten und 8 Bit um. Pakete ohne WAV-Ordner (z. B. Cymatics) liest `ALLWAV=1`; dort kommt die Klasse aus dem Dateinamen („BELL …“, „INSTR Ukulele“, Stems wie „… Min Bass“). `eval_lib.py` vergleicht das Modell mit und ohne diese Daten. RAR-Archive (RAR 4 und 5) entpackt `rarx.py` über die libarchive des Systems, ohne zusätzliche Pakete.
-
-Für große Sammlungen gibt es `labelfeat.mjs`. Es beschriftet die Samples und berechnet die Merkmale in einem Durchgang. Der Lauf kann in Zeitscheiben und parallel auf mehreren Kernen erfolgen und lässt sich jederzeit fortsetzen.
+Das Modell: 50 Entscheidungsbäume, rund 18 MB als JSON. Es läuft ohne Zusatzbibliotheken direkt in der App.
 
 Was die KI falsch einordnet, korrigierst du per Instrumententausch, und die App merkt es sich.
 
@@ -103,7 +98,7 @@ python3 tools/train/synth_dataset.py /tmp/synth 300
 node tools/train/autolabel.mjs <neue-mods> tools/train/labels_auto.json
 node tools/train/extract.mjs /tmp/synth <mod-ordner1>,<mod-ordner2> /tmp/features.json
 node tools/train/extract_wav.mjs <wav-ordner> /tmp/wav.json
-node tools/train/extract_lib.mjs <wav-ordner>,<zip-ordner> /tmp/lib.jsonl 0/1   # → JSON mit src 'wav:lib:…' an wav.json anhängen
+node tools/train/extract_lib.mjs <wav-ordner>,<zip-ordner> /tmp/lib.jsonl 0/1 
 AUG=3 WAVREP=4 NTREES=50 LEAF=4 python3 tools/train/train.py /tmp/features.json src/core/model.json /tmp/wav.json
 ```
 
@@ -136,7 +131,7 @@ GPL-3.0 – siehe [LICENSE](LICENSE). Das SNG-Format stammt von GoatTracker 2 (L
 
 **mod2sid** converts tracker modules – ProTracker MOD (4–32 channels), **OctaMED** (MMD0–3), **FastTracker 2 XM**, **Impulse Tracker IT**, **DigiBooster Pro DBM** and **Art Of Noise** (AON4/AON8), also PowerPacker-packed – into **C64 SID music (PSID)** on **1, 2, 4, 6 or 8 SIDs**, plus **GoatTracker** (.sng) or **C64 GrooveGoat** (.ggt) songs. It is an Electron app for **macOS (Apple Silicon + Intel), Windows and Linux (AppImage/deb)** with a German/English interface.
 
-- An **AI classifier** (extra-trees, trained on synthetic and hand-labelled real Amiga samples) recognises 20 instrument classes, including drum loops and voices. It was trained on synthetic samples, a library of more than 5 000 Amiga WAV samples, 68 421 correctly labelled studio samples from 146 sample packs and 130 590 samples from 33 985 modules. On modules it never saw it gets 85.5 % of classes and 92 % of families right; on studio packs it never saw, 58 % of classes and 91 % of families.
+- An **AI classifier** (extra-trees) recognises 20 instrument classes, including drum loops and voices. On modules it never saw it gets 85 % of classes and 92 % of families right.
 - **Drum loops** are split into single hits. Similar hits are clustered and share one SID drum, so kick, snare and hi-hat in a loop become different instruments.
 - **Human voices** are recognised by their sound and left out (they can still be switched to “voice with pitch contour”).
 - **Sound options**: slides (original / soft / off), vibrato (original / subtle / off), “match waveform to the sound” (overtone spectrum → triangle, saw or pulse width), “no drums”, and “2 voices” (1 SID without drums, voice 3 free).
