@@ -23,13 +23,16 @@ rng = np.random.default_rng(0)
 import os
 AUG = int(os.environ.get("AUG", 200))
 WAVREP = max(1, int(os.environ.get('WAVREP', 1)))
+# rows of the labelled studio libraries (src 'wav:lib:…', tools/train/extract_lib.mjs) are
+# many and clean: they keep weight 1, the small old WAV library gets WAVREP
+wavx = wav & ~np.array([s.startswith('wav:lib:') for s in src])
 NTREES, DEPTH, LEAF = int(os.environ.get("NTREES", 60)), int(os.environ.get("DEPTH", 15)), int(os.environ.get("LEAF", 3))
 
 def make(): return ExtraTreesClassifier(NTREES, max_depth=DEPTH, min_samples_leaf=LEAF, random_state=0, n_jobs=-1)
 def trainset(mask):
     Xa = np.repeat(X[mask], AUG, 0); ya = np.repeat(y[mask], AUG)
     Xa = Xa + rng.normal(0, 1, Xa.shape) * X[syn].std(0) * 0.08
-    Xw, yw = np.repeat(X[wav], WAVREP - 1, 0), np.repeat(y[wav], WAVREP - 1)  # extra weight for the WAV library
+    Xw, yw = np.repeat(X[wavx], WAVREP - 1, 0), np.repeat(y[wavx], WAVREP - 1)  # extra weight for the WAV library
     return np.vstack([X[syn], Xa, Xw]), np.concatenate([y[syn], ya, yw])
 
 h = fh = n = 0
@@ -51,7 +54,7 @@ print(f'grouped CV (test MODs never in training) on {n} real samples from {len(u
 if wav.any():
     hold = wav & (rng.random(len(y)) < 0.2)
     tr = syn & ~hold; wtr = wav & ~hold
-    clf = make().fit(np.vstack([X[tr], np.repeat(X[wtr], WAVREP - 1, 0), X[real]]), np.concatenate([y[tr], np.repeat(y[wtr], WAVREP - 1), y[real]]))
+    clf = make().fit(np.vstack([X[tr], np.repeat(X[wtr & wavx], WAVREP - 1, 0), X[real]]), np.concatenate([y[tr], np.repeat(y[wtr & wavx], WAVREP - 1), y[real]]))
     p = clf.predict(X[hold])
     print(f'WAV-library holdout ({hold.sum()} samples): class accuracy {(p == y[hold]).mean():.2f}, family {np.mean([fam(a) == fam(b) for a, b in zip(p, y[hold])]):.2f}')
 for tag in sorted({s.split(':')[0] for s in src[real] if ':' in s.split('#')[0]}):

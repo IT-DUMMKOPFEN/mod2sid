@@ -85,9 +85,12 @@ Die Werkzeuge liegen in `tools/train/`:
 3. `extract_wav.mjs` liest eine Sample-Bibliothek (WAV). Beschriftet wird nach dem Dateinamen (`wavlabel.mjs`), aber nur, wenn der Klang dazu passt. Die meisten Amiga-WAVs tragen einen falschen 44,1-kHz-Header; sie werden mit typischen MOD-Abspielraten (8–17 kHz) als 8-Bit-Samples ausgewertet.
 4. `train.py` trainiert das Extra-Trees-Modell, prüft es per *Leave-one-MOD-out* (das geprüfte MOD ist nie im Training) und exportiert `src/core/model.json`.
 
-Stand v2.1.3: 6 000 synthetische Samples, 5 304 Samples aus der WAV-Bibliothek und 129 799 echte Samples aus 33 617 Modulen. Darin stecken unter anderem 11 524 MODs von sechs CD-Images, 1 467 Module in den neuen Formaten (OctaMED, XM, IT, DigiBooster, Art Of Noise), 586 Module aus ModsUpdate2020 und 17 426 Module aus einer weiteren großen MOD-Sammlung. Die Beschriftung stammt aus `autolabel.mjs`: Namen wie „st-01:bass“ zählen nur, wenn Klang und Spielweise dazu passen, dazu kommen eindeutige Klangregeln. Die KI selbst sieht keine Namen. Sie lernt nur aus Klang- und Spielmerkmalen und ordnet damit auch Samples ohne sinnvollen Namen ein. Ergebnisse (reine Klang-Einordnung, ohne Namen):
-- Module, die nie im Training waren: **86 % exakte Klasse, 93 % richtige Familie** (Drum / Bass / Melodie / Akkord / FX / Stimme / Beat), gemessen mit 10-fach gruppierter Kreuzvalidierung.
+Stand v2.1.4: 6 000 synthetische Samples, 5 304 Samples aus der WAV-Bibliothek, 29 699 sauber beschriftete Studio-Samples (34 Sample-Pakete, Ordner und ZIP-Archive) und 129 799 echte Samples aus 33 617 Modulen. Darin stecken unter anderem 11 524 MODs von sechs CD-Images, 1 467 Module in den neuen Formaten (OctaMED, XM, IT, DigiBooster, Art Of Noise), 586 Module aus ModsUpdate2020 und 17 426 Module aus einer weiteren großen MOD-Sammlung. Die Beschriftung stammt aus `autolabel.mjs`: Namen wie „st-01:bass“ zählen nur, wenn Klang und Spielweise dazu passen, dazu kommen eindeutige Klangregeln. Die KI selbst sieht keine Namen. Sie lernt nur aus Klang- und Spielmerkmalen und ordnet damit auch Samples ohne sinnvollen Namen ein. Ergebnisse (reine Klang-Einordnung, ohne Namen):
+- Module, die nie im Training waren: **86 % exakte Klasse, 92,5 % richtige Familie** (Drum / Bass / Melodie / Akkord / FX / Stimme / Beat), gemessen mit 10-fach gruppierter Kreuzvalidierung.
 - Zurückgehaltene WAV-Samples: **65 % Klasse / 87 % Familie**.
+- Studio-Samples aus Paketen, die nie im Training waren: **58 % Klasse / 91 % Familie** (ohne diese Daten: 46 % / 91 %).
+
+Die Studio-Bibliotheken liest `extract_lib.mjs`. Es nimmt WAV-Ordner und ZIP-Archive (darin nur die WAV-Ordner), holt die Klasse aus der Ordnerstruktur (`folderlabel.mjs`, z. B. „Drums/01. Individual Hits/02. Snare Drum“ oder „Junos/02. Bass/…“), dünnt Multisamples auf höchstens 40 Töne pro Preset aus und rechnet die Aufnahmen auf Amiga-Raten und 8 Bit um. `eval_lib.py` vergleicht das Modell mit und ohne diese Daten.
 
 Für große Sammlungen gibt es `labelfeat.mjs`. Es beschriftet die Samples und berechnet die Merkmale in einem Durchgang. Der Lauf kann in Zeitscheiben und parallel auf mehreren Kernen erfolgen und lässt sich jederzeit fortsetzen.
 
@@ -98,6 +101,7 @@ python3 tools/train/synth_dataset.py /tmp/synth 300
 node tools/train/autolabel.mjs <neue-mods> tools/train/labels_auto.json
 node tools/train/extract.mjs /tmp/synth <mod-ordner1>,<mod-ordner2> /tmp/features.json
 node tools/train/extract_wav.mjs <wav-ordner> /tmp/wav.json
+node tools/train/extract_lib.mjs <wav-ordner>,<zip-ordner> /tmp/lib.jsonl 0/1   # → JSON mit src 'wav:lib:…' an wav.json anhängen
 AUG=3 WAVREP=4 NTREES=50 LEAF=4 python3 tools/train/train.py /tmp/features.json src/core/model.json /tmp/wav.json
 ```
 
@@ -130,7 +134,7 @@ GPL-3.0 – siehe [LICENSE](LICENSE). Das SNG-Format stammt von GoatTracker 2 (L
 
 **mod2sid** converts tracker modules – ProTracker MOD (4–32 channels), **OctaMED** (MMD0–3), **FastTracker 2 XM**, **Impulse Tracker IT**, **DigiBooster Pro DBM** and **Art Of Noise** (AON4/AON8), also PowerPacker-packed – into **C64 SID music (PSID)** on **1, 2, 4, 6 or 8 SIDs**, plus **GoatTracker** (.sng) or **C64 GrooveGoat** (.ggt) songs. It is an Electron app for **macOS (Apple Silicon + Intel), Windows and Linux (AppImage/deb)** with a German/English interface.
 
-- An **AI classifier** (extra-trees, trained on synthetic and hand-labelled real Amiga samples) recognises 20 instrument classes, including drum loops and voices. It was trained on synthetic samples, a library of more than 5 000 Amiga WAV samples and about 54 000 labelled samples from 14 306 MODs. On MODs it never saw it gets 85 % of classes and 92 % of families right.
+- An **AI classifier** (extra-trees, trained on synthetic and hand-labelled real Amiga samples) recognises 20 instrument classes, including drum loops and voices. It was trained on synthetic samples, a library of more than 5 000 Amiga WAV samples, 29 699 correctly labelled studio samples from 34 sample packs and 129 799 samples from 33 617 modules. On modules it never saw it gets 86 % of classes and 92.5 % of families right; on studio packs it never saw, 58 % of classes and 91 % of families.
 - **Drum loops** are split into single hits. Similar hits are clustered and share one SID drum, so kick, snare and hi-hat in a loop become different instruments.
 - **Human voices** are recognised by their sound and left out (they can still be switched to “voice with pitch contour”).
 - **Sound options**: slides (original / soft / off), vibrato (original / subtle / off), “match waveform to the sound” (overtone spectrum → triangle, saw or pulse width), “no drums”, and “2 voices” (1 SID without drums, voice 3 free).
