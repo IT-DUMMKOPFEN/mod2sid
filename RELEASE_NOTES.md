@@ -1,3 +1,9 @@
+## mod2sid 2.1.6
+
+**DE:** KI weiter trainiert. Die 8 RAR-Pakete mit Samples bringen 2 468 neue, beschriftete Drum- und Perkussions-Samples. Die „Protracker Modules Gpack“-Sammlung (24 320 Module) ist zum größten Teil dieselbe Sammlung wie beim letzten Training. Neu waren nur 368 Module mit 791 Samples. Insgesamt lernt die KI jetzt aus 130 590 Samples aus 33 985 Modulen und 62 555 Studio-Samples aus 80 Paketen. Die neuen Drum-Pakete erkannte schon das alte Modell zu 65 % (Familie 96 %). Mit Training sind es 66 %. Bei Drums ist die KI damit weitgehend ausgelernt. Treffer bei unbekannten Modulen: 86 % Klasse, 92 % Familie.
+
+**EN:** AI trained further. The 8 RAR sample packs add 2,468 new, labelled drum and percussion samples. The “Protracker Modules Gpack” collection (24,320 modules) is mostly the same collection as in the last training. Only 368 modules with 791 samples were new. In total the AI now learns from 130,590 samples from 33,985 modules and 62,555 studio samples from 80 packs. The old model already recognised the new drum packs at 65 % (family 96 %). With training it is 66 %. So for drums the AI has largely learned what it can. Hit rate on unseen modules: 86 % class, 92 % family.
+
 ## mod2sid 2.1.5
 
 **DE:** KI weiter trainiert mit 38 weiteren Sample-Paketen (nur die WAV-Ordner in den ZIPs): 30 388 neue, sauber beschriftete Studio-Samples, darunter echte SID-Klänge, Orchester-, Gitarren- und Chor-Samples. Insgesamt lernt die KI jetzt aus 60 087 Studio-Samples aus 72 Paketen. Bei Paketen, die sie nie gesehen hat, stimmen 58 % der Klassen (vorher 51 %). Deutlich besser: Lead (31 % → 59 %), Effekte (16 % → 30 %), Perkussion (41 % → 53 %), Flächen (0 % → 13 %). Bei Samples aus Modulen bleibt die Trefferquote gleich (86 % Klasse, 92 % Familie).

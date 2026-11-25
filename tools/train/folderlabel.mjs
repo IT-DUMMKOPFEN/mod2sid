@@ -44,10 +44,12 @@ export function folderLabel(path) {
   const lower = inner.join('/');
   const drumPack = DRUM_PACKS.test(pack.replace(/^essential.*/i, ''));
   const essentialDrums = /^Drums$/i.test(inner[0]);
-  const drum = drumPack || essentialDrums || DRUM_CTX.test(inner.slice(0, -1).join('/'));
+  const melodicDir = inner.slice(0, -1).some(p => /^(sounds|instrument sample notes|kraftwerk string)$/i.test(p));
+  const drum = !melodicDir && (drumPack || essentialDrums || DRUM_CTX.test(inner.slice(0, -1).join('/')) || /drum|\bkit\b|percussion/i.test(pack)
+    || inner.slice(0, -1).some(d => /^(kicks?|bass drums?|snares?( & claps?)?|hi[ -]?hats?|hats|cymbals?|crash|ride|claps?|(assorted )?percussion|tambourines?|toms?)$/i.test(clean(d).replace(/^\d+-/, ''))));
   const synthCtx = /^synths$/i.test(inner[0]) || /synths/i.test(lower);
   // drum loops → beat
-  if (drum && !synthCtx && /\bloops?\b|whole beats|full loops/i.test(lower) && !/acid loops/i.test(lower)) return { cls: 'beat', pack };
+  if (drum && !synthCtx && (/\bloops?\b|whole beats|full loops/i.test(lower) || /loops/i.test(pack)) && !/acid loops/i.test(lower)) return { cls: 'beat', pack };
   const note = (inner[inner.length - 1].match(/[_ -]([A-G](#|b)?)(-?\d)\b/) || [])[3];
   const comps = inner.map(clean).reverse();      // file name first
   if (drum && !synthCtx) {
