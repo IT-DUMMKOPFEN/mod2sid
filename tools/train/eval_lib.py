@@ -21,6 +21,8 @@ def arr(rows): return np.array([r['x'] for r in rows], float), np.array([r['y'] 
 X, y, src = arr(json.load(open(sys.argv[1])))
 Xw, yw, _ = arr(json.load(open(sys.argv[2])))
 lib = json.load(open(sys.argv[3]))
+# BASE=<file>: library rows that both A and B train on (weight 1)
+Xb, yb, _ = arr(json.load(open(os.environ['BASE']))) if os.environ.get('BASE') else (np.zeros((0, 34)), np.zeros(0, int), None)
 Xl, yl, sl = arr(lib)
 packs = np.array([s.split('/')[0] for s in sl])
 syn = src == 'synth'; real = ~syn; mods = np.array([s.split('#')[0] for s in src])
@@ -29,7 +31,7 @@ sd = X[syn].std(0)
 def fit(mask, extra=None):
     Xa = np.repeat(X[mask], AUG, 0); ya = np.repeat(y[mask], AUG)
     Xa = Xa + rng.normal(0, 1, Xa.shape) * sd * 0.08
-    parts = [X[syn], Xa, np.repeat(Xw, WAVREP, 0)]; lab = [y[syn], ya, np.repeat(yw, WAVREP)]
+    parts = [X[syn], Xa, np.repeat(Xw, WAVREP, 0), Xb]; lab = [y[syn], ya, np.repeat(yw, WAVREP), yb]
     if extra is not None:
         ex, ey = extra
         if LIBREP < 1:

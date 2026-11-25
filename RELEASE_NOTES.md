@@ -1,3 +1,9 @@
+## mod2sid 2.1.5
+
+**DE:** KI weiter trainiert mit 38 weiteren Sample-Paketen (nur die WAV-Ordner in den ZIPs): 30 388 neue, sauber beschriftete Studio-Samples, darunter echte SID-Klänge, Orchester-, Gitarren- und Chor-Samples. Insgesamt lernt die KI jetzt aus 60 087 Studio-Samples aus 72 Paketen. Bei Paketen, die sie nie gesehen hat, stimmen 58 % der Klassen (vorher 51 %). Deutlich besser: Lead (31 % → 59 %), Effekte (16 % → 30 %), Perkussion (41 % → 53 %), Flächen (0 % → 13 %). Bei Samples aus Modulen bleibt die Trefferquote gleich (86 % Klasse, 92 % Familie).
+
+**EN:** AI trained further with 38 more sample packs (only the WAV folders inside the ZIPs): 30,388 new, correctly labelled studio samples, including real SID sounds, orchestral, guitar and choir samples. In total the AI now learns from 60,087 studio samples from 72 packs. On packs it never saw, 58 % of classes are right (before: 51 %). Clearly better: lead (31 % → 59 %), effects (16 % → 30 %), percussion (41 % → 53 %), pads (0 % → 13 %). On samples from modules the hit rate stays the same (86 % class, 92 % family).
+
 ## mod2sid 2.1.4
 
 **DE:** KI mit sauber beschrifteten Instrumenten trainiert: 29 699 Studio-Samples aus 34 Sample-Paketen (WAV-Ordner und ZIP-Archive, dort nur die WAV-Ordner). Die Klasse kommt aus der Ordnerstruktur, nicht aus geratenen Namen. Die Aufnahmen werden vor dem Lernen auf Amiga-Raten und 8 Bit umgerechnet. Ergebnis: Bei Instrumenten aus Paketen, die die KI nie gesehen hat, stimmen jetzt 58 % der Klassen (vorher 46 %). Am stärksten verbessert: Tom (5 % → 53 %), Becken (26 % → 48 %), HiHat (74 % → 90 %), Lead (5 % → 22 %) und Drum-Loops (46 % → 66 %). Bei Samples aus Modulen bleibt die Trefferquote gleich (86 % Klasse, 92,5 % Familie).
