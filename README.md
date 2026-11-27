@@ -27,6 +27,7 @@ App für **macOS (Apple Silicon + Intel), Windows und Linux (AppImage/deb)**, Ob
   - Slides: Original, Sanft (nur Gleiten zwischen Noten, keine Rutscher auf Drums) oder Aus
   - Vibrato: Original, Dezent oder Aus
   - „Wellenform am Klang anpassen“: Das Obertonspektrum jedes Samples wird mit Dreieck, Sägezahn und Rechteck verschiedener Pulsbreiten verglichen.
+  - „Verzerrte Gitarren clean spielen“ (Standard: an): Die KI erkennt verzerrte E-Gitarren am Klang (Clipping, gefülltes Spektrum). Statt die Verzerrung nachzubauen, spielt eine cleane SID-Gitarre die Note der verzerrten Gitarre. Bei Power-Akkorden kommt der Grundton aus dem Spektrum (Chroma), weil die Periodenmessung dort oft die Quinte oder den Differenzton erwischt.
   - „Keine Drums“
   - „2 Stimmen“: 1 SID ohne Drums, Stimme 3 bleibt frei, z. B. für Soundeffekte in einem Spiel
 - **Lange Streicher und Flächen** behalten ihr langsames Anschwellen und klingen so lange wie das Original-Sample, mit einem Release wie der Ausklang des Samples.
@@ -134,7 +135,7 @@ GPL-3.0 – siehe [LICENSE](LICENSE). Das SNG-Format stammt von GoatTracker 2 (L
 - An **AI classifier** (extra-trees) recognises 20 instrument classes, including drum loops and voices. On modules it never saw it gets 85 % of classes and 92 % of families right.
 - **Drum loops** are split into single hits. Similar hits are clustered and share one SID drum, so kick, snare and hi-hat in a loop become different instruments.
 - **Human voices** are recognised by their sound and left out (they can still be switched to “voice with pitch contour”).
-- **Sound options**: slides (original / soft / off), vibrato (original / subtle / off), “match waveform to the sound” (overtone spectrum → triangle, saw or pulse width), “no drums”, and “2 voices” (1 SID without drums, voice 3 free).
+- **Sound options**: slides (original / soft / off), vibrato (original / subtle / off), “match waveform to the sound” (overtone spectrum → triangle, saw or pulse width), “play distorted guitars clean” (distorted electric guitars are detected by their sound and played by a clean SID guitar on the detected note, the root for power chords), “no drums”, and “2 voices” (1 SID without drums, voice 3 free).
 - **Long strings/pads** keep their swell and ring for the full sample length.
 - **1 to 8 SIDs** (3 to 24 voices), “Auto” picks enough for the channels. 1 SID: PSID v2 + GoatTracker 2 .sng; 2 SIDs: PSID v3 + GoatTracker Stereo .sng; 4, 6 or 8 SIDs: PSID v5 + C64 GrooveGoat .ggt (SIDs from $D400 in steps of $20; 6 SIDs are stored as an 8-SID song). Patterns are cut per voice so repeated bars are shared; songs that do not fit into the 208 patterns are shortened.
 - **Synth instruments** of OctaMED and Art Of Noise keep their waveform (pulse with its width, saw or triangle).

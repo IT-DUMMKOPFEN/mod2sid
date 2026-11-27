@@ -4,6 +4,7 @@ import { analyzeSample, sampleUsage, realNote, DRUM_CLASSES } from './features.j
 import { classify } from './classifier.js';
 import { CLASS_PRESETS, PRESET_BY_ID } from './library.js';
 import { decomposeBeat, voiceWavetable } from './beat.js';
+import { distortionInfo, isDistortedGuitar, guitarPitch } from './guitar.js';
 
 export const WEIGHT = { lead: 10, wood: 9, brass: 8, bass: 9, kick: 8, snare: 8, guitar: 8, keys: 7, strings: 6, chord: 6,
   bell: 6, pad: 5, choir: 5, tom: 5, perc: 4, hihat: 3.5, cymbal: 3, fx: 2, speech: 0, beat: 8 };
@@ -108,18 +109,34 @@ export function soundWave(s, info) {
   return best.dist < 0.9 ? best : null;
 }
 
-export function analyzeMod(mod, replay, { seed = 1, creativity = 0, memory = [] } = {}) {
+export function analyzeMod(mod, replay, { seed = 1, creativity = 0, memory = [], cleanGuitar = true } = {}) {
   const usage = sampleUsage(replay);
   const R = rng(seed * 7919 + 13);
   const out = [];
   for (const s of mod.samples) {
     const u = usage[s.index];
     if (!u || !s.data || s.data.length < 4) { out.push({ index: s.index, name: s.name, used: false }); continue; }
-    const { features, info } = analyzeSample(s, u);
+    const { features, info: info0 } = analyzeSample(s, u);
+    let info = info0;
     const ranking = classify(features, info, s.name, memory);
     let cls = ranking[0].cls;
+    // distorted electric guitar: play a clean guitar on the note the distorted one plays
+    let distGuitar = null;
+    if (!s.synth) {
+      const dinf = distortionInfo(s, info);
+      if (isDistortedGuitar(s, info, ranking, s.name, dinf, u)) {
+        const gp = guitarPitch(s, info);
+        const yinPc = info.f0Hz > 0 ? ((Math.round(69 + 12 * Math.log2(info.f0Hz / 440)) % 12) + 12) % 12 : -1;
+        // the spectrum decides when the period detector is unsure, or when it clearly disagrees
+        const useChroma = gp && (info.pitchConf < 0.5 || (gp.conf >= 0.25 && gp.pc !== yinPc));
+        distGuitar = { ...dinf, pc: useChroma ? gp.pc : yinPc, power: !!(gp && gp.power), f0norm: useChroma ? gp.f0norm : info.f0norm, pitchFrom: useChroma ? 'spectrum' : 'period' };
+        if (cleanGuitar) { cls = 'guitar'; if (useChroma) info = { ...info, f0norm: gp.f0norm, f0Hz: gp.f0Hz, yinF0Hz: info.f0Hz }; }
+      }
+    }
+    const clean = !!(distGuitar && cleanGuitar);
     // re-convert: sometimes take the runner-up class if it is close
     if (creativity > 0 && ranking[1].p > ranking[0].p * (1 - 0.5 * creativity) && R() < 0.5 * creativity) cls = ranking[1].cls;
+    if (clean) cls = 'guitar';
     if (cls === 'chord' && !info.chord) cls = ranking.find(r => r.cls !== 'chord').cls;
     // only mute as speech when the model is quite sure
     if (cls === 'speech' && ranking[0].p < 0.45) cls = ranking.find(r => r.cls !== 'speech' && r.cls !== 'chord').cls;
@@ -142,11 +159,12 @@ export function analyzeMod(mod, replay, { seed = 1, creativity = 0, memory = [] 
     }
     if (cls === 'speech') voice = voiceWavetable(s, info);
     const d = descriptor(info, s);
-    const presets = rankPresets(cls, d);
+    let presets = rankPresets(cls, d);
+    if (clean) presets = ['gtr_clean', ...presets.filter(x => !['gtr_clean', 'gtr_dist', 'gtr_power', 'gtr_lead'].includes(x))];
     let pick = 0;
     if (creativity > 0) { const r = R(); if (r < 0.45 * creativity) pick = 1; else if (r < 0.6 * creativity) pick = 2; }
     pick = Math.min(pick, presets.length - 1);
-    if (cls === 'speech') pick = 0; // human voices are left out (muted)
+    if (cls === 'speech' || clean) pick = 0; // human voices are left out (muted); distorted guitars play clean
     if (learned && PRESET_BY_ID[learned.preset]) { presets.unshift(learned.preset); pick = 0; }
     // note mapping: median real note -> sensible octave for the SID
     const ninfo = voice ? { ...info, f0norm: voice.ref } : info;
@@ -162,8 +180,8 @@ export function analyzeMod(mod, replay, { seed = 1, creativity = 0, memory = [] 
       index: s.index, name: s.name, used: true, features, info, ranking, cls, presets, presetId: presets[pick],
       noteShift: shift, medianNote: med, hits: u.hits, weight: WEIGHT[cls] ?? 5,
       sustained: s.looped || info.sustain > 0.35, lengthSec: s.looped ? 1e9 : s.data.length / info.rate,
-      chord: (cls === 'chord' && info.chord) ? info.chord : null, learned: !!learned, beat, voice,
-      soundWave: !s.synth && !DRUM_CLASSES.has(cls) && !['fx', 'speech', 'beat', 'chord'].includes(cls) ? soundWave(s, info) : null,
+      chord: (cls === 'chord' && info.chord && !clean) ? info.chord : null, learned: !!learned, beat, voice, distGuitar, cleanGuitar: clean,
+      soundWave: !s.synth && !clean && !DRUM_CLASSES.has(cls) && !['fx', 'speech', 'beat', 'chord'].includes(cls) ? soundWave(s, info) : null,
       synthWave: s.synth ? detectSynthWave(s.loopLength > 2 ? s.data.subarray(s.loopStart, s.loopStart + s.loopLength) : s.data) : null,
     });
   }

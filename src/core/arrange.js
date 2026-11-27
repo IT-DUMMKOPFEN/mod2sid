@@ -46,7 +46,9 @@ export function convertSong(mod, replay, analysis, opts = {}) {
       beat = a.beat;
       if (!beat) preset = PRESET_BY_ID.kick;
     }
-    const sw = a.synthWave || (o.soundMatch && !o.assignments[a.index] ? a.soundWave : null);
+    // the app passes every sample's preset; only a different one is a manual choice
+    const manual = !!o.assignments[a.index] && o.assignments[a.index] !== a.presetId;
+    const sw = a.synthWave || (o.soundMatch && !manual ? a.soundWave : null);
     if (sw && !preset.drum && preset.cat !== 'drums' && preset.cat !== 'auto' && preset.id !== 'mute' && preset.cat !== 'fx') {
       // synth instrument of the module, or waveform matched to the sound of the sample:
       // use that waveform (pulse width from the duty cycle / harmonic spectrum)
@@ -56,6 +58,8 @@ export function convertSong(mod, replay, analysis, opts = {}) {
         pulse: W === 0x41 && !(hasPulse && !a.synthWave) ? [[0x80 | ((sw.pw >> 8) & 15), sw.pw & 255], ['S']] : preset.pulse };
     }
     const env = o.fitEnvelope ? fitADSR(preset, a.info, smp, a.cls) : { ad: preset.ad, sr: preset.sr };
+    // clean guitar for a distorted one: the clipped sample swells slowly, a plucked string does not
+    if (a.cleanGuitar && !manual) env.ad = (Math.min(env.ad >> 4, 1) << 4) | Math.max(env.ad & 15, 8);
     const drumAbs = !!preset.drum;
     const isDrum = drumAbs || preset.cat === 'drums';
     const cls = a.cls;

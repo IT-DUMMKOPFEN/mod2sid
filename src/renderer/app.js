@@ -203,7 +203,7 @@ async function openFile(f) {
     const ctx = loadMod(bytes);
     if (S.playing) pause();
     S.ctx = ctx; S.file = f; S.seed = 1; S.variant = 1; S.assign = {}; S.manual = new Set(); S.modBuf = null; S.frame = 0; S.modOffset = 0; S.loaded = 'none';
-    S.analysis = analyze(ctx, { seed: 1, creativity: 0, memory: LS.get('memory', []) });
+    S.analysis = analyze(ctx, { seed: 1, creativity: 0, memory: LS.get('memory', []), cleanGuitar: $('#optCleanGuitar').checked });
     runConvert();
     $('#drop').classList.add('hidden2');
     ['#btnReconvert', '#btnSave', '#btnPlay', '#btnStop', '#seek'].forEach(s => { $(s).disabled = false; });
@@ -235,12 +235,21 @@ function reconvert() {
   S.seed += 1; S.variant += 1;
   const cr = +$('#optCreativity').value / 100;
   const prev = S.analysis;
-  S.analysis = analyze(S.ctx, { seed: S.seed, creativity: cr, memory: LS.get('memory', []) });
+  S.analysis = analyze(S.ctx, { seed: S.seed, creativity: cr, memory: LS.get('memory', []), cleanGuitar: $('#optCleanGuitar').checked });
   // keep manually chosen instruments
   for (const a of S.analysis.samples) if (S.manual.has(a.index)) { const p = prev.samples.find(x => x.index === a.index); if (p) a.presetId = S.assign[a.index]; }
   for (const k of Object.keys(S.assign)) if (!S.manual.has(+k)) delete S.assign[k];
   runConvert(true); renderSamples();
   setStatus(t('variant', S.variant));
+}
+// analyse again with the same variant (e.g. after "play distorted guitars clean" changed)
+function reanalyze() {
+  if (!S.ctx) return;
+  const cr = S.variant > 1 ? +$('#optCreativity').value / 100 : 0;
+  S.analysis = analyze(S.ctx, { seed: S.seed, creativity: cr, memory: LS.get('memory', []), cleanGuitar: $('#optCleanGuitar').checked });
+  for (const a of S.analysis.samples) if (S.manual.has(a.index)) a.presetId = S.assign[a.index];
+  for (const k of Object.keys(S.assign)) if (!S.manual.has(+k)) delete S.assign[k];
+  runConvert(true); renderSamples();
 }
 function setInstrument(a, presetId) {
   S.assign[a.index] = presetId; S.manual.add(a.index);
@@ -331,6 +340,7 @@ function renderSamples() {
       top.filter(x => x.cls !== a.cls).slice(0, 2).map(x => `<span class="tag alt" data-cls="${x.cls}" title="${Math.round(x.p * 100)}%">${esc(cname(x.cls))}</span>`).join('') +
       (S.manual.has(a.index) ? `<span class="tag manual">${t('manual')}</span>` : a.learned ? `<span class="tag manual">${t('learned')}</span>` : '') +
       (a.chord ? `<span class="tag">${esc(a.chord.type)}</span>` : '') +
+      (a.distGuitar ? `<span class="tag" title="${esc(t('distGuitarTip'))}">${t(a.cleanGuitar ? 'distGuitarClean' : 'distGuitar')}</span>` : '') +
       (a.beat ? `<span class="tag" title="${a.beat.hits.length} ${t('hitsWord')}">${a.beat.clusters.length} ${t('drumsWord')}</span>` : '');
     tr.innerHTML = `<td>${a.index}</td><td title="${esc(a.name)}">${esc(a.name || '—')}</td><td>${tags}</td>` +
       `<td><select>${presetOptions(sel, a.cls)}</select></td><td><button class="pbtn" data-a="orig">▶</button></td>` +
@@ -419,6 +429,7 @@ async function init() {
   $('#optVibrato').value = ['orig', 'soft', 'off'].includes(saved.vibrato) ? saved.vibrato : 'orig';
   if (saved.soundMatch !== undefined) $('#optSoundMatch').checked = saved.soundMatch;
   if (saved.noDrums !== undefined) $('#optNoDrums').checked = saved.noDrums;
+  if (saved.cleanGuitar !== undefined) $('#optCleanGuitar').checked = saved.cleanGuitar;
   if (saved.twoVoices !== undefined) $('#optTwoVoices').checked = saved.twoVoices;
   const syncTwo = () => { const tv = $('#optTwoVoices').checked; $('#optSids').disabled = tv; $('#optNoDrums').disabled = tv; };
   syncTwo();
@@ -427,7 +438,8 @@ async function init() {
   if (api.onOpenPath) api.onOpenPath(async (p) => { const r = await api.readFile(p); if (r) openFile(r); });
   if (saved.sids !== undefined && [0, 1, 2, 4, 6, 8].includes(+saved.sids)) $('#optSids').value = saved.sids;
   const saveOpts = () => LS.set('opts', { sids: +$('#optSids').value, model: $('#optModel').value, creativity: +$('#optCreativity').value, fitEnv: $('#optFitEnv').checked, filter: $('#optFilter').checked,
-    slides: $('#optSlides').value, vibrato: $('#optVibrato').value, soundMatch: $('#optSoundMatch').checked, noDrums: $('#optNoDrums').checked, twoVoices: $('#optTwoVoices').checked });
+    slides: $('#optSlides').value, vibrato: $('#optVibrato').value, soundMatch: $('#optSoundMatch').checked, noDrums: $('#optNoDrums').checked, twoVoices: $('#optTwoVoices').checked,
+    cleanGuitar: $('#optCleanGuitar').checked });
   $('#btnOpen').onclick = async () => { const f = await api.openMod(); if (f) openFile(f); };
   $('#btnReconvert').onclick = reconvert;
   $('#btnSave').onclick = save;
@@ -451,6 +463,7 @@ async function init() {
   $('#optSids').onchange = () => { saveOpts(); S.solo = -1; if (S.ctx) runConvert(true); else renderVoiceBtns(); };
   $('#optFitEnv').onchange = () => { saveOpts(); if (S.ctx) runConvert(true); };
   $('#optFilter').onchange = () => { saveOpts(); if (S.ctx) runConvert(true); };
+  $('#optCleanGuitar').onchange = () => { saveOpts(); S.solo = -1; reanalyze(); };
   for (const id of ['#optSlides', '#optVibrato', '#optSoundMatch', '#optNoDrums', '#optTwoVoices']) $(id).onchange = () => { syncTwo(); saveOpts(); S.solo = -1; if (S.ctx) runConvert(true); };
   document.querySelectorAll('.tab').forEach(b => { b.onclick = () => {
     document.querySelectorAll('.tab').forEach(x => x.classList.toggle('active', x === b));

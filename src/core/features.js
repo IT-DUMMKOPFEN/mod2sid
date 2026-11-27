@@ -34,7 +34,7 @@ function fft(re, im) {
   }
 }
 
-function magSpectrum(x, off, n) {
+export function magSpectrum(x, off, n) {
   const re = new Float64Array(n), im = new Float64Array(n);
   for (let i = 0; i < n; i++) {
     const w = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / (n - 1));

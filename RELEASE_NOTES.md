@@ -1,3 +1,9 @@
+## mod2sid 2.2.0
+
+**DE:** Neue Klang-Option **„Verzerrte Gitarren clean spielen“** (Standard: an). Die KI erkennt verzerrte E-Gitarren am Klang (Clipping, gefülltes Spektrum, auch kurze „Chugs“, die das Modul wie eine Melodie spielt). Statt die Verzerrung nachzubauen, was auf dem SID schrill klingt, spielt eine cleane SID-Gitarre mit schnellem Anschlag. Die Note kommt bei Power-Akkorden aus dem Spektrum: Grundton + Quinte statt der Quinte oder des Differenztons eine Oktave tiefer, die die Periodenmessung oft findet. In der Sample-Liste steht dann „verzerrt → clean“. Außerdem wirkt „Wellenform am Klang anpassen“ jetzt auch in der App, nicht nur im Test.
+
+**EN:** New sound option **“Play distorted guitars clean”** (default: on). The AI recognises distorted electric guitars by their sound (clipping, filled-up spectrum, also short “chugs” that the module plays as a melody). Instead of imitating the distortion, which sounds harsh on the SID, a clean SID guitar with a fast attack plays. For power chords the note comes from the spectrum: root + fifth instead of the fifth or the difference tone an octave below, which the period detector often finds. The sample list then shows “distorted → clean”. Also, “match waveform to the sound” now works in the app too, not only in tests.
+
 ## mod2sid 2.1.7
 
 **DE:** KI weiter trainiert. Sie erkennt Gesang, Gitarren, Flächen und Streicher jetzt deutlich besser am Klang.
